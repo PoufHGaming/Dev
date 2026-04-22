@@ -193,6 +193,7 @@
   .hf-item.done .hf-item-name { color: var(--text); }
   .hf-item-pts { font-size: 11px; color: var(--text-dim); }
   .hf-item.done .hf-item-pts { color: var(--teal); }
+  .hf-item-badges { display: flex; gap: 2px; align-items: center; }
 
   /* ACHIEVEMENTS PAGE */
   .dungeon-block {
@@ -260,14 +261,17 @@
   .badge-pts {
     width: auto; height: 22px; padding: 0 6px;
     font-size: 10px; font-family: 'Cinzel', serif; letter-spacing: 0.05em;
-    background: rgba(201,168,76,0.15); color: var(--gold);
-    border: 1px solid var(--gold-dim); border-radius: 20px;
+    background: rgba(201,168,76,0.15); color: var(--gold); border-radius: 20px;
   }
   .hf-card-desc {
     display: none;
-    margin-top: 10px; padding-top: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid var(--border);
-    color: var(--text-dim); font-size: 15px; line-height: 1.6; font-style: italic;
+    color: var(--text-dim);
+    font-size: 16px;
+    line-height: 1.6;
+    font-style: italic;
   }
   .hf-card.open .hf-card-desc { display: block; }
   .hf-card-title::after { content: ' \25B8'; font-size: 10px; color: var(--text-dim); opacity: 0.4; }
@@ -421,8 +425,8 @@
 
 <header>
   <div class="event-title">Gloire à la Compagnie I</div>
-  <div class="event-subtitle">Du 21/04 au 17/05 &nbsp;·&nbsp; Classement en direct</div>
-  <div class="event-subtitle">Organisé par Pouf</div>
+  <div class="event-subtitle" id="header-subtitle">Du 21/04 au 17/05 &nbsp;·&nbsp; Classement en direct</div>
+  <div class="event-subtitle" id="header-organiser">Organisé par Pouf</div>
   <div class="social-links">
     <a href="https://www.twitch.tv/pouf_hgaming" target="_blank" rel="noopener" class="social-link twitch">
       <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -440,9 +444,9 @@
 </header>
 
 <nav>
-  <button class="tab active" onclick="showPage('leaderboard', this)" data-i18n="nav.leaderboard">Classement</button>
-  <button class="tab" onclick="showPage('achievements', this)" data-i18n="nav.achievements">Hauts-faits</button>
-  <button class="tab lang-btn" onclick="toggleLang()" id="lang-btn" style="margin-left:auto">FR / EN</button>
+  <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard', this)">Classement</button>
+  <button class="tab" id="tab-achievements" onclick="showPage('achievements', this)">Hauts-faits</button>
+  <button class="tab" id="lang-btn" onclick="toggleLang()" style="margin-left:auto;opacity:0.6">FR</button>
 </nav>
 
 <main>
@@ -469,63 +473,104 @@ const SUPABASE_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
 // ============================================================
 
-// ---- DATA LOCALE (hauts-faits) ----
-// CONDITIONS disponibles : 'portal', 'dice', 'res', 'dispell', 'shadow', 'drum', 'poulet'
-// Images attendues dans : images/conditions/portal.png, images/conditions/dice.png, etc.
-// Pour ajouter des conditions à un HF : conditions:['portal','res']
-// Le badge "groupe" s'affiche automatiquement quand personal:false
-// Le badge "solo"   s'affiche automatiquement quand personal:true
+// CONDITIONS disponibles : 'portal','dice','res','dispell','shadow','drum','poulet'
+// Pour ajouter une condition : conditions:['portal'] ou conditions:['portal','dispell']
 const ACHIEVEMENTS = [
-  {id:1, dungeon:"Abime des marins",      title:"Surfeur dans l'âme",                    desc:"Tous les joueurs du groupe doivent se prendre 1 vague (subir les dégâts et se faire propulser) sans utiliser de sorts pendant le combat contre Sinthara.", points:10, hard:false, personal:false, conditions:[]},
-  {id:2, dungeon:"Abime des marins",      title:"BIG PULL",                              desc:"Le groupe doit tuer 40 forgotten soul en 1 pull.",                                                                                                           points:10, hard:false, personal:false, conditions:[]},
-  {id:3, dungeon:"Abime des marins",      title:"Pourquoi choisir",                      desc:"Le groupe doit se séparer en 2 et se rejoindre au feu de camp (Reliques Skip & Portail interdit).",                                                         points:20, hard:true,  personal:false, conditions:['portal']},
-  {id:4, dungeon:"Bois de L'aube",        title:"La charge sauvage",                     desc:"Tous les totems doivent être détruits avec la charge du cerf pendant le combat contre Malgut. Aucun joueur ne doit en détruire.",                           points:10, hard:false, personal:false, conditions:[]},
-  {id:5, dungeon:"Bois de L'aube",        title:"Reforestation",                         desc:"Le groupe ne doit tuer aucune créature de type plante du donjon.",                                                                                          points:10, hard:false, personal:false, conditions:[]},
-  {id:6, dungeon:"Bois de L'aube",        title:"Sang pour 100",                         desc:"Le groupe doit tuer 4 Bloodstone Goliath à 10sec d'intervalle.",                                                                                            points:20, hard:true,  personal:false, conditions:[]},
-  {id:7, dungeon:"Carrière tombe-dieu",   title:"Incognito",                             desc:"Aucun membre du groupe ne doit aggro de mob sur la plateforme (Reliques Skip & Portail interdit).",                                                         points:10, hard:false, personal:false, conditions:['portal']},
-  {id:8, dungeon:"Carrière tombe-dieu",   title:"Rock Solid",                            desc:"Le groupe doit tuer les 2 Enraged Earth Elemental pendant le combat contre le Titan.",                                                                      points:10, hard:false, personal:false, conditions:[]},
-  {id:9, dungeon:"Carrière tombe-dieu",   title:"Tout est dans le timing",               desc:"Obtenir 50% de score de donjon en étant uniquement sur la plateforme et sans tuer la patrouille (Enforcer).",                                              points:20, hard:true,  personal:false, conditions:[]},
-  {id:10,dungeon:"Caveau de Lamespectre", title:"Allié ou Ennemi ?",                     desc:"Le groupe doit survivre à un combat avec 4 sentinelles dans un pull. Se valide quand les joueurs ne sont plus en combat.",                                  points:10, hard:false, personal:false, conditions:[]},
-  {id:11,dungeon:"Caveau de Lamespectre", title:"Pierre qui roule n'amasse pas mousse",  desc:"Aucun membre du groupe ne doit VOLONTAIREMENT infliger des dégâts à la boule d'or pendant le combat contre Bael Aurum.",                                   points:10, hard:false, personal:false, conditions:[]},
-  {id:12,dungeon:"Caveau de Lamespectre", title:"Devy Jones",                            desc:"1 cannonier doit être en vie au début de la P2 de Katrine.",                                                                                                 points:10, hard:false, personal:false, conditions:[]},
-  {id:13,dungeon:"Caveau de Lamespectre", title:"Complètement Marteau",                  desc:"Le groupe doit se prendre TOUS les requins pendant le combat contre Marrow.",                                                                               points:10, hard:false, personal:false, conditions:[]},
-  {id:14,dungeon:"Caveau de Lamespectre", title:"Je connais un passage",                 desc:"Le groupe doit vaincre Marrow en premier SANS tuer aucune créature (Reliques Skip & Portail interdit).",                                                    points:10, hard:false, personal:false, conditions:['portal']},
-  {id:15,dungeon:"Caveau de Lamespectre", title:"Allié",                                 desc:"Le groupe doit tuer Bael Aurum grâce aux sentinelles.",                                                                                                      points:20, hard:true,  personal:false, conditions:[]},
-  {id:16,dungeon:"Coeur de guivre",       title:"Givré",                                 desc:"Le groupe ne doit JAMAIS interrompre le sort \"Frigid Mists\" de Veras.",                                                                                   points:10, hard:false, personal:false, conditions:[]},
-  {id:17,dungeon:"Coeur de guivre",       title:"Transit",                               desc:"Le joueur doit atteindre 10 stacks de givre.",                                                                                                               points:10, hard:false, personal:true,  conditions:[]},
-  {id:18,dungeon:"Coeur de guivre",       title:"Sculpture sur Glace",                   desc:"Le groupe doit vaincre les 2 Greater Ice Elemental à 10sec d'intervalle avec Veras.",                                                                       points:20, hard:true,  personal:false, conditions:[]},
-  {id:19,dungeon:"Coeur de Tuzari",       title:"La marche",                             desc:"Aucune créature ne doit être ralentie, contrôlée pendant le combat contre Ez'rath.",                                                                        points:10, hard:false, personal:false, conditions:[]},
-  {id:20,dungeon:"Coeur de Tuzari",       title:"Balo'Tuzari",                           desc:"Aucun membre du groupe ne doit se prendre une orbe pendant le combat contre Moar'gore.",                                                                    points:10, hard:false, personal:false, conditions:[]},
-  {id:21,dungeon:"Coeur de Tuzari",       title:"Pulvérisateur",                         desc:"Toutes les plantes du donjon doivent être tuées.",                                                                                                           points:10, hard:false, personal:false, conditions:[]},
-  {id:22,dungeon:"Coeur de Tuzari",       title:"Qu'ils brûlent",                        desc:"Aucun membre du groupe ne doit tuer de Pyromancien (Reliques Skip & Portail interdit).",                                                                    points:10, hard:false, personal:false, conditions:['portal']},
-  {id:23,dungeon:"Coeur de Tuzari",       title:"Mauvaise graine",                       desc:"Pendant le combat contre Vun'Kahr, aucune plante ne doit apparaître — marcher sur TOUTES les plantes.",                                                    points:10, hard:false, personal:false, conditions:[]},
-  {id:24,dungeon:"Coeur de Tuzari",       title:"Petits pas",                            desc:"Aucun membre du groupe AINSI que Moar'gore ne doit se prendre une orbe.",                                                                                   points:20, hard:true,  personal:false, conditions:[]},
-  {id:25,dungeon:"Creux Soyeux",          title:"Progéniture",                           desc:"Aucun membre du groupe ne doit tuer d'araignée pendant le combat contre Vexira (exceptée Vexira évidemment).",                                             points:10, hard:false, personal:false, conditions:[]},
-  {id:26,dungeon:"Creux Soyeux",          title:"Insecticide",                           desc:"Le groupe doit vaincre toutes les horreurs (Araignée Orange) dans le donjon.",                                                                              points:10, hard:false, personal:false, conditions:[]},
-  {id:27,dungeon:"Creux Soyeux",          title:"Cent Dix Pelles",                       desc:"Aucun membre du groupe ne doit utiliser de dispell (Reliques dispell interdit).",                                                                           points:20, hard:true,  personal:false, conditions:['dispell']},
-  {id:28,dungeon:"Guet Tempete",          title:"Grappin",                               desc:"Le groupe doit tuer Brogg alors qu'au moins 4 Mancatcher sont encore en vie.",                                                                              points:10, hard:false, personal:false, conditions:[]},
-  {id:29,dungeon:"Guet Tempete",          title:"Enragé",                                desc:"Le groupe doit vaincre un pillard qui a atteint 20 stacks.",                                                                                                 points:10, hard:false, personal:false, conditions:[]},
-  {id:30,dungeon:"Guet Tempete",          title:"World Boss",                            desc:"Le groupe doit vaincre un pillard qui a atteint 35 stacks.",                                                                                                 points:20, hard:true,  personal:false, conditions:[]},
-  {id:31,dungeon:"La chute Cithrel",      title:"La roulette",                           desc:"Pendant le combat contre Noor, le joueur ne doit se prendre aucun dégât de \"Cold-blooded Twist\" et \"Razor Trap\".",                                      points:10, hard:false, personal:true,  conditions:[]},
-  {id:32,dungeon:"La chute Cithrel",      title:"Soif de Sang",                          desc:"Pendant le combat contre Cithrel, tous les membres du groupe doivent avoir au moins 1 stack de sang à chaque utilisation du sort.",                         points:10, hard:false, personal:false, conditions:[]},
-  {id:33,dungeon:"La chute Cithrel",      title:"Big bang",                              desc:"Pendant le combat contre Koros, le groupe doit réussir à détruire 4 orbes en un coup.",                                                                     points:10, hard:false, personal:false, conditions:[]},
-  {id:34,dungeon:"La chute Cithrel",      title:"La montagne",                           desc:"Le groupe ne doit tuer AUCUN élémentaire de glace (Reliques Skip & Portail interdit).",                                                                     points:10, hard:false, personal:false, conditions:['portal']},
-  {id:35,dungeon:"La chute Cithrel",      title:"Disco",                                 desc:"Le groupe doit amener la MÊME orbe dans TOUTES les zones des boss.",                                                                                        points:10, hard:false, personal:false, conditions:[]},
-  {id:36,dungeon:"La chute Cithrel",      title:"Zéro Absolu",                           desc:"Le joueur doit obtenir 20 stacks de givre.",                                                                                                                 points:20, hard:true,  personal:true,  conditions:[]},
-  {id:37,dungeon:"Marché d'Urrak",        title:"La Paire",                              desc:"Le groupe doit faire monter un boss à 40 stacks minimum, avant de le tuer.",                                                                                points:10, hard:false, personal:false, conditions:[]},
-  {id:38,dungeon:"Marché d'Urrak",        title:"POUR LA FAMILLE",                       desc:"Le groupe doit libérer tous les villageois sans dépasser 100% d'accomplissement (8 Piliers).",                                                              points:10, hard:false, personal:false, conditions:[]},
-  {id:39,dungeon:"Marché d'Urrak",        title:"La Maire",                              desc:"Le groupe doit faire monter un boss à 70 stacks minimum, avant de le tuer.",                                                                                points:20, hard:true,  personal:false, conditions:[]},
-  {id:40,dungeon:"Sables Empyréens",      title:"Comme un pro",                          desc:"Le joueur ne doit se prendre aucun dégât de : zone au sol, rayon, AoE boss pendant le combat contre Sin Magir.",                                           points:10, hard:false, personal:true,  conditions:[]},
-  {id:41,dungeon:"Sables Empyréens",      title:"Sneaky",                                desc:"Le groupe doit accomplir le donjon sans aggro une seule patrouille (Reliques Skip & Portail interdit).",                                                    points:10, hard:false, personal:false, conditions:['portal']},
-  {id:42,dungeon:"Sables Empyréens",      title:"Comme un dieu",                         desc:"Le joueur ne doit se prendre aucun dégât esquivable de tout le donjon.",                                                                                    points:20, hard:true,  personal:true,  conditions:[]},
-  {id:43,dungeon:"Saccage de Drakheim",   title:"C'est pas comme ça qu'on fait",         desc:"Le joueur doit obtenir 10 stacks de Givre & 10 stacks de Feu dans le même combat (pas en même temps).",                                                   points:10, hard:false, personal:false, conditions:[]},
-  {id:44,dungeon:"Saccage de Drakheim",   title:"Je ne sais pas nager",                  desc:"Aucun membre du groupe ne doit mettre de pied dans l'eau.",                                                                                                  points:10, hard:false, personal:false, conditions:[]},
-  {id:45,dungeon:"Saccage de Drakheim",   title:"Dans le doute",                         desc:"Pendant le combat contre Auga Handhafi, vous devez détruire au moins 8 orbes avant de le tuer. (Toutes les orbes du boss comptent.)",                      points:10, hard:false, personal:false, conditions:[]},
-  {id:46,dungeon:"Saccage de Drakheim",   title:"Hydrophobe",                            desc:"Pendant le combat contre Chilgar, le joueur ne doit se prendre aucune vague / pilier / tornade.",                                                           points:10, hard:false, personal:true,  conditions:[]},
-  {id:47,dungeon:"Saccage de Drakheim",   title:"De feu et de glace",                    desc:"Le groupe doit vaincre Isilagour & Eldsupptok à 10sec d'intervalle.",                                                                                       points:10, hard:false, personal:false, conditions:[]},
-  {id:48,dungeon:"Saccage de Drakheim",   title:"Jamais 203",                            desc:"Le groupe doit vaincre Isilagour & Eldsupptok & Fodir Kaldur à 10sec d'intervalle.",                                                                        points:20, hard:true,  personal:false, conditions:[]},
+  {id:1, dungeon:"Abime des marins",      title:"Surfeur dans l'âme",                   desc:"Tous les joueurs du groupe doivent se prendre 1 vague (subir les dégâts et se faire propulser) sans utiliser de sorts pendant le combat contre Sinthara.", points:10, hard:false, personal:false, conditions:[]},
+  {id:2, dungeon:"Abime des marins",      title:"BIG PULL",                             desc:"Le groupe doit tuer 40 forgotten soul en 1 pull.",                                                                                                          points:10, hard:false, personal:false, conditions:[]},
+  {id:3, dungeon:"Abime des marins",      title:"Pourquoi choisir",                     desc:"Le groupe doit se séparer en 2 et se rejoindre au feu de camp (Reliques Skip & Portail interdit).",                                                        points:20, hard:true,  personal:false, conditions:['portal','shadow']},
+  {id:4, dungeon:"Bois de L'aube",        title:"La charge sauvage",                    desc:"Tous les totems doivent être détruits avec la charge du cerf pendant le combat contre Malgut. Aucun joueur ne doit en détruire (Poulet interdit)",                          points:10, hard:false, personal:false, conditions:['poulet']},
+  {id:5, dungeon:"Bois de L'aube",        title:"Reforestation",                        desc:"Le groupe ne doit tuer aucune créature de type plante du donjon.",                                                                                         points:10, hard:false, personal:false, conditions:[]},
+  {id:6, dungeon:"Bois de L'aube",        title:"Sang pour 100",                        desc:"Le groupe doit tuer 4 Bloodstone Goliath à 10sec d'intervalle.",                                                                                           points:20, hard:true,  personal:false, conditions:[]},
+  {id:7, dungeon:"Carrière tombe-dieu",   title:"Incognito",                            desc:"Aucun membre du groupe ne doit aggro de mob sur la plateforme (Reliques Skip & Portail interdit).",                                                        points:10, hard:false, personal:false, conditions:['portal','shadow']},
+  {id:8, dungeon:"Carrière tombe-dieu",   title:"Rock Solid",                           desc:"Le groupe doit commencer le combat contre le Titan avec les 2 Enraged Earth Elemental avec au moins 95% de santé. Et les vaincre.",                                                                     points:10, hard:false, personal:false, conditions:[]},
+  {id:9, dungeon:"Carrière tombe-dieu",   title:"Tout est dans le timing",              desc:"Obtenir 50% de score de donjon en étant uniquement sur la plateforme et sans aggro la patrouille (Enforcer) (Pas de snap)",                                             points:20, hard:true,  personal:false, conditions:[]},
+  {id:10,dungeon:"Caveau de Lamespectre", title:"Allié ou Ennemi ?",                    desc:"Le groupe doit survivre à un combat avec 4 sentinelles dans un pull. Se valide quand les joueurs ne sont plus en combat et les sentinnelles vaincues",                                 points:10, hard:false, personal:false, conditions:[]},
+  {id:11,dungeon:"Caveau de Lamespectre", title:"Pierre qui roule n'amasse pas mousse", desc:"Aucun membre du groupe ne doit VOLONTAIREMENT infliger des dégâts à la boule d'or pendant le combat contre Bael Aurum.",                                  points:10, hard:false, personal:false, conditions:[]},
+  {id:12,dungeon:"Caveau de Lamespectre", title:"Devy Jones",                           desc:"1 cannonier doit être en vie au début de la P2 de Katrine.",                                                                                                points:10, hard:false, personal:false, conditions:[]},
+  {id:13,dungeon:"Caveau de Lamespectre", title:"Complètement Marteau",                 desc:"Le groupe doit se prendre TOUS les requins pendant le combat contre Marrow.",                                                                              points:10, hard:false, personal:false, conditions:[]},
+  {id:14,dungeon:"Caveau de Lamespectre", title:"Je connais un passage",                desc:"Le groupe doit vaincre Marrow en premier SANS tuer aucune créature (Reliques Skip & Portail interdit).",                                                   points:10, hard:false, personal:false, conditions:['portal','shadow']},
+  {id:15,dungeon:"Caveau de Lamespectre", title:"Allié",                                desc:"Le groupe doit tuer n'importe quel boss grâce aux sentinelles (Elles infligent le dégât final)",                                                                                                     points:20, hard:true,  personal:false, conditions:[]},
+  {id:16,dungeon:"Coeur de guivre",       title:"Givré",                                desc:"Le groupe ne doit JAMAIS interrompre le sort \"Frigid Mists\" de Veras.",                                                                                  points:10, hard:false, personal:false, conditions:[]},
+  {id:17,dungeon:"Coeur de guivre",       title:"Transit",                              desc:"Le joueur doit atteindre 10 stacks de givre.",                                                                                                              points:10, hard:false, personal:true,  conditions:[]},
+  {id:18,dungeon:"Coeur de guivre",       title:"Sculpture sur Glace",                  desc:"Le groupe doit commencer le combat contre Veras avec les 2 Greater Ice Elemental (au moins 95% de santé) et vaincre les Elementals et le boss à 10sec d'intervalle.",                                                                      points:20, hard:true,  personal:false, conditions:[]},
+  {id:19,dungeon:"Coeur de Tuzari",       title:"La marche",                            desc:"Aucune créature ne doit être ralentie, contrôlée (Bump / Grip / Boss interdit) pendant le combat contre Ez'rath.",                                                                       points:10, hard:false, personal:false, conditions:[]},
+  {id:20,dungeon:"Coeur de Tuzari",       title:"Petits pas",                          desc:"Aucun membre du groupe ne doit se prendre une orbe pendant le combat contre Moar'gore.",                                                                   points:10, hard:false, personal:false, conditions:[]},
+  {id:21,dungeon:"Coeur de Tuzari",       title:"Pulvérisateur",                        desc:"Toutes les plantes du donjon doivent être tuées.",                                                                                                          points:10, hard:false, personal:false, conditions:[]},
+  {id:22,dungeon:"Coeur de Tuzari",       title:"Qu'ils brûlent",                       desc:"Aucun membre du groupe ne doit tuer de Pyromancien (Reliques Skip & Portail interdit).",                                                                   points:10, hard:false, personal:false, conditions:['portal','shadow']},
+  {id:23,dungeon:"Coeur de Tuzari",       title:"Mauvaise graine",                      desc:"Pendant le combat contre Vun'Kahr, aucune plante ne doit apparaître (marcher sur TOUTES les plantes).",                                                   points:10, hard:false, personal:false, conditions:[]},
+  {id:24,dungeon:"Coeur de Tuzari",       title:"Balo'Tuzari",                           desc:"Aucun membre du groupe AINSI que Moar'gore ne doit se prendre une orbe.",                                                                                  points:20, hard:true,  personal:false, conditions:[]},
+  {id:25,dungeon:"Creux Soyeux",          title:"Progéniture",                          desc:"Aucun membre du groupe ne doit tuer d'araignée pendant le combat contre Vexira (exceptée Vexira évidemment). Poulet interdit",                                            points:10, hard:false, personal:false, conditions:['poulet']},
+  {id:26,dungeon:"Creux Soyeux",          title:"Insecticide",                          desc:"Le groupe doit vaincre toutes les horreurs (Araignée Orange) dans le donjon et lancer le combat contre Vexira avant la fin du timer",                                                                             points:10, hard:false, personal:false, conditions:[]},
+  {id:27,dungeon:"Creux Soyeux",          title:"Cent Dix Pelles",                      desc:"Aucun membre du groupe ne doit utiliser de dispell (Reliques dispell interdite).",                                                                          points:20, hard:true,  personal:false, conditions:['dispell']},
+  {id:28,dungeon:"Guet Tempete",          title:"Grappin",                              desc:"Le groupe doit tuer Brogg alors qu'au moins 2 Mancatcher (ceux invoqués par le boss) sont encore en vie.",                                                                             points:10, hard:false, personal:false, conditions:[]},
+  {id:29,dungeon:"Guet Tempete",          title:"Enragé",                               desc:"Le groupe doit vaincre un pillard qui a atteint 20 stacks.",                                                                                                points:10, hard:false, personal:false, conditions:[]},
+  {id:30,dungeon:"Guet Tempete",          title:"World Boss",                           desc:"Le groupe doit vaincre un pillard qui a atteint 35 stacks.",                                                                                                points:20, hard:true,  personal:false, conditions:[]},
+  {id:31,dungeon:"La chute Cithrel",      title:"La roulette",                          desc:"Pendant le combat contre Noor, le joueur ne doit se prendre aucun dégât de \"Cold-blooded Twist\" et \"Razor Trap\".",                                     points:10, hard:false, personal:true,  conditions:[]},
+  {id:32,dungeon:"La chute Cithrel",      title:"Soif de Sang",                         desc:"Pendant le combat contre Cithrel, tous les membres du groupe doivent avoir au moins 1 stack de sang à chaque utilisation du sort.",                        points:10, hard:false, personal:false, conditions:[]},
+  {id:33,dungeon:"La chute Cithrel",      title:"Big bang",                             desc:"Pendant le combat contre Koros, le groupe doit réussir à détruire 6 orbes en un coup.",                                                                    points:10, hard:false, personal:false, conditions:[]},
+  {id:34,dungeon:"La chute Cithrel",      title:"La montagne",                          desc:"Le groupe ne doit tuer AUCUN élémentaire de glace (Reliques Skip & Portail interdit).",                                                                    points:10, hard:false, personal:false, conditions:['portal','shadow']},
+  {id:35,dungeon:"La chute Cithrel",      title:"Disco",                                desc:"Le groupe doit amener la MÊME orbe dans TOUTES les zones des boss.",                                                                                       points:10, hard:false, personal:false, conditions:[]},
+  {id:36,dungeon:"La chute Cithrel",      title:"Zéro Absolu",                          desc:"Le joueur doit obtenir 20 stacks de givre.",                                                                                                                points:20, hard:true,  personal:true,  conditions:[]},
+  {id:37,dungeon:"Marché d'Urrak",        title:"La Paire",                             desc:"Le groupe doit faire monter un boss à 40 stacks minimum, avant de le tuer.",                                                                               points:10, hard:false, personal:false, conditions:[]},
+  {id:38,dungeon:"Marché d'Urrak",        title:"POUR LA FAMILLE",                      desc:"Le groupe doit libérer tous les villageois sans dépasser 100% d'accomplissement (8 Piliers).",                                                             points:10, hard:false, personal:false, conditions:[]},
+  {id:39,dungeon:"Marché d'Urrak",        title:"La Maire",                             desc:"Le groupe doit faire monter un boss à 70 stacks minimum, avant de le tuer.",                                                                               points:20, hard:true,  personal:false, conditions:[]},
+  {id:40,dungeon:"Sables Empyréens",      title:"Comme un pro",                         desc:"Le joueur ne doit se prendre aucun dégât de : \"Jugement de Sinnari\" (rayon horizonta & vertical), \"Explosion céleste\" (petite zone au sol), \"Pénombre\" (aoe violette) pendant le combat contre Sin Magir.",                                          points:10, hard:false, personal:true,  conditions:[]},
+  {id:41,dungeon:"Sables Empyréens",      title:"Sneaky",                               desc:"Le groupe doit accomplir le donjon sans aggro une seule patrouille (Reliques Skip & Portail interdit).",                                                   points:10, hard:false, personal:false, conditions:['portal','shadow']},
+  {id:42,dungeon:"Sables Empyréens",      title:"Comme un dieu",                        desc:"Le joueur ne doit se prendre aucun dégât esquivable (dégâts autorisées : \"Explosion orbe boss, rayon tank boss, Dot Acolyte, Shadow bolt & Constellation of Ruin Magi, Dark Cleave, Crush Armor, Auto hit mob & boss\") de tout le donjon.",                                                                                   points:20, hard:true,  personal:true,  conditions:[]},
+  {id:43,dungeon:"Saccage de Drakheim",   title:"C'est pas comme ça qu'on fait",        desc:"Le joueur doit obtenir 10 stacks de Givre & 10 stacks de Feu pendant le combat contre Fodir Kaldur (pas en même temps).",                                                  points:10, hard:false, personal:false, conditions:[]},
+  {id:44,dungeon:"Saccage de Drakheim",   title:"Je ne sais pas nager",                 desc:"Aucun membre du groupe ne doit mettre de pied dans l'eau (Portal & Sort de mobilité interdit)",                                                                                                 points:10, hard:false, personal:false, conditions:[]},
+  {id:45,dungeon:"Saccage de Drakheim",   title:"Dans le doute",                        desc:"Pendant le combat contre Auga Handhafi, vous devez détruire au moins 8 orbes avant de le tuer. (Toutes les orbes du boss comptent.)",                     points:10, hard:false, personal:false, conditions:[]},
+  {id:46,dungeon:"Saccage de Drakheim",   title:"Hydrophobe",                           desc:"Pendant le combat contre Chilgar, le joueur ne doit se prendre aucune vague / pilier / tornade.",                                                          points:10, hard:false, personal:true,  conditions:[]},
+  {id:47,dungeon:"Saccage de Drakheim",   title:"De feu et de glace",                   desc:"Le groupe doit vaincre Isilagour & Eldsupptok à 10sec d'intervalle.",                                                                                      points:10, hard:false, personal:false, conditions:[]},
+  {id:48,dungeon:"Saccage de Drakheim",   title:"Jamais 203",                           desc:"Le groupe doit commencer le combat contre Fodir Kaldur avec Isilagour & Eldsupptok à au moins 95% de santé. Se valide quand le combat est terminée et que les créatures ont été vaincues",                                                                       points:20, hard:true,  personal:false, conditions:[]},
 ];
-
+  {id:2,dungeon:"Abime des marins",title:"BIG PULL",desc:"Le groupe doit tuer 40 forgotten soul en 1 pull.",points:10,hard:false,personal:false},
+  {id:3,dungeon:"Abime des marins",title:"Pourquoi choisir",desc:"Le groupe doit se séparer en 2 et se rejoindre au feu de camp (Reliques Skip & Portail interdit).",points:20,hard:true,personal:false},
+  {id:4,dungeon:"Bois de L'aube",title:"La charge sauvage",desc:"Tous les totems doivent être détruits avec la charge du cerf pendant le combat contre Malgut. Aucun joueur ne doit en détruire.",points:10,hard:false,personal:false},
+  {id:5,dungeon:"Bois de L'aube",title:"Reforestation",desc:"Le groupe ne doit tuer aucune créature de type plante du donjon.",points:10,hard:false,personal:false},
+  {id:6,dungeon:"Bois de L'aube",title:"Sang pour 100",desc:"Le groupe doit tuer 4 Bloodstone Goliath à 10sec d'intervalle.",points:20,hard:true,personal:false},
+  {id:7,dungeon:"Carrière tombe-dieu",title:"Incognito",desc:"Aucun membre du groupe ne doit aggro de mob sur la plateforme (Reliques Skip & Portail interdit).",points:10,hard:false,personal:false},
+  {id:8,dungeon:"Carrière tombe-dieu",title:"Rock Solid",desc:"Le groupe doit tuer les 2 Enraged Earth Elemental pendant le combat contre le Titan.",points:10,hard:false,personal:false},
+  {id:9,dungeon:"Carrière tombe-dieu",title:"Tout est dans le timing",desc:"Obtenir 50% de score de donjon en étant uniquement sur la plateforme et sans tuer la patrouille (Enforcer).",points:20,hard:true,personal:false},
+  {id:10,dungeon:"Caveau de Lamespectre",title:"Allié ou Ennemi ?",desc:"Le groupe doit survivre à un combat avec 4 sentinelles dans un pull. Se valide quand les joueurs ne sont plus en combat.",points:10,hard:false,personal:false},
+  {id:11,dungeon:"Caveau de Lamespectre",title:"Pierre qui roule n'amasse pas mousse",desc:"Aucun membre du groupe ne doit VOLONTAIREMENT infliger des dégâts à la boule d'or pendant le combat contre Bael Aurum.",points:10,hard:false,personal:false},
+  {id:12,dungeon:"Caveau de Lamespectre",title:"Devy Jones",desc:"1 cannonier doit être en vie au début de la P2 de Katrine.",points:10,hard:false,personal:false},
+  {id:13,dungeon:"Caveau de Lamespectre",title:"Complètement Marteau",desc:"Le groupe doit se prendre TOUS les requins pendant le combat contre Marrow.",points:10,hard:false,personal:false},
+  {id:14,dungeon:"Caveau de Lamespectre",title:"Je connais un passage",desc:"Le groupe doit vaincre Marrow en premier SANS tuer aucune créature (Reliques Skip & Portail interdit).",points:10,hard:false,personal:false},
+  {id:15,dungeon:"Caveau de Lamespectre",title:"Allié",desc:"Le groupe doit tuer Bael Aurum grâce aux sentinelles.",points:20,hard:true,personal:false},
+  {id:16,dungeon:"Coeur de guivre",title:"Givré",desc:"Le groupe ne doit JAMAIS interrompre le sort \"Frigid Mists\" de Veras.",points:10,hard:false,personal:false},
+  {id:17,dungeon:"Coeur de guivre",title:"Transit",desc:"Le joueur doit atteindre 10 stacks de givre.",points:10,hard:false,personal:true},
+  {id:18,dungeon:"Coeur de guivre",title:"Sculpture sur Glace",desc:"Le groupe doit vaincre les 2 Greater Ice Elemental à 10sec d'intervalle avec Veras.",points:20,hard:true,personal:false},
+  {id:19,dungeon:"Coeur de Tuzari",title:"La marche",desc:"Aucune créature ne doit être ralentie, contrôlée pendant le combat contre Ez'rath.",points:10,hard:false,personal:false},
+  {id:20,dungeon:"Coeur de Tuzari",title:"Balo'Tuzari",desc:"Aucun membre du groupe ne doit se prendre une orbe pendant le combat contre Moar'gore.",points:10,hard:false,personal:false},
+  {id:21,dungeon:"Coeur de Tuzari",title:"Pulvérisateur",desc:"Toutes les plantes du donjon doivent être tuées.",points:10,hard:false,personal:false},
+  {id:22,dungeon:"Coeur de Tuzari",title:"Qu'ils brûlent",desc:"Aucun membre du groupe ne doit tuer de Pyromancien (Reliques Skip & Portail interdit).",points:10,hard:false,personal:false},
+  {id:23,dungeon:"Coeur de Tuzari",title:"Mauvaise graine",desc:"Pendant le combat contre Vun'Kahr, aucune plante ne doit apparaître — marcher sur TOUTES les plantes.",points:10,hard:false,personal:false},
+  {id:24,dungeon:"Coeur de Tuzari",title:"Petits pas",desc:"Aucun membre du groupe AINSI que Moar'gore ne doit se prendre une orbe.",points:20,hard:true,personal:false},
+  {id:25,dungeon:"Creux Soyeux",title:"Progéniture",desc:"Aucun membre du groupe ne doit tuer d'araignée pendant le combat contre Vexira (exceptée Vexira évidemment).",points:10,hard:false,personal:false},
+  {id:26,dungeon:"Creux Soyeux",title:"Insecticide",desc:"Le groupe doit vaincre toutes les horreurs (Araignée Orange) dans le donjon.",points:10,hard:false,personal:false},
+  {id:27,dungeon:"Creux Soyeux",title:"Cent Dix Pelles",desc:"Aucun membre du groupe ne doit utiliser de dispell (Reliques dispell interdit).",points:20,hard:true,personal:false},
+  {id:28,dungeon:"Guet Tempete",title:"Grappin",desc:"Le groupe doit tuer Brogg alors qu'au moins 4 Mancatcher sont encore en vie.",points:10,hard:false,personal:false},
+  {id:29,dungeon:"Guet Tempete",title:"Enragé",desc:"Le groupe doit vaincre un pillard qui a atteint 20 stacks.",points:10,hard:false,personal:false},
+  {id:30,dungeon:"Guet Tempete",title:"World Boss",desc:"Le groupe doit vaincre un pillard qui a atteint 35 stacks.",points:20,hard:true,personal:false},
+  {id:31,dungeon:"La chute Cithrel",title:"La roulette",desc:"Pendant le combat contre Noor, le joueur ne doit se prendre aucun dégât de \"Cold-blooded Twist\" et \"Razor Trap\".",points:10,hard:false,personal:true},
+  {id:32,dungeon:"La chute Cithrel",title:"Soif de Sang",desc:"Pendant le combat contre Cithrel, tous les membres du groupe doivent avoir au moins 1 stack de sang à chaque utilisation du sort.",points:10,hard:false,personal:false},
+  {id:33,dungeon:"La chute Cithrel",title:"Big bang",desc:"Pendant le combat contre Koros, le groupe doit réussir à détruire 4 orbes en un coup.",points:10,hard:false,personal:false},
+  {id:34,dungeon:"La chute Cithrel",title:"La montagne",desc:"Le groupe ne doit tuer AUCUN élémentaire de glace (Reliques Skip & Portail interdit).",points:10,hard:false,personal:false},
+  {id:35,dungeon:"La chute Cithrel",title:"Disco",desc:"Le groupe doit amener la MÊME orbe dans TOUTES les zones des boss.",points:10,hard:false,personal:false},
+  {id:36,dungeon:"La chute Cithrel",title:"Zéro Absolu",desc:"Le joueur doit obtenir 20 stacks de givre.",points:20,hard:true,personal:true},
+  {id:37,dungeon:"Marché d'Urrak",title:"La Paire",desc:"Le groupe doit faire monter un boss à 40 stacks minimum, avant de le tuer.",points:10,hard:false,personal:false},
+  {id:38,dungeon:"Marché d'Urrak",title:"POUR LA FAMILLE",desc:"Le groupe doit libérer tous les villageois sans dépasser 100% d'accomplissement (8 Piliers).",points:10,hard:false,personal:false},
+  {id:39,dungeon:"Marché d'Urrak",title:"La Maire",desc:"Le groupe doit faire monter un boss à 70 stacks minimum, avant de le tuer.",points:20,hard:true,personal:false},
+  {id:40,dungeon:"Sables Empyréens",title:"Comme un pro",desc:"Le joueur ne doit se prendre aucun dégât de : zone au sol, rayon, AoE boss pendant le combat contre Sin Magir.",points:10,hard:false,personal:true},
+  {id:41,dungeon:"Sables Empyréens",title:"Sneaky",desc:"Le groupe doit accomplir le donjon sans aggro une seule patrouille (Reliques Skip & Portail interdit).",points:10,hard:false,personal:false},
+  {id:42,dungeon:"Sables Empyréens",title:"Comme un dieu",desc:"Le joueur ne doit se prendre aucun dégât esquivable de tout le donjon.",points:20,hard:true,personal:true},
+  {id:43,dungeon:"Saccage de Drakheim",title:"C'est pas comme ça qu'on fait",desc:"Le joueur doit obtenir 10 stacks de Givre & 10 stacks de Feu dans le même combat (pas en même temps).",points:10,hard:false,personal:false},
+  {id:44,dungeon:"Saccage de Drakheim",title:"Je ne sais pas nager",desc:"Aucun membre du groupe ne doit mettre de pied dans l'eau.",points:10,hard:false,personal:false},
+  {id:45,dungeon:"Saccage de Drakheim",title:"Dans le doute",desc:"Pendant le combat contre Auga Handhafi, vous devez détruire au moins 8 orbes avant de le tuer. (Toutes les orbes du boss comptent.)",points:10,hard:false,personal:false},
+  {id:46,dungeon:"Saccage de Drakheim",title:"Hydrophobe",desc:"Pendant le combat contre Chilgar, le joueur ne doit se prendre aucune vague / pilier / tornade.",points:10,hard:false,personal:true},
+  {id:47,dungeon:"Saccage de Drakheim",title:"De feu et de glace",desc:"Le groupe doit vaincre Isilagour & Eldsupptok à 10sec d'intervalle.",points:10,hard:false,personal:false},
 const DUNGEONS_ORDER = [
   "Abime des marins","Bois de L'aube","Carrière tombe-dieu",
   "Coeur de guivre","Creux Soyeux","Guet Tempete",
@@ -632,18 +677,18 @@ async function loadLeaderboard() {
 function renderLeaderboard(scores) {
   const rankIcons = ['I', 'II', 'III'];
   let html = `<div class="lb-header">
-    <div></div><div>Joueur</div>
-    <div class="col-base" style="text-align:right">Base</div>
-    <div class="col-bonus" style="text-align:right">Bonus</div>
-    <div style="text-align:right">HF</div>
-    <div style="text-align:right">Total</div>
+    <div></div>
+    <div>${t('lb.col.player')}</div>
+    <div class="col-base" style="text-align:right">${t('lb.col.base')}</div>
+    <div class="col-bonus" style="text-align:right">${t('lb.col.bonus')}</div>
+    <div style="text-align:right">${t('lb.col.hf')}</div>
+    <div style="text-align:right">${t('lb.col.total')}</div>
   </div>`;
 
   scores.forEach((s, i) => {
     const rankClass = i < 3 ? `rank-${i+1}` : '';
     const rankLabel = i < 3 ? `<span style="font-style:italic;font-size:11px">${rankIcons[i]}</span>` : `<span style="font-size:12px">${i+1}</span>`;
 
-    // Detail: tous les HF par donjon, avec état
     let detailHtml = '<div class="lb-detail"><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px">';
     DUNGEONS_ORDER.forEach(d => {
       const dHFs = ACHIEVEMENTS.filter(a => a.dungeon === d);
@@ -651,15 +696,17 @@ function renderLeaderboard(scores) {
       const complete = dDone === dHFs.length;
       detailHtml += `<div class="dungeon-section">
         <div class="dp-header">
-          <span class="dp-name">${d}</span>
+          <span class="dp-name">${t(d)}</span>
           <span class="dp-count ${complete ? 'complete' : ''}">${dDone}/${dHFs.length}${complete ? ' · +5pts' : ''}</span>
         </div>
         <div class="hf-list">`;
       dHFs.forEach(a => {
         const done = s.done.has(a.id);
+        const title = (currentLang === 'en' && TRANSLATIONS[a.title]?.en) ? TRANSLATIONS[a.title].en : a.title;
         detailHtml += `<div class="hf-item ${done ? 'done' : ''}">
           <div class="hf-check-icon">${done ? '✓' : ''}</div>
-          <span class="hf-item-name">${a.title}${a.hard ? ' ⭐' : ''}${a.personal ? ' 👤' : ''}</span>
+          <span class="hf-item-name">${title}</span>
+          <div class="hf-item-badges">${renderBadges(a)}</div>
           <span class="hf-item-pts">${done ? '+' + a.points : a.points} pts</span>
         </div>`;
       });
@@ -679,24 +726,6 @@ function renderLeaderboard(scores) {
   });
 
   document.getElementById('lb-content').innerHTML = html;
-}
-
-// ---- BADGES ----
-// Images dans : images/badges/hard.png, images/badges/solo.png, images/badges/group.png
-// Images conditions dans : images/conditions/portal.png, images/conditions/dispell.png, etc.
-function renderBadges(a) {
-  let html = '';
-  if (a.hard)
-    html += `<span class="badge badge-hard" title="${t('badge.hard')}"><img src="images/badges/hard.png" alt="${t('badge.hard')}"></span>`;
-  if (a.personal)
-    html += `<span class="badge badge-solo" title="${t('badge.solo')}"><img src="images/badges/solo.png" alt="${t('badge.solo')}"></span>`;
-  else
-    html += `<span class="badge badge-group" title="${t('badge.group')}"><img src="images/badges/group.png" alt="${t('badge.group')}"></span>`;
-  (a.conditions || []).forEach(c =>
-    html += `<span class="badge badge-cond" title="${t('cond.'+c)}"><img src="images/conditions/${c}.png" alt="${t('cond.'+c)}"></span>`
-  );
-  html += `<span class="badge badge-pts">${a.points} pts</span>`;
-  return html;
 }
 
 // ---- ACHIEVEMENTS LIST ----
@@ -722,11 +751,10 @@ function renderAchievements() {
     const maxPts = hfs.reduce((s, a) => s + a.points, 0) + 5;
     const imgPath = DUNGEON_IMAGES[d] || '';
     const bgStyle = imgPath ? `background-image: url('${imgPath}');` : '';
-    const dungeonLabel = t(d);
     html += `<div class="dungeon-block">
       <div class="dungeon-bg" style="${bgStyle}"></div>
       <div class="dungeon-inner">
-        <div class="dungeon-title">${dungeonLabel} <span class="bonus-tag">${t('hf.bonus_tag')}</span> <span style="margin-left:auto;font-size:14px;color:var(--text-dim)">${maxPts} ${t('hf.pts_max')}</span></div>
+        <div class="dungeon-title">${t(d)} <span class="bonus-tag">${t('hf.bonus_tag')}</span> <span style="margin-left:auto;font-size:14px;color:var(--text-dim)">${maxPts} ${t('hf.pts_max')}</span></div>
         <div class="hf-grid">`;
     hfs.forEach(a => {
       const title = (currentLang === 'en' && TRANSLATIONS[a.title]?.en) ? TRANSLATIONS[a.title].en : a.title;
@@ -845,60 +873,60 @@ async function toggleHF(achievementId, el) {
   el.style.pointerEvents = '';
 }
 
+// ---- BADGES ----
+// Images dans images/badges/hard.png, solo.png, group.png
+// Images conditions dans images/conditions/portal.png, dispell.png, dice.png, res.png, shadow.png, drum.png, poulet.png
+function renderBadges(a) {
+  let html = '';
+  if (a.hard)
+    html += `<span class="badge" title="${t('badge.hard')}"><img src="images/badges/hard.png" alt="${t('badge.hard')}"></span>`;
+  if (a.personal)
+    html += `<span class="badge" title="${t('badge.solo')}"><img src="images/badges/solo.png" alt="${t('badge.solo')}"></span>`;
+  (a.conditions || []).forEach(c =>
+    html += `<span class="badge" title="${t('cond.'+c)}"><img src="images/conditions/${c}.png" alt="${c}"></span>`
+  );
+  html += `<span class="badge badge-pts">${a.points} pts</span>`;
+  return html;
+}
+
 // ---- TRADUCTIONS ----
-// Pour traduire : remplis les valeurs EN ci-dessous.
-// Les clés FR sont les textes affichés par défaut dans le HTML.
-// Format : 'clé': 'traduction EN'
+// Remplis les valeurs EN ci-dessous. Les FR sont les textes par défaut.
 const TRANSLATIONS = {
-  // --- Navigation ---
-  'nav.leaderboard':      { fr: 'Classement',    en: 'Leaderboard' },
-  'nav.achievements':     { fr: 'Hauts-faits',   en: 'Achievements' },
-
-  // --- Header ---
-  'header.subtitle':      { fr: 'Du 21/04 au 17/05 · Classement en direct', en: 'Apr 21 – May 17 · Live rankings' },
-  'header.organiser':     { fr: 'Organisé par Pouf',                         en: 'Hosted by Pouf' },
-
-  // --- Leaderboard ---
-  'lb.col.base':          { fr: 'Base',     en: 'Base' },
-  'lb.col.bonus':         { fr: 'Bonus',    en: 'Bonus' },
-  'lb.col.hf':            { fr: 'HF',       en: 'Ach.' },
-  'lb.col.total':         { fr: 'Total',    en: 'Total' },
-  'lb.loading':           { fr: 'Chargement...', en: 'Loading...' },
-  'lb.error':             { fr: 'Erreur de chargement. Vérifie ta config Supabase.', en: 'Loading error. Check your Supabase config.' },
-
-  // --- Hauts-faits ---
-  'hf.bonus_tag':         { fr: '+5 pts si complet', en: '+5 pts if complete' },
-  'hf.pts_max':           { fr: 'pts max',           en: 'pts max' },
-
-  // --- Badges ---
-  'badge.hard':           { fr: 'Difficile', en: 'Hard' },
-  'badge.solo':           { fr: 'Solo',      en: 'Solo' },
-  'badge.group':          { fr: 'Groupe',    en: 'Group' },
-
-  // --- Conditions (noms affichés en tooltip) ---
-  'cond.portal':   { fr: 'Portail interdit',  en: 'Portal forbidden' },
-  'cond.dispell':  { fr: 'Dispell interdit',  en: 'Dispell forbidden' },
-  'cond.dice':     { fr: 'Dés',               en: 'Dice' },
-  'cond.res':      { fr: 'Résurrection',      en: 'Resurrection' },
-  'cond.shadow':   { fr: 'Ombre',             en: 'Shadow' },
-  'cond.drum':     { fr: 'Tambour',           en: 'Drum' },
-  'cond.poulet':   { fr: 'Poulet',            en: 'Chicken' },
-
-  // --- Titres des donjons ---
-  "Abime des marins":       { fr: "Abime des marins",      en: "Mariner's Abyss" },
-  "Bois de L'aube":         { fr: "Bois de L'aube",        en: "Dawn Woods" },
-  "Carrière tombe-dieu":    { fr: "Carrière tombe-dieu",   en: "God-Slayer Quarry" },
-  "Caveau de Lamespectre":  { fr: "Caveau de Lamespectre", en: "Ghostblade Vault" },
-  "Coeur de guivre":        { fr: "Coeur de guivre",       en: "Wyrm Heart" },
-  "Coeur de Tuzari":        { fr: "Coeur de Tuzari",       en: "Heart of Tuzari" },
+  'nav.leaderboard':   { fr: 'Classement',  en: 'Leaderboard' },
+  'nav.achievements':  { fr: 'Hauts-faits', en: 'Achievements' },
+  'header.subtitle':   { fr: 'Du 21/04 au 17/05 · Classement en direct', en: 'Apr 21 – May 17 · Live rankings' },
+  'header.organiser':  { fr: 'Organisé par Pouf', en: 'Hosted by Pouf' },
+  'lb.col.player':     { fr: 'Joueur',  en: 'Player' },
+  'lb.col.base':       { fr: 'Base',    en: 'Base' },
+  'lb.col.bonus':      { fr: 'Bonus',   en: 'Bonus' },
+  'lb.col.hf':         { fr: 'HF',      en: 'Ach.' },
+  'lb.col.total':      { fr: 'Total',   en: 'Total' },
+  'hf.bonus_tag':      { fr: '+5 pts si complet', en: '+5 pts if complete' },
+  'hf.pts_max':        { fr: 'pts max', en: 'pts max' },
+  'badge.hard':        { fr: 'Difficile', en: 'Hard' },
+  'badge.solo':        { fr: 'Solo',     en: 'Solo' },
+  'badge.group':       { fr: 'Groupe',   en: 'Group' },
+  'cond.portal':   { fr: 'Portail interdit', en: 'Portal forbidden' },
+  'cond.dispell':  { fr: 'Dispell interdit', en: 'Dispell forbidden' },
+  'cond.dice':     { fr: 'Dés interdit',              en: 'Dice forbidden' },
+  'cond.res':      { fr: 'Résurrection interdite',     en: 'Resurrection forbidden' },
+  'cond.shadow':   { fr: 'Ombre interdite',            en: 'Shadow forbidden' },
+  'cond.drum':     { fr: 'Tambour interdit',          en: 'Drum forbidden' },
+  'cond.poulet':   { fr: 'Poulet interdit',           en: 'Chicken forbidden' },
+  // Noms de donjons
+  "Abime des marins":       { fr: "Abime des marins",      en: "Sailor's Abyss" },
+  "Bois de L'aube":         { fr: "Bois de L'aube",        en: "Everdawn Grove" },
+  "Carrière tombe-dieu":    { fr: "Carrière tombe-dieu",   en: "Godfall Quarry" },
+  "Caveau de Lamespectre":  { fr: "Caveau de Lamespectre", en: "Wraithtide Vault" },
+  "Coeur de guivre":        { fr: "Coeur de guivre",       en: "Wyrmheart" },
+  "Coeur de Tuzari":        { fr: "Coeur de Tuzari",       en: "The Heart of Tuzari" },
   "Creux Soyeux":           { fr: "Creux Soyeux",          en: "Silken Hollow" },
-  "Guet Tempete":           { fr: "Guet Tempete",          en: "Storm Watch" },
+  "Guet Tempete":           { fr: "Guet Tempete",          en: "Stormwatch" },
   "La chute Cithrel":       { fr: "La chute Cithrel",      en: "Cithrel's Fall" },
-  "Marché d'Urrak":         { fr: "Marché d'Urrak",        en: "Urrak's Market" },
+  "Marché d'Urrak":         { fr: "Marché d'Urrak",        en: "Urrak Market" },
   "Sables Empyréens":       { fr: "Sables Empyréens",      en: "Empyrean Sands" },
   "Saccage de Drakheim":    { fr: "Saccage de Drakheim",   en: "Drakheim Sack" },
-
-  // --- Titres des HF (ajouter au fur et à mesure) ---
+  // Titres des HF — ajoute ici tes traductions EN au fur et à mesure
   // Exemple : "Surfeur dans l'âme": { fr: "Surfeur dans l'âme", en: "Soul Surfer" },
 };
 
@@ -910,17 +938,24 @@ function t(key) {
   return entry[currentLang] || entry.fr || key;
 }
 
+function applyLangToStaticElements() {
+  document.getElementById('header-subtitle').innerHTML = t('header.subtitle');
+  document.getElementById('header-organiser').textContent = t('header.organiser');
+  document.getElementById('tab-leaderboard').textContent = t('nav.leaderboard');
+  document.getElementById('tab-achievements').textContent = t('nav.achievements');
+  document.getElementById('lang-btn').textContent = currentLang.toUpperCase();
+  document.documentElement.lang = currentLang;
+}
+
 function toggleLang() {
   currentLang = currentLang === 'fr' ? 'en' : 'fr';
-  document.getElementById('lang-btn').textContent = currentLang === 'fr' ? 'FR / EN' : 'EN / FR';
-  document.documentElement.lang = currentLang;
+  applyLangToStaticElements();
   renderAchievements();
-  if (document.getElementById('page-leaderboard').classList.contains('active')) {
-    loadLeaderboard();
-  }
+  if (lbData) renderLeaderboard(lbData);
 }
 
 // ---- INIT ----
+applyLangToStaticElements();
 loadLeaderboard();
 renderAchievements();
 </script>
