@@ -1085,7 +1085,7 @@ function renderRules() {
         <img
           src="images/stuff-example.png"
           alt="Exemple de stuff autorisé"
-          style="max-width:320px;width:100%;border-radius:6px;border:1px solid var(--border);display:block;"
+          style="max-width:320px;width:100%;border-radius:6px;border:1px solid var(--border);display:block;margin:0 auto;"
         >
       </div>
     </div>
@@ -1106,6 +1106,9 @@ function renderRules() {
           </div>
           <span>${t('rules.hf.2')}</span>
         </div>
+        <div class="rules-item" style="border-left-color:#89070e;background:rgba(137,7,14,0.08);">
+          🏰&nbsp; ${t('rules.dungeon.1')}
+        </div>
       </div>
     </div>
 
@@ -1114,13 +1117,6 @@ function renderRules() {
       <div class="rules-list">
         <div class="rules-item">📋&nbsp; ${t('rules.valid.1')}</div>
         <div class="rules-item">💬&nbsp; ${t('rules.valid.2')}</div>
-      </div>
-    </div>
-
-    <div class="rules-section">
-      <div class="rules-section-title">${t('rules.section.dungeon')}</div>
-      <div class="rules-list">
-        <div class="rules-item highlight">🏰&nbsp; ${t('rules.dungeon.1')}</div>
       </div>
     </div>
   `;
