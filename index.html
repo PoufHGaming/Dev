@@ -11,14 +11,15 @@
   :root {
     --gold: #c9a84c;
     --gold-light: #e8c96a;
-    --gold-dim: #7a6030;
+    --gold-dim: #9a7a3a;
     --bg: #0a0a0e;
     --bg2: #12121a;
     --bg3: #1c1c28;
     --border: rgba(201,168,76,0.2);
     --border-bright: rgba(201,168,76,0.5);
     --text: #e8e0d0;
-    --text-dim: #8a8070;
+    --text-dim: #b0a898;
+    --text-muted: #706860;
     --red: #c94c4c;
     --teal: #4ca8a8;
     --purple: #9b7fea;
@@ -56,11 +57,12 @@
   }
   .event-subtitle {
     font-size: 15px;
-    color: var(--text-dim);
+    color: var(--text);
     margin-top: 6px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     font-weight: 300;
+    opacity: 0.65;
   }
   .social-links {
     display: flex;
@@ -77,13 +79,13 @@
     border: 1px solid var(--border);
     border-radius: 4px;
     text-decoration: none;
-    color: var(--text-dim);
+    color: var(--text);
     font-size: 12px;
     font-family: 'Cinzel', serif;
     letter-spacing: 0.08em;
     transition: all 0.2s;
   }
-  .social-link:hover { color: var(--text); }
+  .social-link:hover { color: var(--text); border-color: var(--border-bright); }
   .social-link.twitch:hover { border-color: #9147ff; color: #9147ff; }
   .social-link.discord:hover { border-color: #5865f2; color: #5865f2; }
   .social-icon { width: 15px; height: 15px; flex-shrink: 0; }
@@ -104,12 +106,13 @@
     padding: 8px 20px;
     background: none;
     border: 1px solid transparent;
-    color: var(--text-dim);
+    color: var(--text);
     cursor: pointer;
     transition: all 0.2s;
+    opacity: 0.6;
   }
-  .tab:hover { color: var(--text); border-color: var(--border); }
-  .tab.active { color: var(--gold); border-color: var(--border-bright); background: rgba(201,168,76,0.05); }
+  .tab:hover { opacity: 1; border-color: var(--border); }
+  .tab.active { color: var(--gold); border-color: var(--border-bright); background: rgba(201,168,76,0.05); opacity: 1; }
 
   /* MAIN */
   main { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
@@ -545,9 +548,9 @@
   <button class="tab" id="tab-rules" onclick="showPage('rules', this)">Règles</button>
 <div style="margin-left:auto; display:flex; align-items:center; gap:10px; position:relative;">
 
-  <button class="tab" id="lang-btn" onclick="toggleLang()" style="opacity:0.6">FR</button>
+  <button class="tab" id="lang-btn" onclick="toggleLang()" style="">FR</button>
 
-<button class="tab" id="help-btn" onclick="toggleHelpMenu()" style="opacity:0.6"></button>
+<button class="tab" id="help-btn" onclick="toggleHelpMenu()" style=""></button>
 
   <div id="help-menu" style="
     display:none;
@@ -602,7 +605,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
 const ACHIEVEMENTS = [
   {id:1, dungeon:"Abime des marins",      title:"Surfeur dans l'âme",                   title_en:"Surfer at Heart",                   desc:"Tous les joueurs du groupe doivent se prendre 1 vague (subir les dégâts et se faire propulser) sans utiliser de sorts pendant le combat contre Sinthara.",                                                                                                                                                                                                                         desc_en:"All players in the group must get hit by 1 wave (take damage and be propelled) without using movement spells during the fight against Sinthara.",                                                                                                                    points:10, hard:false, personal:false, conditions:[]},
   {id:2, dungeon:"Abime des marins",      title:"BIG PULL",                             title_en:"BIG PULL",                          desc:"Le groupe doit tuer 40 forgotten soul en 1 pull.",                                                                                                                                                                                                                                                                                                                                 desc_en:"The group must kill 40 Forgotten Soul in 1 pull.",                                                                                                                                                                                                                   points:10, hard:false, personal:false, conditions:[]},
-  {id:3, dungeon:"Abime des marins",      title:"Pourquoi choisir",                     title_en:"Why Choose",                        desc:"Le groupe doit se séparer en 2 et se rejoindre au feu de camp (Reliques Skip & Portail interdit).",                                                                                                                                                                                                                                                                               desc_en:"The group must split in 2, kill the mobs and reunite at the campfire.",                                                                                                                                                                                              points:20, hard:true,  personal:false, conditions:['portal','shadow']},
+  {id:3, dungeon:"Abime des marins",      title:"Pourquoi choisir",                     title_en:"Why Choose",                        desc:"Le groupe doit se séparer en 2 et se rejoindre au feu de camp (Reliques Skip & Portail interdit). Chaque groupe doit réaliser au moins 40% du score de donjon",                                                                                                                                                                                                                    desc_en:"The group must split in 2, kill the mobs and reunite at the campfire. Each group must achieve at least 40% of Dungeon score",                                                                                                                                                                                              points:20, hard:true,  personal:false, conditions:['portal','shadow']},
   {id:4, dungeon:"Bois de L'aube",        title:"La charge sauvage",                    title_en:"Wild Charge",                       desc:"Tous les totems doivent être détruits avec la charge du cerf pendant le combat contre Malgut. Aucun joueur ne doit en détruire (Poulet interdit)",                                                                                                                                                                                                                               desc_en:"All totems must be destroyed with the stag's charge during the fight against Malgut. No player should destroy any.",                                                                                                                                                  points:10, hard:false, personal:false, conditions:['poulet']},
   {id:5, dungeon:"Bois de L'aube",        title:"Reforestation",                        title_en:"Reforestation",                     desc:"Le groupe ne doit tuer aucune créature de type plante du donjon.",                                                                                                                                                                                                                                                                                                                 desc_en:"The group must not kill any plant-type creatures in the dungeon.",                                                                                                                                                                                                   points:10, hard:false, personal:false, conditions:[]},
   {id:6, dungeon:"Bois de L'aube",        title:"Sang pour 100",                        title_en:"A Bloody Percent",                  desc:"Le groupe doit tuer 4 Bloodstone Goliath à 10sec d'intervalle.",                                                                                                                                                                                                                                                                                                                  desc_en:"The group must kill 4 Bloodstone Goliath within a 10-second interval.",                                                                                                                                                                                             points:20, hard:true,  personal:false, conditions:[]},
@@ -1022,7 +1025,7 @@ const TRANSLATIONS = {
   "La chute Cithrel":       { fr: "La chute Cithrel",      en: "Cithrel's Fall" },
   "Marché d'Urrak":         { fr: "Marché d'Urrak",        en: "Urrak Market" },
   "Sables Empyréens":       { fr: "Sables Empyréens",      en: "Empyrean Sands" },
-  "Saccage de Drakheim":    { fr: "Saccage de Drakheim",   en: "Drakheim Sack" },
+  "Saccage de Drakheim":    { fr: "Saccage de Drakheim",   en: "Ransack of Drakheim" },
   // Titres des HF — ajoute ici tes traductions EN au fur et à mesure
   // Exemple : "Surfeur dans l'âme": { fr: "Surfeur dans l'âme", en: "Soul Surfer" },
   "Surfeur dans l'âme": { fr: "Surfeur dans l'âme", en: "Surfer at Heart" },
