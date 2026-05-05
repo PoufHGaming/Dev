@@ -243,9 +243,14 @@
 
   /* ─── EVENTS ─── */
   .events-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
+  }
+  .events-grid .event-card {
+    width: 300px;
+    flex-shrink: 0;
   }
 
   .event-card {
