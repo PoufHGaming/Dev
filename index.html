@@ -169,10 +169,10 @@
   }
 
   .social-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 16px;
+    gap: 7px;
+    padding: 6px 14px;
     border: 1px solid var(--border);
     border-radius: 3px;
     text-decoration: none;
@@ -183,8 +183,13 @@
     text-transform: uppercase;
     transition: all 0.25s;
     background: rgba(255,255,255,0.02);
+    white-space: nowrap;
   }
-  .social-link svg { flex-shrink: 0; }
+  .social-link svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
   .social-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
   .social-link.twitch:hover  { border-color: var(--twitch);  color: var(--twitch);  box-shadow: 0 0 12px rgba(145,71,255,0.15); }
   .social-link.discord:hover { border-color: var(--discord); color: var(--discord); box-shadow: 0 0 12px rgba(88,101,242,0.15); }
