@@ -777,16 +777,20 @@
 
 <script>
   // ─── LANG ───
-  let currentLang = 'fr';
+  let currentLang = localStorage.getItem('pouf_lang') || 'fr';
 
   function setLang(lang) {
     currentLang = lang;
+    localStorage.setItem('pouf_lang', lang);
     document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
     document.querySelectorAll('[data-fr]').forEach(el => {
       el.textContent = el.dataset[lang] || el.dataset.fr;
     });
   }
+
+  // Init : applique la langue sauvegardée au chargement
+  setLang(currentLang);
 
   // ─── VIDEO PLAYER ───
   function playVideo(index, videoId) {

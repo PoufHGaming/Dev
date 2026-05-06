@@ -616,7 +616,10 @@
   <button class="tab" id="tab-rules" onclick="showPage('rules', this)">Règles</button>
 <div style="margin-left:auto; display:flex; align-items:center; gap:10px; position:relative;">
 
-  <button class="tab" id="lang-btn" onclick="toggleLang()" style="">FR</button>
+  <div style="display:flex;gap:2px;">
+    <button class="tab lang-btn-fr" id="lang-btn-fr" onclick="setLang('fr')" style="padding:6px 10px;font-size:12px;border-radius:3px 0 0 3px;">FR</button>
+    <button class="tab lang-btn-en" id="lang-btn-en" onclick="setLang('en')" style="padding:6px 10px;font-size:12px;border-radius:0 3px 3px 0;">EN</button>
+  </div>
 
 <button class="tab" id="help-btn" onclick="toggleHelpMenu()" style=""></button>
 
@@ -1188,7 +1191,7 @@ const TRANSLATIONS = {
 "Jamais 203": { fr: "Jamais 203", en: "Third Time’s the Charm" },
 };
 
-let currentLang = 'fr';
+let currentLang = localStorage.getItem('pouf_lang') || 'fr';
 
 function t(key) {
   const entry = TRANSLATIONS[key];
@@ -1206,12 +1209,14 @@ function applyLangToStaticElements() {
   document.getElementById('event-title').textContent = t('header.event-title');
   document.getElementById('joiningform').textContent = t('nav.joiningform');
   document.getElementById('feedbackform').textContent = t('nav.feedbackform');
-  document.getElementById('lang-btn').textContent = currentLang.toUpperCase();
+  document.getElementById('lang-btn-fr').classList.toggle('active', currentLang === 'fr');
+  document.getElementById('lang-btn-en').classList.toggle('active', currentLang === 'en');
   document.documentElement.lang = currentLang;
 }
 
-function toggleLang() {
-  currentLang = currentLang === 'fr' ? 'en' : 'fr';
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('pouf_lang', lang);
   applyLangToStaticElements();
   renderAchievements();
   if (lbData) renderLeaderboard(lbData);
