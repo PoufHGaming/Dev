@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donjon en Pagaille</title>
+<link rel="icon" type="image/png" href="../images/pouf.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #4ca8a8;
+    --teal-light: #6ecece;
+    --teal-dim: #2a7a7a;
+    --teal-glow: rgba(76,168,168,0.15);
+    --gold: #c9a84c;
+    --gold-dim: #9a7a3a;
+    --bg: #0a0a0e;
+    --bg2: #0e1618;
+    --bg3: #141e20;
+    --bg4: #1a2830;
+    --border: rgba(76,168,168,0.18);
+    --border-bright: rgba(76,168,168,0.45);
+    --text: #dce8e8;
+    --text-dim: #8eb0b0;
+    --text-muted: #4a6868;
+    --tier1: #6dbf6d;
+    --tier2: var(--teal);
+    --tier3: #9b7fea;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-weight: 300;
+    min-height: 100vh;
+    font-size: 17px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -5%, rgba(76,168,168,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 5% 85%, rgba(76,168,168,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse 30% 30% at 95% 15%, rgba(155,127,234,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── TOP LINE ─── */
+  .top-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--teal-dim) 20%, var(--teal) 50%, var(--teal-dim) 80%, transparent 100%);
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    text-align: center;
+    padding: 44px 24px 28px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  .event-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(20px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(76,168,168,0.3);
+  }
+  .event-subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 300;
+    opacity: 0.7;
+  }
+  .event-dates {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.1em;
+  }
+  .event-dates .sep { color: var(--teal-dim); }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  .tab {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 7px 18px;
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.6;
+    border-radius: 3px;
+  }
+  .tab:hover { opacity: 1; border-color: var(--border); color: var(--text); }
+  .tab.active { color: var(--teal); border-color: var(--border-bright); background: rgba(76,168,168,0.05); opacity: 1; }
+  .home-btn { opacity: 0.55; }
+  .home-btn:hover { opacity: 1; }
+  .nav-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; align-self: center; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .lang-toggle { display: flex; gap: 2px; }
+  .lang-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 5px 9px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn:first-child { border-radius: 3px 0 0 3px; }
+  .lang-btn:last-child  { border-radius: 0 3px 3px 0; }
+  .lang-btn.active { color: var(--teal); border-color: var(--border-bright); background: rgba(76,168,168,0.07); }
+
+  /* ─── MAIN ─── */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-section {
+    margin-bottom: 40px;
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+  .progress-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .progress-count {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: var(--teal);
+    font-weight: 700;
+  }
+  .progress-count span {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .progress-track {
+    position: relative;
+    height: 12px;
+    background: var(--bg3);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    overflow: visible;
+    margin-bottom: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--teal-dim), var(--teal));
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(76,168,168,0.3);
+    min-width: 0;
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--teal-light);
+    border-radius: 0 6px 6px 0;
+    box-shadow: 0 0 8px var(--teal);
+  }
+
+  /* Tier markers */
+  .tier-markers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .tier-marker {
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    width: 2px;
+    border-radius: 2px;
+    transform: translateX(-50%);
+  }
+  .tier-marker::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .tier-marker.t1 { background: var(--tier1); color: var(--tier1); left: 20%; }
+  .tier-marker.t2 { background: var(--tier2); color: var(--tier2); left: 50%; }
+  .tier-marker.t3 { background: var(--tier3); color: var(--tier3); left: 100%; }
+
+  /* Tier cards */
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .tier-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tier-card.unlocked {
+    border-color: var(--border-bright);
+  }
+  .tier-card.unlocked::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(76,168,168,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .tier-card.t1.unlocked { border-color: rgba(109,191,109,0.5); }
+  .tier-card.t1.unlocked::before { background: linear-gradient(135deg, rgba(109,191,109,0.05) 0%, transparent 60%); }
+  .tier-card.t3.unlocked { border-color: rgba(155,127,234,0.5); }
+  .tier-card.t3.unlocked::before { background: linear-gradient(135deg, rgba(155,127,234,0.05) 0%, transparent 60%); }
+
+  .tier-num {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.6;
+  }
+  .tier-card.t1 .tier-num { color: var(--tier1); }
+  .tier-card.t2 .tier-num { color: var(--tier2); }
+  .tier-card.t3 .tier-num { color: var(--tier3); }
+
+  .tier-threshold {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .tier-card.t1 .tier-threshold { color: var(--tier1); }
+  .tier-card.t2 .tier-threshold { color: var(--tier2); }
+  .tier-card.t3 .tier-threshold { color: var(--tier3); }
+
+  .tier-reward {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.45;
+    font-style: italic;
+  }
+  .tier-card.locked .tier-reward { color: var(--text-muted); }
+
+  .tier-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .tier-status::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .tier-status.done { color: var(--tier1); }
+  .tier-status.locked { color: var(--text-muted); }
+
+  /* ─── LEADERBOARD ─── */
+  .lb-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+  .lb-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { color: var(--teal); border-color: var(--border-bright); }
+  .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .lb-header {
+    display: grid;
+    grid-template-columns: 40px 1fr 100px 80px;
+    gap: 12px;
+    padding: 0 16px 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .lb-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 100px 80px;
+    gap: 12px;
+    align-items: center;
+    padding: 13px 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .lb-row:hover { border-color: var(--border); background: var(--bg2); }
+  .lb-row.rank-1 { border-color: rgba(76,168,168,0.35); background: rgba(76,168,168,0.04); }
+  .lb-row.rank-2 { border-color: rgba(76,168,168,0.2); }
+  .lb-row.rank-3 { border-color: rgba(76,168,168,0.1); }
+
+  .rank-num {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .lb-row.rank-1 .rank-num { color: var(--teal); }
+  .lb-row.rank-2 .rank-num { color: var(--text-dim); }
+  .lb-row.rank-3 .rank-num { color: var(--text-dim); opacity: 0.7; }
+
+  .player-name {
+    font-size: 17px;
+    font-weight: 400;
+  }
+  .player-name::after { content: ' ▸'; font-size: 10px; color: var(--text-muted); opacity: 0.4; }
+  .lb-row.open .player-name::after { content: ' ▾'; }
+
+  .score-boss {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--teal);
+    text-align: right;
+  }
+  .score-dungeons {
+    font-size: 14px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  /* Player detail */
+  .lb-detail {
+    display: none;
+    padding: 14px 16px 18px 56px;
+    grid-column: 1 / -1;
+  }
+  .lb-row.open .lb-detail { display: block; }
+
+  .dungeon-kills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+  }
+  .dk-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: var(--bg3);
+    border-radius: 3px;
+    font-size: 13px;
+  }
+  .dk-name { color: var(--text-dim); }
+  .dk-count {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--teal-dim);
+  }
+  .dk-count.has-kills { color: var(--teal); }
+
+  /* ─── RULES ─── */
+  .rules-page { max-width: 640px; }
+  .rules-section { margin-bottom: 28px; }
+  .rules-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal-dim);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rules-list { display: flex; flex-direction: column; gap: 8px; }
+  .rules-item {
+    padding: 12px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--teal-dim);
+    border-radius: 0 4px 4px 0;
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .rules-item strong { color: var(--text); font-weight: 400; }
+
+  /* ─── ADMIN ─── */
+  .admin-gate { text-align: center; padding: 48px 24px; }
+  .admin-gate h2 { font-family: 'Cinzel', serif; font-size: 18px; color: var(--teal); margin-bottom: 20px; }
+  .admin-form { max-width: 360px; margin: 0 auto; }
+  .field { margin-bottom: 14px; text-align: left; }
+  .field label { display: block; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 10px 12px; color: var(--text);
+    font-family: 'Crimson Pro', serif; font-size: 15px;
+  }
+  .field textarea { min-height: 160px; resize: vertical; font-size: 13px; font-family: monospace; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--border-bright); }
+  .btn {
+    font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 10px 24px;
+    background: rgba(76,168,168,0.1); border: 1px solid var(--border-bright);
+    border-radius: 4px; color: var(--teal); cursor: pointer; transition: all 0.2s;
+  }
+  .btn:hover { background: rgba(76,168,168,0.18); }
+  .btn.danger { color: #c94c4c; border-color: rgba(201,76,76,0.4); background: rgba(201,76,76,0.07); }
+  .btn.danger:hover { background: rgba(201,76,76,0.14); }
+  .admin-panel { display: none; }
+  .admin-panel.visible { display: block; }
+
+  .import-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .import-section h3 {
+    font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--teal-dim); margin-bottom: 16px;
+  }
+  .import-result {
+    margin-top: 12px; padding: 10px 14px;
+    background: var(--bg3); border-radius: 4px;
+    font-size: 13px; color: var(--text-dim);
+    display: none;
+  }
+  .import-result.show { display: block; }
+  .import-result.ok { color: var(--tier1); border-left: 3px solid var(--tier1); }
+  .import-result.err { color: #c94c4c; border-left: 3px solid #c94c4c; }
+
+  /* Players admin */
+  .admin-players-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px; margin-top: 16px;
+  }
+  .admin-player-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; background: var(--bg3); border-radius: 4px; font-size: 14px;
+  }
+  .admin-player-del { cursor: pointer; color: var(--text-muted); font-size: 16px; transition: color 0.2s; }
+  .admin-player-del:hover { color: #c94c4c; }
+
+  /* ─── LOADING / TOAST ─── */
+  .loading { text-align: center; padding: 48px; color: var(--text-muted); font-style: italic; font-size: 15px; }
+  .empty { text-align: center; padding: 48px; color: var(--text-muted); font-size: 15px; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--bg3); border: 1px solid var(--border-bright); border-radius: 6px;
+    padding: 10px 20px; font-size: 14px; color: var(--text); opacity: 0;
+    transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { border-color: rgba(201,76,76,0.5); color: #e88; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    main { padding: 20px 14px 64px; }
+    .lb-header, .lb-row { grid-template-columns: 32px 1fr 70px; }
+    .lb-header .col-dng, .lb-row .score-dungeons { display: none; }
+    .tiers-grid { grid-template-columns: 1fr; }
+    nav { padding: 10px 12px; flex-wrap: wrap; gap: 4px; }
+    .nav-right { margin-left: auto; }
+    .dungeon-kills-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-line"></div>
+
+<header>
+  <div class="event-title" id="event-title">Donjon en Pagaille</div>
+  <div class="event-subtitle" id="event-subtitle">Tuez le plus de boss possible</div>
+  <div class="event-dates" id="event-dates">
+    <span id="dates-text">Date à confirmer</span>
+  </div>
+</header>
+
+<nav>
+  <a href="../index.html" class="tab home-btn" title="Accueil" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:7px 12px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+  </a>
+  <div class="nav-sep"></div>
+  <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard', this)">Classement</button>
+  <button class="tab" id="tab-rules" onclick="showPage('rules', this)">Règles</button>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lang-btn-fr" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- LEADERBOARD -->
+  <div id="page-leaderboard" class="page active">
+
+    <!-- Barre de progression -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-title" data-fr="Boss tués — total communauté" data-en="Bosses killed — community total">Boss tués — total communauté</span>
+        <span class="progress-count"><span id="total-kills">—</span> <span data-fr="boss" data-en="bosses">boss</span></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        <div class="tier-markers">
+          <div class="tier-marker t1" data-label="1 000"></div>
+          <div class="tier-marker t2" data-label="2 500"></div>
+          <div class="tier-marker t3" data-label="5 000"></div>
+        </div>
+      </div>
+      <div class="tiers-grid">
+        <div class="tier-card t1 locked" id="tier-1">
+          <div class="tier-num" data-fr="Palier 1" data-en="Tier 1">Palier 1</div>
+          <div class="tier-threshold">1 000</div>
+          <div class="tier-reward" data-fr="Débloque de nouveaux émotes" data-en="Unlocks new emotes">Débloque de nouveaux émotes</div>
+          <div class="tier-status locked" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
+        </div>
+        <div class="tier-card t2 locked" id="tier-2">
+          <div class="tier-num" data-fr="Palier 2" data-en="Tier 2">Palier 2</div>
+          <div class="tier-threshold">2 500</div>
+          <div class="tier-reward" data-fr="Organisation de Gloire à la Compagnie II" data-en="Gloire à la Compagnie II confirmed">Organisation de Gloire à la Compagnie II</div>
+          <div class="tier-status locked" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
+        </div>
+        <div class="tier-card t3 locked" id="tier-3">
+          <div class="tier-num" data-fr="Palier 3" data-en="Tier 3">Palier 3</div>
+          <div class="tier-threshold">5 000</div>
+          <div class="tier-reward" data-fr="Indice sur le secret de la Saison 1" data-en="Hint about Season 1's secret">Indice sur le secret de la Saison 1</div>
+          <div class="tier-status locked" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="lb-toolbar">
+      <span class="lb-info" id="lb-cache-info"></span>
+      <button class="refresh-btn" id="refresh-btn" onclick="refreshLeaderboard()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        <span data-fr="Actualiser" data-en="Refresh">Actualiser</span>
+      </button>
+    </div>
+
+    <!-- Headers -->
+    <div class="lb-header">
+      <div>#</div>
+      <div data-fr="Joueur" data-en="Player">Joueur</div>
+      <div style="text-align:right" data-fr="Boss tués" data-en="Bosses">Boss tués</div>
+      <div class="col-dng" style="text-align:right" data-fr="Donjons" data-en="Dungeons">Donjons</div>
+    </div>
+    <div id="lb-content"><div class="loading" data-fr="Chargement..." data-en="Loading...">Chargement...</div></div>
+
+  </div>
+
+  <!-- RULES -->
+  <div id="page-rules" class="page">
+    <div class="rules-page" id="rules-content"></div>
+  </div>
+
+  <!-- ADMIN (caché) -->
+  <div id="page-admin" class="page">
+    <div class="admin-gate" id="admin-gate">
+      <h2 data-fr="Administration" data-en="Administration">Administration</h2>
+      <div class="admin-form">
+        <div class="field">
+          <label>Service Role Key</label>
+          <input type="password" id="input-key" placeholder="eyJ...">
+        </div>
+        <button class="btn" onclick="adminLogin()" data-fr="Connexion" data-en="Login">Connexion</button>
+      </div>
+    </div>
+    <div class="admin-panel" id="admin-panel">
+
+      <!-- Import logs -->
+      <div class="import-section">
+        <h3 data-fr="Importer des logs" data-en="Import logs">Importer des logs</h3>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:14px;font-style:italic;" data-fr="Colle ici le JSON des logs Fellowship. Format attendu : tableau d'objets {player, dungeon, boss_kills, completed}." data-en="Paste Fellowship log JSON here. Expected format: array of {player, dungeon, boss_kills, completed}.">
+          Colle ici le JSON des logs Fellowship. Format attendu : tableau d'objets {player, dungeon, boss_kills, completed}.
+        </p>
+        <div class="field">
+          <label data-fr="JSON des logs" data-en="Log JSON">JSON des logs</label>
+          <textarea id="import-json" placeholder='[{"player":"NomJoueur","dungeon":"Abime des marins","boss_kills":3,"completed":true}]'></textarea>
+        </div>
+        <button class="btn" onclick="importLogs()" data-fr="Importer" data-en="Import">Importer</button>
+        <div class="import-result" id="import-result"></div>
+      </div>
+
+      <!-- Ajouter joueur -->
+      <div class="import-section">
+        <h3 data-fr="Joueurs inscrits" data-en="Registered players">Joueurs inscrits</h3>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <div class="field" style="flex:1;margin:0">
+            <label data-fr="Nom du joueur" data-en="Player name">Nom du joueur</label>
+            <input type="text" id="new-player-name" placeholder="NomJoueur">
+          </div>
+          <button class="btn" onclick="addPlayer()" style="margin-bottom:0">+</button>
+        </div>
+        <div class="admin-players-grid" id="admin-players-grid"></div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Secret admin access (triple click on title) -->
+<script>
+  let titleClicks = 0, titleTimer;
+  document.getElementById('event-title').addEventListener('click', () => {
+    titleClicks++;
+    clearTimeout(titleTimer);
+    titleTimer = setTimeout(() => titleClicks = 0, 600);
+    if (titleClicks >= 3) {
+      titleClicks = 0;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-admin').classList.add('active');
+      loadAdminPlayers();
+    }
+  });
+</script>
+
+<script>
+// ============================================================
+// CONFIG — même base que Gloire à la Compagnie
+// ============================================================
+const SUPABASE_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
+// ============================================================
+
+const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
+const TIER_THRESHOLDS = [1000, 2500, 5000];
+
+const DUNGEONS_ORDER = [
+  "Abime des marins","Bois de L'aube","Carrière tombe-dieu",
+  "Coeur de guivre","Creux Soyeux","Guet Tempete",
+  "Marché d'Urrak","Sables Empyréens","Caveau de Lamespectre",
+  "Coeur de Tuzari","La chute Cithrel","Saccage de Drakheim"
+];
+
+// ─── LANG ───
+let currentLang = localStorage.getItem('pouf_lang') || 'fr';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('pouf_lang', lang);
+  document.getElementById('lang-btn-fr').classList.toggle('active', lang === 'fr');
+  document.getElementById('lang-btn-en').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    el.textContent = el.dataset[lang] || el.dataset.fr;
+  });
+  renderRules();
+}
+
+// ─── TOAST ───
+function toast(msg, isError=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ─── PAGE NAV ───
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'leaderboard') loadLeaderboard();
+  if (id === 'rules') renderRules();
+}
+
+// ─── SUPABASE FETCH ───
+async function sbFetch(path, key, opts={}) {
+  const url = SUPABASE_URL + path;
+  const apiKey = key || SUPABASE_ANON_KEY;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': apiKey,
+      'Authorization': 'Bearer ' + apiKey,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || '',
+      ...opts.headers
+    },
+    method: opts.method || 'GET',
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if (!res.ok) { const err = await res.text(); throw new Error(err); }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+// ─── CACHE ───
+let cachedData = null;
+let cacheTimestamp = 0;
+
+function getCached() {
+  if (cachedData && (Date.now() - cacheTimestamp) < CACHE_DURATION_MS) return cachedData;
+  return null;
+}
+function setCache(data) {
+  cachedData = data;
+  cacheTimestamp = Date.now();
+}
+function updateCacheInfo() {
+  const el = document.getElementById('lb-cache-info');
+  if (!cacheTimestamp) { el.textContent = ''; return; }
+  const ago = Math.round((Date.now() - cacheTimestamp) / 1000);
+  const next = Math.max(0, Math.round((CACHE_DURATION_MS - (Date.now() - cacheTimestamp)) / 1000 / 60));
+  el.textContent = currentLang === 'en'
+    ? `Updated ${ago < 60 ? ago+'s ago' : Math.round(ago/60)+'min ago'} · next refresh in ${next}min`
+    : `Mis à jour il y a ${ago < 60 ? ago+'s' : Math.round(ago/60)+'min'} · prochain refresh dans ${next}min`;
+}
+
+// ─── LEADERBOARD ───
+async function loadLeaderboard(force=false) {
+  const cached = force ? null : getCached();
+  if (cached) { renderLeaderboard(cached); updateCacheInfo(); return; }
+
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+
+  try {
+    // Récupère tous les runs pagaille
+    const runs = await sbFetch(
+      '/rest/v1/pagaille_runs?select=player_id,dungeon_name,boss_kills&order=player_id',
+      SUPABASE_ANON_KEY
+    );
+    // Récupère les joueurs
+    const players = await sbFetch(
+      '/rest/v1/players?select=id,name&order=name',
+      SUPABASE_ANON_KEY
+    );
+    const data = { runs, players };
+    setCache(data);
+    renderLeaderboard(data);
+    updateCacheInfo();
+  } catch(e) {
+    document.getElementById('lb-content').innerHTML =
+      `<div class="empty">Erreur de chargement. <a href="#" onclick="refreshLeaderboard()" style="color:var(--teal)">Réessayer</a></div>`;
+  }
+  btn.classList.remove('spinning');
+}
+
+function refreshLeaderboard() { loadLeaderboard(true); }
+
+function computeLeaderboard({ runs, players }) {
+  // Agrège par joueur
+  const byPlayer = {};
+  players.forEach(p => byPlayer[p.id] = { id: p.id, name: p.name, total: 0, byDungeon: {} });
+
+  runs.forEach(r => {
+    if (!byPlayer[r.player_id]) return;
+    byPlayer[r.player_id].total += r.boss_kills;
+    byPlayer[r.player_id].byDungeon[r.dungeon_name] =
+      (byPlayer[r.player_id].byDungeon[r.dungeon_name] || 0) + r.boss_kills;
+  });
+
+  return Object.values(byPlayer)
+    .sort((a, b) => b.total - a.total);
+}
+
+function renderLeaderboard(data) {
+  const scores = computeLeaderboard(data);
+  const totalKills = scores.reduce((s, p) => s + p.total, 0);
+
+  // Update progress
+  document.getElementById('total-kills').textContent = totalKills.toLocaleString('fr-FR');
+  const maxTier = TIER_THRESHOLDS[TIER_THRESHOLDS.length - 1];
+  const pct = Math.min(100, (totalKills / maxTier) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Update tier cards
+  TIER_THRESHOLDS.forEach((threshold, i) => {
+    const card = document.getElementById('tier-' + (i+1));
+    const status = card.querySelector('.tier-status');
+    if (totalKills >= threshold) {
+      card.classList.remove('locked');
+      card.classList.add('unlocked');
+      status.classList.remove('locked');
+      status.classList.add('done');
+      status.dataset.fr = 'Débloqué ✓';
+      status.dataset.en = 'Unlocked ✓';
+      status.textContent = currentLang === 'en' ? 'Unlocked ✓' : 'Débloqué ✓';
+    } else {
+      const remaining = (threshold - totalKills).toLocaleString('fr-FR');
+      status.dataset.fr = `encore ${remaining} boss`;
+      status.dataset.en = `${remaining} more bosses`;
+      status.textContent = currentLang === 'en' ? `${remaining} more bosses` : `encore ${remaining} boss`;
+    }
+  });
+
+  if (scores.length === 0 || scores.every(s => s.total === 0)) {
+    document.getElementById('lb-content').innerHTML = `<div class="empty">${currentLang === 'en' ? 'No data yet.' : 'Aucune donnée pour le moment.'}</div>`;
+    return;
+  }
+
+  // Dense ranking
+  let rank = 1, prevTotal = null, displayRank = 1;
+  let html = '';
+  scores.forEach((s, i) => {
+    if (s.total !== prevTotal) { displayRank = rank; }
+    prevTotal = s.total;
+    rank++;
+
+    const rankClass = displayRank <= 3 ? 'rank-' + displayRank : '';
+    const dungeonCount = Object.values(s.byDungeon).filter(v => v > 0).length;
+
+    // Détail par donjon
+    let detailHtml = '<div class="lb-detail"><div class="dungeon-kills-grid">';
+    DUNGEONS_ORDER.forEach(d => {
+      const kills = s.byDungeon[d] || 0;
+      detailHtml += `<div class="dk-item">
+        <span class="dk-name">${d}</span>
+        <span class="dk-count ${kills > 0 ? 'has-kills' : ''}">${kills > 0 ? kills + (currentLang === 'en' ? ' boss' : ' boss') : '—'}</span>
+      </div>`;
+    });
+    detailHtml += '</div></div>';
+
+    html += `<div class="lb-row ${rankClass}" onclick="this.classList.toggle('open')">
+      <div class="rank-num">${displayRank}</div>
+      <div class="player-name">${s.name}</div>
+      <div class="score-boss">${s.total}</div>
+      <div class="score-dungeons col-dng">${dungeonCount}</div>
+      ${detailHtml}
+    </div>`;
+  });
+
+  document.getElementById('lb-content').innerHTML = html;
+}
+
+// ─── RULES ───
+function renderRules() {
+  const fr = currentLang === 'fr';
+  document.getElementById('rules-content').innerHTML = `
+    <div class="rules-section">
+      <div class="rules-section-title">${fr ? 'Objectif' : 'Objective'}</div>
+      <div class="rules-list">
+        <div class="rules-item">⚔️ ${fr ? 'Tuez le plus de <strong>boss de donjons</strong> possible en équipe pendant la durée de l\'événement.' : 'Kill as many <strong>dungeon bosses</strong> as possible as a group during the event.'}</div>
+        <div class="rules-item">✅ ${fr ? 'Seuls les boss de <strong>donjons complétés</strong> sont comptabilisés.' : 'Only bosses in <strong>completed dungeons</strong> count.'}</div>
+        <div class="rules-item">👥 ${fr ? 'Les kills sont liés au compte — un boss tué par ton groupe compte pour toi.' : 'Kills are account-bound — a boss killed by your group counts for you.'}</div>
+      </div>
+    </div>
+    <div class="rules-section">
+      <div class="rules-section-title">${fr ? 'Paliers communautaires' : 'Community tiers'}</div>
+      <div class="rules-list">
+        <div class="rules-item">🎭 <strong>1 000 boss</strong> — ${fr ? 'Débloque de nouveaux émotes' : 'Unlocks new emotes'}</div>
+        <div class="rules-item">⚔️ <strong>2 500 boss</strong> — ${fr ? 'Confirme l\'organisation de Gloire à la Compagnie II' : 'Confirms Gloire à la Compagnie II'}</div>
+        <div class="rules-item">🔮 <strong>5 000 boss</strong> — ${fr ? 'Révèle un indice sur le secret de la Saison 1' : 'Reveals a hint about Season 1\'s secret'}</div>
+      </div>
+    </div>
+    <div class="rules-section">
+      <div class="rules-section-title">${fr ? 'Validation' : 'Validation'}</div>
+      <div class="rules-list">
+        <div class="rules-item">📋 ${fr ? 'Les scores sont importés via les logs Fellowship. Pas besoin de valider manuellement.' : 'Scores are imported via Fellowship logs. No manual validation needed.'}</div>
+        <div class="rules-item">💬 ${fr ? 'En cas de problème ou d\'oubli, contacte Pouf sur Discord.' : 'For issues or missing kills, contact Pouf on Discord.'}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ADMIN ───
+let adminKey = '';
+let adminPlayers = [];
+
+function adminLogin() {
+  adminKey = document.getElementById('input-key').value.trim();
+  if (!adminKey) { toast('Entre la service role key', true); return; }
+  loadAdminPlayers();
+}
+
+async function loadAdminPlayers() {
+  try {
+    adminPlayers = await sbFetch('/rest/v1/players?select=id,name&order=name', adminKey);
+    document.getElementById('admin-gate').style.display = 'none';
+    document.getElementById('admin-panel').classList.add('visible');
+    renderAdminPlayers();
+    toast('Connecté !');
+  } catch(e) {
+    toast('Erreur de connexion', true);
+  }
+}
+
+function renderAdminPlayers() {
+  const grid = document.getElementById('admin-players-grid');
+  if (!adminPlayers.length) { grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;margin-top:8px;">Aucun joueur inscrit.</div>'; return; }
+  grid.innerHTML = adminPlayers.map(p =>
+    `<div class="admin-player-row">
+      <span>${p.name}</span>
+      <span class="admin-player-del" onclick="deletePlayer(${p.id},'${p.name}')">✕</span>
+    </div>`
+  ).join('');
+}
+
+async function addPlayer() {
+  const name = document.getElementById('new-player-name').value.trim();
+  if (!name) return;
+  try {
+    await sbFetch('/rest/v1/players', adminKey, { method: 'POST', prefer: 'return=minimal', body: { name } });
+    document.getElementById('new-player-name').value = '';
+    adminPlayers = await sbFetch('/rest/v1/players?select=id,name&order=name', adminKey);
+    renderAdminPlayers();
+    toast('Joueur ajouté !');
+  } catch(e) { toast('Erreur ajout joueur', true); }
+}
+
+async function deletePlayer(id, name) {
+  if (!confirm(`Supprimer ${name} et tous ses runs ?`)) return;
+  try {
+    await sbFetch(`/rest/v1/pagaille_runs?player_id=eq.${id}`, adminKey, { method: 'DELETE', prefer: 'return=minimal' });
+    await sbFetch(`/rest/v1/players?id=eq.${id}`, adminKey, { method: 'DELETE', prefer: 'return=minimal' });
+    adminPlayers = adminPlayers.filter(p => p.id !== id);
+    renderAdminPlayers();
+    toast('Joueur supprimé');
+  } catch(e) { toast('Erreur suppression', true); }
+}
+
+async function importLogs() {
+  const raw = document.getElementById('import-json').value.trim();
+  const result = document.getElementById('import-result');
+  if (!raw) { toast('Colle du JSON d\'abord', true); return; }
+
+  let logs;
+  try { logs = JSON.parse(raw); }
+  catch(e) {
+    result.className = 'import-result show err';
+    result.textContent = 'JSON invalide : ' + e.message;
+    return;
+  }
+
+  if (!Array.isArray(logs) || !logs.length) {
+    result.className = 'import-result show err';
+    result.textContent = 'Le JSON doit être un tableau non vide.';
+    return;
+  }
+
+  // Récupère les joueurs pour mapper les noms → id
+  const players = await sbFetch('/rest/v1/players?select=id,name', adminKey);
+  const playerMap = {};
+  players.forEach(p => playerMap[p.name.toLowerCase()] = p.id);
+
+  let inserted = 0, skipped = 0, errors = [];
+
+  for (const entry of logs) {
+    if (!entry.completed) { skipped++; continue; }
+    const playerId = playerMap[entry.player?.toLowerCase()];
+    if (!playerId) { errors.push(`Joueur inconnu : ${entry.player}`); skipped++; continue; }
+    if (!entry.dungeon || !entry.boss_kills) { skipped++; continue; }
+
+    try {
+      await sbFetch('/rest/v1/pagaille_runs', adminKey, {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body: {
+          player_id: playerId,
+          dungeon_name: entry.dungeon,
+          boss_kills: entry.boss_kills,
+          run_source: 'manual'
+        }
+      });
+      inserted++;
+    } catch(e) {
+      errors.push(`Erreur pour ${entry.player}/${entry.dungeon}`);
+      skipped++;
+    }
+  }
+
+  cachedData = null; // invalide le cache
+  result.className = 'import-result show ' + (errors.length ? 'err' : 'ok');
+  result.textContent = `${inserted} run(s) importé(s), ${skipped} ignoré(s).` + (errors.length ? ' Erreurs : ' + errors.slice(0,3).join(', ') : '');
+  if (inserted > 0) toast(`${inserted} runs importés !`);
+}
+
+// ─── INIT ───
+setLang(currentLang);
+renderRules();
+loadLeaderboard();
+</script>
+</body>
+</html>
