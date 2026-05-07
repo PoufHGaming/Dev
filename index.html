@@ -229,16 +229,16 @@
   }
   .section-title {
     font-family: 'Cinzel', serif;
-    font-size: 13px;
+    font-size: 15px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--gold-dim);
+    color: var(--gold);
     white-space: nowrap;
   }
   .section-ornament {
     color: var(--gold);
-    font-size: 16px;
-    opacity: 0.5;
+    font-size: 18px;
+    opacity: 0.7;
   }
 
   /* ─── EVENTS ─── */
@@ -335,40 +335,41 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
+    font-size: 12px;
     font-family: 'Cinzel', serif;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     margin-bottom: 10px;
+    font-weight: 600;
   }
   .event-status::before {
     content: '';
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
   }
-  .event-status.active  { color: #6dbf6d; }
-  .event-status.active::before  { background: #6dbf6d; box-shadow: 0 0 6px #6dbf6d; animation: pulse 2s ease-in-out infinite; }
-  .event-status.upcoming { color: var(--teal); }
-  .event-status.upcoming::before { background: var(--teal); }
+  .event-status.active  { color: #7ddf7d; }
+  .event-status.active::before  { background: #7ddf7d; box-shadow: 0 0 8px #7ddf7d; animation: pulse 2s ease-in-out infinite; }
+  .event-status.upcoming { color: #5cc4c4; }
+  .event-status.upcoming::before { background: #5cc4c4; }
   .event-status.past { color: var(--text-muted); }
   .event-status.past::before { background: var(--text-muted); }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
   .event-name {
     font-family: 'Cinzel', serif;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   .event-desc {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.55;
-    margin-bottom: 14px;
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 16px;
     font-style: italic;
   }
 
@@ -376,8 +377,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-muted);
+    font-size: 13px;
+    color: var(--text-dim);
     letter-spacing: 0.05em;
   }
 
@@ -385,7 +386,7 @@
 
   .event-cta {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--gold-dim);
@@ -403,13 +404,13 @@
   .events-category:last-child { margin-bottom: 0; }
   .category-label {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-dim);
     margin-bottom: 14px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(201,168,76,0.12);
   }
 
   /* ─── VIDEOS ─── */
