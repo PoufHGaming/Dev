@@ -215,6 +215,13 @@
 
   /* LEADERBOARD */
   .lb-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 12px; }
+  .sync-info { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-muted); font-style: italic; }
+  .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0;
+  }
+  .sync-dot.ok     { background: var(--tier1); box-shadow: 0 0 6px var(--tier1); }
+  .sync-dot.error  { background: #f07070; box-shadow: 0 0 6px #f07070; }
+  .sync-dot.live   { background: var(--tier1); box-shadow: 0 0 6px var(--tier1); animation: pdot 2s ease-in-out infinite; }
   .lb-info { font-size: 14px; color: var(--text-muted); font-style: italic; }
   .refresh-btn {
     display: flex; align-items: center; gap: 6px;
@@ -415,7 +422,10 @@
     </div>
 
     <div class="lb-toolbar">
-      <span class="lb-info" id="lb-cache-info"></span>
+      <div class="sync-info" id="sync-info">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-text">—</span>
+      </div>
       <button class="refresh-btn" id="refresh-btn" onclick="refreshLeaderboard()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
         <span data-fr="Actualiser" data-en="Refresh">Actualiser</span>
@@ -488,7 +498,7 @@
 // ══ CONFIG ══════════════════════════════════════════════
 const SUPABASE_URL      = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
-const CACHE_MS          = 5 * 60 * 1000;
+const CACHE_MS = 60 * 1000; // cache front 1min
 const TIERS             = [1000, 2500, 5000];
 const DUNGEONS = [
   "Abime des marins","Bois de L'aube","Carrière tombe-dieu",
@@ -506,7 +516,7 @@ function setLang(lang) {
   document.getElementById('lang-btn-en').classList.toggle('active', lang==='en');
   document.querySelectorAll('[data-fr]').forEach(el => el.textContent = el.dataset[lang] || el.dataset.fr);
   renderRules();
-  updateCacheInfo();
+  renderSyncInfo();
 }
 
 // ── TOAST ──
@@ -545,24 +555,60 @@ async function sbFetch(path, key, opts={}) {
   return res.json();
 }
 
-// ── CACHE ──
-let _cache = null, _cacheTs = 0;
-function getCached() { return (_cache && Date.now() - _cacheTs < CACHE_MS) ? _cache : null; }
-function setCache(d) { _cache = d; _cacheTs = Date.now(); }
-function updateCacheInfo() {
-  const el = document.getElementById('lb-cache-info');
-  if (!_cacheTs) { el.textContent = ''; return; }
-  const ago = Math.round((Date.now() - _cacheTs) / 1000);
-  const next = Math.max(0, Math.round((CACHE_MS - (Date.now() - _cacheTs)) / 60000));
-  el.textContent = currentLang === 'en'
-    ? `Updated ${ago < 60 ? ago + 's ago' : Math.round(ago/60) + 'min ago'} · next in ${next}min`
-    : `Mis à jour il y a ${ago < 60 ? ago + 's' : Math.round(ago/60) + 'min'} · prochain dans ${next}min`;
+// ── SYNC META ──
+let _syncMeta = null, _syncTimer = null;
+
+async function loadSyncMeta() {
+  try {
+    const data = await sbFetch('/rest/v1/pagaille_sync_meta?id=eq.1&select=last_sync,next_sync,last_status,runs_added');
+    _syncMeta = data?.[0] ?? null;
+    renderSyncInfo();
+    clearInterval(_syncTimer);
+    _syncTimer = setInterval(renderSyncInfo, 1000);
+  } catch(e) { console.warn('sync_meta unavailable'); }
+}
+
+function renderSyncInfo() {
+  const dot  = document.getElementById('sync-dot');
+  const text = document.getElementById('sync-text');
+  if (!_syncMeta) { text.textContent = '—'; return; }
+  const { last_sync, next_sync, last_status } = _syncMeta;
+  const now = Date.now();
+  dot.className = 'sync-dot ' + (last_status === 'ok' ? 'ok' : last_status === 'error' ? 'error' : '');
+  const agoMs  = last_sync ? now - new Date(last_sync).getTime() : null;
+  const nextMs = next_sync ? new Date(next_sync).getTime() - now  : null;
+  let agoStr = '';
+  if (agoMs !== null) {
+    const s = Math.round(agoMs / 1000);
+    agoStr = s < 60 ? `${s}s` : `${Math.round(s/60)}min`;
+  }
+  let nextStr = '';
+  if (nextMs !== null && nextMs > 0) {
+    const s = Math.round(nextMs / 1000);
+    nextStr = s < 60
+      ? (currentLang==='en' ? `next sync in ${s}s` : `prochain sync dans ${s}s`)
+      : (currentLang==='en' ? `next sync in ${Math.round(s/60)}min` : `prochain sync dans ${Math.round(s/60)}min`);
+  } else if (nextMs !== null) {
+    nextStr = currentLang==='en' ? 'syncing soon…' : 'sync imminent…';
+    dot.className = 'sync-dot live';
+  }
+  if (last_status === 'error') {
+    text.textContent = currentLang==='en' ? `Sync error · ${nextStr}` : `Erreur sync · ${nextStr}`;
+  } else if (agoStr && nextStr) {
+    text.textContent = currentLang==='en' ? `Updated ${agoStr} ago · ${nextStr}` : `Mis à jour il y a ${agoStr} · ${nextStr}`;
+  } else {
+    text.textContent = nextStr || '—';
+  }
 }
 
 // ── LEADERBOARD ──
+let _cache = null, _cacheTs = 0;
+function getCached() { return (_cache && Date.now() - _cacheTs < CACHE_MS) ? _cache : null; }
+function setCache(d) { _cache = d; _cacheTs = Date.now(); }
+
 async function loadLeaderboard(force=false) {
   const cached = force ? null : getCached();
-  if (cached) { renderLeaderboard(cached); updateCacheInfo(); return; }
+  if (cached) { renderLeaderboard(cached); return; }
   const btn = document.getElementById('refresh-btn');
   btn.classList.add('spinning');
   try {
@@ -571,7 +617,8 @@ async function loadLeaderboard(force=false) {
       sbFetch('/rest/v1/players?select=id,name&order=name')
     ]);
     const data = { runs, players };
-    setCache(data); renderLeaderboard(data); updateCacheInfo();
+    setCache(data); renderLeaderboard(data);
+    loadSyncMeta();
   } catch(e) {
     document.getElementById('lb-content').innerHTML =
       `<div class="empty">Erreur de chargement. <a href="#" onclick="refreshLeaderboard()" style="color:var(--teal-light)">Réessayer</a></div>`;
