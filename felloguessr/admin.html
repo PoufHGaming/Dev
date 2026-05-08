@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FelloGuessr — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:wght@0,300;0,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c; --gold-light: #e8c96a; --gold-dim: #9a7a3a;
+    --bg: #07090a; --bg2: #0e1418; --bg3: #141e24;
+    --border: rgba(201,168,76,0.18); --border-bright: rgba(201,168,76,0.55);
+    --text: #f0ece0; --text-dim: #a89880; --text-muted: #5a5040;
+    --green: #44ee88; --red: #ee4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Crimson Pro', serif; font-size: 17px; min-height: 100vh; padding: 32px 24px 64px; }
+
+  .top-line { height: 2px; background: linear-gradient(90deg, transparent, var(--gold-dim) 20%, var(--gold) 50%, var(--gold-dim) 80%, transparent); margin-bottom: 32px; }
+  .admin-title { font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 4px; }
+  .admin-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
+
+  /* Gate */
+  .gate { max-width: 400px; margin: 80px auto; text-align: center; }
+  .gate h2 { font-family: 'Cinzel', serif; font-size: 18px; color: var(--gold); margin-bottom: 20px; }
+  .gate-form { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Layout */
+  .admin-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1100px; }
+  @media (max-width: 800px) { .admin-layout { grid-template-columns: 1fr; } }
+
+  /* Cards */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 22px 24px; }
+  .card-title { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 18px; }
+
+  /* Fields */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-family: 'Cinzel', serif; }
+  .field input, .field select {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; padding: 9px 12px; color: var(--text);
+    font-family: 'Crimson Pro', serif; font-size: 16px;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--border-bright); }
+
+  /* Map click area */
+  .map-click-area {
+    position: relative; cursor: crosshair;
+    border: 1px solid var(--border-bright); border-radius: 4px;
+    overflow: hidden; margin-bottom: 12px;
+    background: var(--bg3);
+    min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .map-click-area img { display: block; max-width: 100%; max-height: 400px; object-fit: contain; pointer-events: none; }
+  .map-click-area .placeholder-text { color: var(--text-muted); font-size: 14px; font-style: italic; text-align: center; padding: 24px; }
+  .map-pin-admin {
+    position: absolute; width: 20px; height: 20px;
+    transform: translate(-50%, -100%);
+    pointer-events: none; display: none;
+  }
+  .coords-display {
+    font-size: 13px; color: var(--text-muted);
+    font-family: monospace; margin-bottom: 12px;
+    padding: 6px 10px; background: var(--bg3);
+    border-radius: 3px; text-align: center;
+  }
+
+  /* Buttons */
+  .btn {
+    font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 10px 20px;
+    background: rgba(201,168,76,0.1); border: 1px solid var(--border-bright);
+    border-radius: 4px; color: var(--gold); cursor: pointer; transition: all 0.2s;
+    width: 100%;
+  }
+  .btn:hover { background: rgba(201,168,76,0.2); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.danger { color: var(--red); border-color: rgba(238,68,68,0.4); background: rgba(238,68,68,0.07); }
+  .btn.danger:hover { background: rgba(238,68,68,0.14); }
+  .btn-sm { padding: 6px 12px; font-size: 11px; width: auto; }
+
+  /* Locations list */
+  .location-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 4px; margin-bottom: 6px;
+  }
+  .location-thumb {
+    width: 48px; height: 36px; object-fit: cover;
+    border-radius: 3px; flex-shrink: 0;
+    background: var(--bg);
+  }
+  .location-info { flex: 1; min-width: 0; }
+  .location-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text); }
+  .location-meta { font-size: 12px; color: var(--text-muted); }
+  .location-active { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .location-active.on  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .location-active.off { background: var(--text-muted); }
+
+  /* Result */
+  .result-msg { margin-top: 12px; padding: 10px 14px; border-radius: 4px; font-size: 14px; display: none; }
+  .result-msg.show { display: block; }
+  .result-msg.ok  { color: var(--green); background: rgba(68,238,136,0.07); border-left: 3px solid var(--green); }
+  .result-msg.err { color: var(--red);   background: rgba(238,68,68,0.07);  border-left: 3px solid var(--red); }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: 1px solid var(--border-bright); border-radius: 6px; padding: 10px 20px; font-size: 14px; color: var(--text); opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="top-line"></div>
+
+<!-- GATE -->
+<div id="admin-gate">
+  <div class="gate">
+    <h2>FelloGuessr Admin</h2>
+    <div class="gate-form">
+      <div class="field">
+        <label>Service Role Key</label>
+        <input type="password" id="input-key" placeholder="eyJ…">
+      </div>
+      <button class="btn" onclick="adminLogin()">Connexion</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div id="admin-panel" style="display:none">
+  <div class="admin-title">FelloGuessr — Admin</div>
+  <div class="admin-sub">Gestion des locations (screenshots + coordonnées)</div>
+
+  <div class="admin-layout">
+
+    <!-- ── AJOUTER UNE LOCATION ── -->
+    <div class="card">
+      <div class="card-title">Ajouter une location</div>
+
+      <div class="field">
+        <label>Donjon</label>
+        <select id="loc-dungeon">
+          <option value="">— Choisir —</option>
+          <option>Abime des marins</option>
+          <option>Bois de L'aube</option>
+          <option>Carrière tombe-dieu</option>
+          <option>Coeur de guivre</option>
+          <option>Creux Soyeux</option>
+          <option>Guet Tempete</option>
+          <option>Marché d'Urrak</option>
+          <option>Sables Empyréens</option>
+          <option>Caveau de Lamespectre</option>
+          <option>Coeur de Tuzari</option>
+          <option>La chute Cithrel</option>
+          <option>Saccage de Drakheim</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Chemin du screenshot</label>
+        <input type="text" id="loc-image" placeholder="felloguessr/images/001.jpg">
+      </div>
+
+      <div class="field">
+        <label>Chemin de la map</label>
+        <input type="text" id="loc-map" placeholder="felloguessr/maps/abime.png" oninput="loadMapPreview()">
+      </div>
+
+      <div class="field">
+        <label>Difficulté</label>
+        <select id="loc-difficulty">
+          <option value="normal">Normal</option>
+          <option value="easy">Facile</option>
+          <option value="hard">Difficile</option>
+        </select>
+      </div>
+
+      <!-- Click sur la map pour placer le vrai point -->
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;font-family:'Cinzel',serif;">
+        Cliquer sur la map pour placer le vrai point
+      </div>
+      <div class="map-click-area" id="map-click-area" onclick="placeAdminPin(event)">
+        <img id="map-preview" src="" alt="" style="display:none">
+        <div class="placeholder-text" id="map-placeholder">Entre le chemin de la map ci-dessus pour la prévisualiser</div>
+        <svg class="map-pin-admin" id="admin-pin" viewBox="0 0 24 36">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 9 12 24 12 24s12-15 12-24C24 5.37 18.63 0 12 0z" fill="#44ee88"/>
+          <circle cx="12" cy="12" r="5" fill="#07090a"/>
+        </svg>
+      </div>
+
+      <div class="coords-display" id="coords-display">Aucune coordonnée — clique sur la map</div>
+
+      <button class="btn" id="btn-add-location" onclick="addLocation()" disabled>
+        Ajouter la location
+      </button>
+      <div class="result-msg" id="add-result"></div>
+    </div>
+
+    <!-- ── LISTE DES LOCATIONS ── -->
+    <div class="card">
+      <div class="card-title">Locations existantes (<span id="loc-count">0</span>)</div>
+      <div id="locations-list">
+        <div style="color:var(--text-muted);font-style:italic;font-size:14px;">Chargement…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+let adminKey = '';
+let adminPinX = null, adminPinY = null;
+
+// ── AUTH ──
+async function adminLogin() {
+  adminKey = document.getElementById('input-key').value.trim();
+  if (!adminKey) return;
+  try {
+    await sbFetch('/rest/v1/fg_locations?select=id&limit=1');
+    document.getElementById('admin-gate').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    loadLocations();
+    toast('Connecté !');
+  } catch(e) { toast('Clé invalide'); }
+}
+
+async function sbFetch(path, opts={}) {
+  const key = adminKey || SUPABASE_URL; // gate uses anon for test
+  const res = await fetch(SUPABASE_URL + path, {
+    headers: {
+      'apikey': adminKey,
+      'Authorization': 'Bearer ' + adminKey,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || ''
+    },
+    method: opts.method || 'GET',
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  if (!res.ok) throw new Error(await res.text());
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+function toast(msg, err=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast show' + (err?' error':'');
+  clearTimeout(el._t); el._t = setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ── MAP PREVIEW ──
+function loadMapPreview() {
+  const path = document.getElementById('loc-map').value.trim();
+  const img = document.getElementById('map-preview');
+  const placeholder = document.getElementById('map-placeholder');
+  if (!path) { img.style.display='none'; placeholder.style.display='block'; return; }
+  img.src = '/' + path;
+  img.onload = () => { img.style.display='block'; placeholder.style.display='none'; };
+  img.onerror = () => { img.style.display='none'; placeholder.textContent='Image introuvable : ' + path; placeholder.style.display='block'; };
+}
+
+// ── PIN PLACEMENT ──
+function placeAdminPin(e) {
+  const area = document.getElementById('map-click-area');
+  const rect = area.getBoundingClientRect();
+  adminPinX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  adminPinY = Math.max(0, Math.min(1, (e.clientY - rect.top)  / rect.height));
+
+  const pin = document.getElementById('admin-pin');
+  pin.style.display = 'block';
+  pin.style.left = (adminPinX * 100) + '%';
+  pin.style.top  = (adminPinY * 100) + '%';
+
+  document.getElementById('coords-display').textContent =
+    `X: ${adminPinX.toFixed(4)} — Y: ${adminPinY.toFixed(4)}`;
+
+  checkAddReady();
+}
+
+function checkAddReady() {
+  const dungeon = document.getElementById('loc-dungeon').value;
+  const image   = document.getElementById('loc-image').value.trim();
+  const map     = document.getElementById('loc-map').value.trim();
+  document.getElementById('btn-add-location').disabled =
+    !dungeon || !image || !map || adminPinX === null;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  ['loc-dungeon','loc-image','loc-map'].forEach(id =>
+    document.getElementById(id).addEventListener('input', checkAddReady)
+  );
+});
+
+// ── ADD LOCATION ──
+async function addLocation() {
+  const dungeon    = document.getElementById('loc-dungeon').value;
+  const imagePath  = document.getElementById('loc-image').value.trim();
+  const mapPath    = document.getElementById('loc-map').value.trim();
+  const difficulty = document.getElementById('loc-difficulty').value;
+  const result     = document.getElementById('add-result');
+
+  if (!dungeon || !imagePath || !mapPath || adminPinX === null) return;
+
+  try {
+    await sbFetch('/rest/v1/fg_locations', {
+      method: 'POST', prefer: 'return=minimal',
+      body: {
+        dungeon_name: dungeon,
+        image_path:   imagePath,
+        map_path:     mapPath,
+        true_x:       adminPinX,
+        true_y:       adminPinY,
+        difficulty
+      }
+    });
+    result.className = 'result-msg show ok';
+    result.textContent = `✓ Location ajoutée — ${dungeon} (${adminPinX.toFixed(3)}, ${adminPinY.toFixed(3)})`;
+    // Reset
+    document.getElementById('loc-image').value = '';
+    document.getElementById('admin-pin').style.display = 'none';
+    document.getElementById('coords-display').textContent = 'Aucune coordonnée — clique sur la map';
+    adminPinX = null; adminPinY = null;
+    document.getElementById('btn-add-location').disabled = true;
+    loadLocations();
+    toast('Location ajoutée !');
+  } catch(e) {
+    result.className = 'result-msg show err';
+    result.textContent = 'Erreur : ' + e.message;
+  }
+}
+
+// ── LIST LOCATIONS ──
+async function loadLocations() {
+  try {
+    const locs = await sbFetch('/rest/v1/fg_locations?select=*&order=created_at.desc');
+    document.getElementById('loc-count').textContent = locs.length;
+    document.getElementById('locations-list').innerHTML = locs.length
+      ? locs.map(l => `
+          <div class="location-row">
+            <img class="location-thumb" src="/${l.image_path}" onerror="this.style.opacity='0.2'" alt="">
+            <div class="location-info">
+              <div class="location-name">${l.dungeon_name}</div>
+              <div class="location-meta">${l.difficulty} · (${l.true_x.toFixed(2)}, ${l.true_y.toFixed(2)})</div>
+              <div class="location-meta" style="font-size:11px;color:var(--text-muted);margin-top:2px">${l.image_path}</div>
+            </div>
+            <div class="location-active ${l.active ? 'on' : 'off'}" title="${l.active ? 'Actif' : 'Désactivé'}"></div>
+            <button class="btn btn-sm ${l.active ? 'danger' : ''}" onclick="toggleLocation(${l.id}, ${l.active})">
+              ${l.active ? 'Off' : 'On'}
+            </button>
+            <button class="btn btn-sm danger" onclick="deleteLocation(${l.id})">✕</button>
+          </div>
+        `).join('')
+      : '<div style="color:var(--text-muted);font-style:italic;font-size:14px;">Aucune location pour le moment.</div>';
+  } catch(e) { toast('Erreur chargement', true); }
+}
+
+async function toggleLocation(id, active) {
+  try {
+    await sbFetch(`/rest/v1/fg_locations?id=eq.${id}`, { method: 'PATCH', prefer: 'return=minimal', body: { active: !active } });
+    loadLocations();
+  } catch(e) { toast('Erreur', true); }
+}
+
+async function deleteLocation(id) {
+  if (!confirm('Supprimer cette location ? Les guesses associées seront aussi supprimées.')) return;
+  try {
+    await sbFetch(`/rest/v1/fg_locations?id=eq.${id}`, { method: 'DELETE', prefer: 'return=minimal' });
+    loadLocations();
+    toast('Supprimé');
+  } catch(e) { toast('Erreur', true); }
+}
+</script>
+</body>
+</html>
