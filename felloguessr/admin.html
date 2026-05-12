@@ -159,8 +159,21 @@
       </div>
 
       <div class="field">
+        <label>Type de média</label>
+        <select id="loc-media-type" onchange="toggleMediaType()">
+          <option value="image">Image (screenshot)</option>
+          <option value="video">Vidéo (boucle)</option>
+        </select>
+      </div>
+
+      <div class="field" id="field-image">
         <label>Chemin du screenshot</label>
         <input type="text" id="loc-image" placeholder="felloguessr/images/001.jpg">
+      </div>
+
+      <div class="field" id="field-video" style="display:none">
+        <label>Chemin de la vidéo</label>
+        <input type="text" id="loc-video" placeholder="felloguessr/videos/001.mp4">
       </div>
 
       <div class="field">
@@ -281,35 +294,52 @@ function placeAdminPin(e) {
   checkAddReady();
 }
 
-function checkAddReady() {
-  const dungeon = document.getElementById('loc-dungeon').value;
-  const image   = document.getElementById('loc-image').value.trim();
-  const map     = document.getElementById('loc-map').value.trim();
-  document.getElementById('btn-add-location').disabled =
-    !dungeon || !image || !map || adminPinX === null;
+function toggleMediaType() {
+  const type = document.getElementById('loc-media-type').value;
+  document.getElementById('field-image').style.display = type === 'image' ? 'block' : 'none';
+  document.getElementById('field-video').style.display = type === 'video' ? 'block' : 'none';
+  checkAddReady();
 }
+
+function checkAddReady() {
+  const dungeon   = document.getElementById('loc-dungeon').value;
+  const mediaType = document.getElementById('loc-media-type').value;
+  const image     = document.getElementById('loc-image').value.trim();
+  const video     = document.getElementById('loc-video').value.trim();
+  const map       = document.getElementById('loc-map').value.trim();
+  const mediaOk   = mediaType === 'image' ? !!image : !!video;
+  document.getElementById('btn-add-location').disabled =
+    !dungeon || !mediaOk || !map || adminPinX === null;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  ['loc-dungeon','loc-image','loc-map'].forEach(id =>
-    document.getElementById(id).addEventListener('input', checkAddReady)
+  ['loc-dungeon','loc-image','loc-video','loc-map'].forEach(id =>
+    document.getElementById(id)?.addEventListener('input', checkAddReady)
   );
 });
 
 // ── ADD LOCATION ──
 async function addLocation() {
   const dungeon    = document.getElementById('loc-dungeon').value;
+  const mediaType  = document.getElementById('loc-media-type').value;
   const imagePath  = document.getElementById('loc-image').value.trim();
+  const videoPath  = document.getElementById('loc-video').value.trim();
   const mapPath    = document.getElementById('loc-map').value.trim();
   const difficulty = document.getElementById('loc-difficulty').value;
   const result     = document.getElementById('add-result');
 
-  if (!dungeon || !imagePath || !mapPath || adminPinX === null) return;
+  if (!dungeon || !mapPath || adminPinX === null) return;
+  if (mediaType === 'image' && !imagePath) return;
+  if (mediaType === 'video' && !videoPath) return;
 
   try {
     await sbFetch('/rest/v1/fg_locations', {
       method: 'POST', prefer: 'return=minimal',
       body: {
         dungeon_name: dungeon,
-        image_path:   imagePath,
+        image_path:   imagePath || '',
+        video_path:   videoPath || null,
+        media_type:   mediaType,
         map_path:     mapPath,
         true_x:       adminPinX,
         true_y:       adminPinY,
@@ -317,9 +347,9 @@ async function addLocation() {
       }
     });
     result.className = 'result-msg show ok';
-    result.textContent = `✓ Location ajoutée — ${dungeon} (${adminPinX.toFixed(3)}, ${adminPinY.toFixed(3)})`;
-    // Reset
+    result.textContent = `✓ Location ajoutée — ${dungeon} (${mediaType})`;
     document.getElementById('loc-image').value = '';
+    document.getElementById('loc-video').value = '';
     document.getElementById('admin-pin').style.display = 'none';
     document.getElementById('coords-display').textContent = 'Aucune coordonnée — clique sur la map';
     adminPinX = null; adminPinY = null;

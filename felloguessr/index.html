@@ -56,49 +56,49 @@
   }
   .home-logo-title {
     font-family: 'Cinzel', serif;
-    font-size: clamp(32px, 6vw, 64px);
+    font-size: clamp(36px, 6vw, 68px);
     font-weight: 700;
-    color: var(--gold);
+    color: var(--gold-light);
     letter-spacing: 0.1em;
-    text-shadow: 0 0 40px rgba(201,168,76,0.4), 0 0 80px rgba(201,168,76,0.15);
+    text-shadow: 0 0 40px rgba(201,168,76,0.55), 0 0 80px rgba(201,168,76,0.2);
   }
   .home-logo-sub {
-    font-size: 15px;
-    color: var(--text-muted);
+    font-size: 16px;
+    color: var(--text-dim);
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    margin-top: 8px;
+    margin-top: 10px;
   }
 
   .home-card {
     background: var(--bg2);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(201,168,76,0.28);
     border-radius: 8px;
     padding: 32px 40px;
-    width: min(440px, 90vw);
+    width: min(460px, 90vw);
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
   }
 
   .field label {
     display: block;
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-dim);
     margin-bottom: 8px;
   }
   .field select, .field input {
     width: 100%;
     background: var(--bg3);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(201,168,76,0.22);
     border-radius: 4px;
-    padding: 11px 14px;
+    padding: 12px 14px;
     color: var(--text);
     font-family: 'Crimson Pro', serif;
-    font-size: 17px;
+    font-size: 18px;
     appearance: none;
     cursor: pointer;
     transition: border-color 0.2s;
@@ -114,43 +114,45 @@
   }
   .rounds-btn {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     background: var(--bg3);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(201,168,76,0.2);
     border-radius: 4px;
-    color: var(--text-muted);
+    color: var(--text-dim);
     font-family: 'Cinzel', serif;
-    font-size: 15px;
+    font-size: 17px;
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
   }
+  .rounds-btn:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
   .rounds-btn.active {
-    color: var(--gold);
+    color: var(--gold-light);
     border-color: var(--border-bright);
-    background: rgba(201,168,76,0.08);
+    background: rgba(201,168,76,0.12);
+    font-weight: 600;
   }
 
   .btn-primary {
     width: 100%;
-    padding: 14px;
-    background: rgba(201,168,76,0.12);
+    padding: 15px;
+    background: rgba(201,168,76,0.14);
     border: 1px solid var(--border-bright);
     border-radius: 4px;
-    color: var(--gold);
+    color: var(--gold-light);
     font-family: 'Cinzel', serif;
-    font-size: 14px;
-    letter-spacing: 0.12em;
+    font-size: 15px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s;
   }
   .btn-primary:hover {
-    background: rgba(201,168,76,0.2);
-    box-shadow: 0 0 20px rgba(201,168,76,0.15);
+    background: rgba(201,168,76,0.24);
+    box-shadow: 0 0 24px rgba(201,168,76,0.2);
   }
   .btn-primary:disabled {
-    opacity: 0.4;
+    opacity: 0.35;
     cursor: not-allowed;
   }
 
@@ -161,17 +163,17 @@
   }
   .nav-link {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-dim);
     text-decoration: none;
-    padding: 6px 12px;
-    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border: 1px solid rgba(201,168,76,0.25);
     border-radius: 3px;
     transition: all 0.2s;
   }
-  .nav-link:hover { color: var(--gold-light); border-color: var(--border-bright); }
+  .nav-link:hover { color: var(--gold-light); border-color: var(--border-bright); background: rgba(201,168,76,0.06); }
 
   /* ══════════════════════════════════════════
      SCREEN : JEU
@@ -182,7 +184,7 @@
     overflow: hidden;
   }
 
-  /* Screenshot plein écran */
+  /* Screenshot / Video view */
   .screenshot-view {
     flex: 1;
     position: relative;
@@ -207,6 +209,132 @@
     color: var(--text-muted);
     font-size: 18px;
     font-style: italic;
+  }
+
+  /* Video player */
+  .video-player {
+    width: 100%; height: 100%;
+    position: relative;
+    display: none;
+    background: #000;
+  }
+  .video-player.active { display: block; }
+  .video-el {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Video controls overlay */
+  .video-controls {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 16px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .video-player:hover .video-controls,
+  .video-player.paused .video-controls { opacity: 1; }
+
+  /* Progress bar */
+  .video-progress {
+    position: relative;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: height 0.15s;
+  }
+  .video-player:hover .video-progress { height: 6px; }
+  .video-progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    pointer-events: none;
+    transition: width 0.1s linear;
+  }
+  .video-progress-thumb {
+    position: absolute;
+    top: 50%; right: 0;
+    width: 12px; height: 12px;
+    background: var(--gold-light);
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .video-player:hover .video-progress-thumb { opacity: 1; }
+
+  /* Controls row */
+  .video-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .video-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    transition: opacity 0.15s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .video-btn:hover { opacity: 1; transform: scale(1.1); }
+  .video-btn svg { width: 20px; height: 20px; }
+
+  .video-time {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    flex: 1;
+  }
+
+  .video-speed {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px;
+    color: var(--text-dim);
+    padding: 3px 7px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .video-speed:hover { border-color: var(--border-bright); color: var(--gold); }
+
+  /* Big play button overlay when paused */
+  .video-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .video-player.paused .video-play-overlay { opacity: 1; }
+  .video-play-overlay-icon {
+    width: 64px; height: 64px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(4px);
   }
 
   /* HUD en haut */
@@ -643,13 +771,65 @@
     <div class="hud-score">Score <span id="hud-score">0</span></div>
   </div>
 
-  <!-- Screenshot -->
-  <div class="screenshot-view">
+  <!-- Media view (image ou vidéo) -->
+  <div class="screenshot-view" id="media-view" onclick="toggleVideoPlay()">
+
+    <!-- Image mode -->
     <img class="screenshot-img" id="game-screenshot" src="" alt="" style="display:none">
     <div class="screenshot-placeholder" id="screenshot-placeholder">
       <span>📸</span>
-      <span>Screenshot en chargement…</span>
+      <span>Média en chargement…</span>
     </div>
+
+    <!-- Video mode -->
+    <div class="video-player" id="video-player">
+      <video class="video-el" id="game-video"
+             loop playsinline
+             preload="auto">
+      </video>
+
+      <!-- Big play overlay -->
+      <div class="video-play-overlay">
+        <div class="video-play-overlay-icon">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="video-controls" id="video-controls" onclick="event.stopPropagation()">
+        <!-- Progress -->
+        <div class="video-progress" id="video-progress" onclick="seekVideo(event)">
+          <div class="video-progress-fill" id="video-progress-fill" style="width:0%"></div>
+          <div class="video-progress-thumb" id="video-progress-thumb" style="right:100%"></div>
+        </div>
+        <!-- Buttons row -->
+        <div class="video-controls-row">
+          <!-- Rewind 5s -->
+          <button class="video-btn" onclick="seekRelative(-5)" title="−5s">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="7" y="14" font-size="6" fill="currentColor" font-family="sans-serif">5</text></svg>
+          </button>
+          <!-- Play/Pause -->
+          <button class="video-btn" id="btn-play-pause" onclick="toggleVideoPlay()">
+            <svg id="icon-play"  viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <!-- Forward 5s -->
+          <button class="video-btn" onclick="seekRelative(5)" title="+5s">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/><text x="9" y="14" font-size="6" fill="currentColor" font-family="sans-serif">5</text></svg>
+          </button>
+          <!-- Time -->
+          <div class="video-time" id="video-time">0:00 / 0:00</div>
+          <!-- Speed -->
+          <select class="video-speed" id="video-speed" onchange="setVideoSpeed(this.value)" onclick="event.stopPropagation()">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Panel bas -->
@@ -884,6 +1064,100 @@ async function startGame() {
   }
 }
 
+// ── VIDEO PLAYER ──
+let _videoProgressDragging = false;
+
+function loadMedia(loc) {
+  const imgEl       = document.getElementById('game-screenshot');
+  const placeholder = document.getElementById('screenshot-placeholder');
+  const videoPlayer = document.getElementById('video-player');
+  const videoEl     = document.getElementById('game-video');
+
+  if (loc.media_type === 'video' && loc.video_path) {
+    // Mode vidéo
+    imgEl.style.display = 'none';
+    placeholder.style.display = 'none';
+    videoPlayer.classList.add('active');
+    videoPlayer.classList.remove('paused');
+
+    videoEl.src = '/' + loc.video_path;
+    videoEl.currentTime = 0;
+    videoEl.playbackRate = 1;
+    document.getElementById('video-speed').value = '1';
+
+    videoEl.onloadedmetadata = () => updateVideoTime();
+    videoEl.ontimeupdate = () => updateVideoProgress();
+    videoEl.onended = () => {}; // loop gère ça
+
+    videoEl.play().catch(() => {
+      videoPlayer.classList.add('paused');
+      document.getElementById('icon-play').style.display  = 'block';
+      document.getElementById('icon-pause').style.display = 'none';
+    });
+
+    document.getElementById('icon-play').style.display  = 'none';
+    document.getElementById('icon-pause').style.display = 'block';
+
+  } else {
+    // Mode image
+    videoPlayer.classList.remove('active');
+    videoEl.pause(); videoEl.src = '';
+    placeholder.style.display = 'flex';
+    imgEl.style.display = 'none';
+    imgEl.onload = () => { imgEl.style.display = 'block'; placeholder.style.display = 'none'; };
+    imgEl.src = '/' + loc.image_path;
+  }
+}
+
+function toggleVideoPlay() {
+  const videoEl = document.getElementById('game-video');
+  const player  = document.getElementById('video-player');
+  if (!player.classList.contains('active')) return;
+  if (videoEl.paused) {
+    videoEl.play();
+    player.classList.remove('paused');
+    document.getElementById('icon-play').style.display  = 'none';
+    document.getElementById('icon-pause').style.display = 'block';
+  } else {
+    videoEl.pause();
+    player.classList.add('paused');
+    document.getElementById('icon-play').style.display  = 'block';
+    document.getElementById('icon-pause').style.display = 'none';
+  }
+}
+
+function seekRelative(secs) {
+  const v = document.getElementById('game-video');
+  v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + secs));
+}
+
+function seekVideo(e) {
+  const v    = document.getElementById('game-video');
+  const bar  = document.getElementById('video-progress');
+  const rect = bar.getBoundingClientRect();
+  const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  v.currentTime = pct * (v.duration || 0);
+}
+
+function setVideoSpeed(val) {
+  document.getElementById('game-video').playbackRate = parseFloat(val);
+}
+
+function updateVideoProgress() {
+  const v   = document.getElementById('game-video');
+  const pct = v.duration ? (v.currentTime / v.duration) * 100 : 0;
+  document.getElementById('video-progress-fill').style.width = pct + '%';
+  document.getElementById('video-progress-thumb').style.right = (100 - pct) + '%';
+  updateVideoTime();
+}
+
+function updateVideoTime() {
+  const v = document.getElementById('game-video');
+  const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  document.getElementById('video-time').textContent =
+    `${fmt(v.currentTime || 0)} / ${fmt(v.duration || 0)}`;
+}
+
 // ── ROUND ──
 function startRound() {
   // Pioche une location non encore utilisée
@@ -904,13 +1178,8 @@ function startRound() {
   document.getElementById('step-dungeon').classList.add('active');
   document.getElementById('step-map').classList.remove('active');
 
-  // Screenshot
-  const img = document.getElementById('game-screenshot');
-  const placeholder = document.getElementById('screenshot-placeholder');
-  img.style.display = 'none';
-  placeholder.style.display = 'flex';
-  img.onload = () => { img.style.display = 'block'; placeholder.style.display = 'none'; };
-  img.src = '/' + loc.image_path;
+  // Charge le média (image ou vidéo)
+  loadMedia(loc);
 
   // HUD
   document.getElementById('hud-round-num').textContent = state.roundsDone + 1;
