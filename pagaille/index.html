@@ -341,7 +341,7 @@
       box-shadow: 0 0 7px var(--tier3);
     }
 
-    /* Tier cards */
+    /* ── TIER CARDS ── */
     .tiers-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -350,139 +350,289 @@
     }
 
     .tier-card {
-      background: var(--bg2);
-      border-radius: 6px;
-      padding: 18px 20px;
-      transition: all 0.3s;
+      border-radius: 8px;
+      padding: 20px 22px 18px;
       position: relative;
       overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .tier-card.t1 {
-      border: 1px solid rgba(68, 238, 68, 0.25);
-      border-left: 3px solid rgba(68, 238, 68, 0.5);
+    /* LOCKED : lisible et incitatif */
+    .tier-card.t1.locked {
+      background: linear-gradient(145deg, rgba(68, 238, 68, 0.05) 0%, var(--bg2) 60%);
+      border: 1px solid rgba(68, 238, 68, 0.2);
+      border-top: 2px solid rgba(68, 238, 68, 0.35);
     }
 
-    .tier-card.t2 {
-      border: 1px solid rgba(64, 212, 212, 0.25);
-      border-left: 3px solid rgba(64, 212, 212, 0.5);
+    .tier-card.t2.locked {
+      background: linear-gradient(145deg, rgba(64, 212, 212, 0.05) 0%, var(--bg2) 60%);
+      border: 1px solid rgba(64, 212, 212, 0.2);
+      border-top: 2px solid rgba(64, 212, 212, 0.35);
     }
 
-    .tier-card.t3 {
-      border: 1px solid rgba(196, 160, 255, 0.25);
-      border-left: 3px solid rgba(196, 160, 255, 0.5);
+    .tier-card.t3.locked {
+      background: linear-gradient(145deg, rgba(196, 160, 255, 0.05) 0%, var(--bg2) 60%);
+      border: 1px solid rgba(196, 160, 255, 0.2);
+      border-top: 2px solid rgba(196, 160, 255, 0.35);
     }
 
-    .tier-card.locked {
-      opacity: 0.5;
+    .tier-card.locked::after {
+      content: '🔒';
+      position: absolute;
+      bottom: 14px;
+      right: 16px;
+      font-size: 16px;
+      opacity: 0.3;
+      pointer-events: none;
     }
 
+    /* UNLOCKED : célébration */
     .tier-card.t1.unlocked {
-      border-left-color: var(--tier1);
-      background: linear-gradient(135deg, rgba(68, 238, 68, 0.1) 0%, var(--bg2) 55%);
-      box-shadow: 0 0 28px rgba(68, 238, 68, 0.15);
-      opacity: 1;
+      background: linear-gradient(145deg, rgba(68, 238, 68, 0.14) 0%, rgba(13, 26, 13, 0.95) 55%, var(--bg2) 100%);
+      border: 1px solid rgba(68, 238, 68, 0.55);
+      border-top: 2px solid var(--tier1);
+      animation: tier-glow-1 3s ease-in-out infinite;
     }
 
     .tier-card.t2.unlocked {
-      border-left-color: var(--tier2);
-      background: linear-gradient(135deg, rgba(64, 212, 212, 0.1) 0%, var(--bg2) 55%);
-      box-shadow: 0 0 28px rgba(64, 212, 212, 0.15);
-      opacity: 1;
+      background: linear-gradient(145deg, rgba(64, 212, 212, 0.14) 0%, rgba(13, 26, 26, 0.95) 55%, var(--bg2) 100%);
+      border: 1px solid rgba(64, 212, 212, 0.55);
+      border-top: 2px solid var(--tier2);
+      animation: tier-glow-2 3s ease-in-out infinite;
     }
 
     .tier-card.t3.unlocked {
-      border-left-color: var(--tier3);
-      background: linear-gradient(135deg, rgba(196, 160, 255, 0.1) 0%, var(--bg2) 55%);
-      box-shadow: 0 0 28px rgba(196, 160, 255, 0.15);
-      opacity: 1;
+      background: linear-gradient(145deg, rgba(196, 160, 255, 0.14) 0%, rgba(18, 13, 26, 0.95) 55%, var(--bg2) 100%);
+      border: 1px solid rgba(196, 160, 255, 0.55);
+      border-top: 2px solid var(--tier3);
+      animation: tier-glow-3 3s ease-in-out infinite;
     }
 
+    @keyframes tier-glow-1 {
+
+      0%,
+      100% {
+        box-shadow: 0 0 24px rgba(68, 238, 68, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 48px rgba(68, 238, 68, 0.35);
+      }
+    }
+
+    @keyframes tier-glow-2 {
+
+      0%,
+      100% {
+        box-shadow: 0 0 24px rgba(64, 212, 212, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 48px rgba(64, 212, 212, 0.35);
+      }
+    }
+
+    @keyframes tier-glow-3 {
+
+      0%,
+      100% {
+        box-shadow: 0 0 24px rgba(196, 160, 255, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 48px rgba(196, 160, 255, 0.35);
+      }
+    }
+
+    /* Bandeau Débloqué */
+    .tier-badge-unlocked {
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .tier-card.unlocked .tier-badge-unlocked {
+      display: block;
+    }
+
+    .tier-card.t1.unlocked .tier-badge-unlocked {
+      color: var(--tier1);
+      background: rgba(68, 238, 68, 0.12);
+      border: 1px solid rgba(68, 238, 68, 0.4);
+    }
+
+    .tier-card.t2.unlocked .tier-badge-unlocked {
+      color: var(--tier2);
+      background: rgba(64, 212, 212, 0.12);
+      border: 1px solid rgba(64, 212, 212, 0.4);
+    }
+
+    .tier-card.t3.unlocked .tier-badge-unlocked {
+      color: var(--tier3);
+      background: rgba(196, 160, 255, 0.12);
+      border: 1px solid rgba(196, 160, 255, 0.4);
+    }
+
+    /* tier-num */
     .tier-num {
       font-family: 'Cinzel', serif;
-      font-size: 11px;
-      letter-spacing: 0.2em;
+      font-size: 10px;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .tier-card.t1 .tier-num {
-      color: var(--tier1);
+      color: rgba(68, 238, 68, 0.6);
     }
 
     .tier-card.t2 .tier-num {
-      color: var(--tier2);
+      color: rgba(64, 212, 212, 0.6);
     }
 
     .tier-card.t3 .tier-num {
-      color: var(--tier3);
+      color: rgba(196, 160, 255, 0.6);
     }
 
+    .tier-card.t1.unlocked .tier-num {
+      color: rgba(68, 238, 68, 0.9);
+    }
+
+    .tier-card.t2.unlocked .tier-num {
+      color: rgba(64, 212, 212, 0.9);
+    }
+
+    .tier-card.t3.unlocked .tier-num {
+      color: rgba(196, 160, 255, 0.9);
+    }
+
+    /* tier-threshold */
     .tier-threshold {
       font-family: 'Cinzel', serif;
-      font-size: 26px;
       font-weight: 700;
-      margin-bottom: 7px;
+      margin-bottom: 10px;
+      transition: all 0.4s;
     }
 
-    .tier-card.t1 .tier-threshold {
+    .tier-card.t1.locked .tier-threshold {
+      font-size: 28px;
+      color: rgba(68, 238, 68, 0.5);
+      text-shadow: 0 0 16px rgba(68, 238, 68, 0.15);
+    }
+
+    .tier-card.t2.locked .tier-threshold {
+      font-size: 28px;
+      color: rgba(64, 212, 212, 0.5);
+      text-shadow: 0 0 16px rgba(64, 212, 212, 0.15);
+    }
+
+    .tier-card.t3.locked .tier-threshold {
+      font-size: 28px;
+      color: rgba(196, 160, 255, 0.5);
+      text-shadow: 0 0 16px rgba(196, 160, 255, 0.15);
+    }
+
+    .tier-card.t1.unlocked .tier-threshold {
+      font-size: 34px;
       color: var(--tier1);
-      text-shadow: 0 0 20px rgba(68, 238, 68, 0.65);
+      text-shadow: 0 0 28px rgba(68, 238, 68, 0.7), 0 0 56px rgba(68, 238, 68, 0.3);
     }
 
-    .tier-card.t2 .tier-threshold {
+    .tier-card.t2.unlocked .tier-threshold {
+      font-size: 34px;
       color: var(--tier2);
-      text-shadow: 0 0 20px rgba(64, 212, 212, 0.65);
+      text-shadow: 0 0 28px rgba(64, 212, 212, 0.7), 0 0 56px rgba(64, 212, 212, 0.3);
     }
 
-    .tier-card.t3 .tier-threshold {
+    .tier-card.t3.unlocked .tier-threshold {
+      font-size: 34px;
       color: var(--tier3);
-      text-shadow: 0 0 20px rgba(196, 160, 255, 0.65);
+      text-shadow: 0 0 28px rgba(196, 160, 255, 0.7), 0 0 56px rgba(196, 160, 255, 0.3);
     }
 
+    /* tier-reward */
     .tier-reward {
       font-size: 15px;
-      color: var(--text-dim);
-      line-height: 1.5;
+      line-height: 1.55;
       font-style: italic;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .tier-card.locked .tier-reward {
-      color: var(--text-muted);
+      color: var(--text-dim);
     }
 
+    .tier-card.unlocked .tier-reward {
+      color: var(--text);
+    }
+
+    /* tier-status */
     .tier-status {
       display: inline-flex;
       align-items: center;
       gap: 7px;
       font-family: 'Cinzel', serif;
-      font-size: 12px;
-      letter-spacing: 0.12em;
+      font-size: 11px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-weight: 600;
     }
 
     .tier-status::before {
       content: '';
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: currentColor;
       flex-shrink: 0;
     }
 
-    .tier-status.done {
+    .tier-card.t1.locked .tier-status {
+      color: rgba(68, 238, 68, 0.45);
+    }
+
+    .tier-card.t2.locked .tier-status {
+      color: rgba(64, 212, 212, 0.45);
+    }
+
+    .tier-card.t3.locked .tier-status {
+      color: rgba(196, 160, 255, 0.45);
+    }
+
+    .tier-card.t1.unlocked .tier-status {
       color: var(--tier1);
     }
 
-    .tier-status.done::before {
-      box-shadow: 0 0 8px var(--tier1);
+    .tier-card.t2.unlocked .tier-status {
+      color: var(--tier2);
+    }
+
+    .tier-card.t3.unlocked .tier-status {
+      color: var(--tier3);
+    }
+
+    .tier-card.unlocked .tier-status::before {
       animation: pdot 2s ease-in-out infinite;
     }
 
-    .tier-status.locked {
-      color: var(--text-muted);
+    .tier-card.t1.unlocked .tier-status::before {
+      box-shadow: 0 0 8px var(--tier1);
+    }
+
+    .tier-card.t2.unlocked .tier-status::before {
+      box-shadow: 0 0 8px var(--tier2);
+    }
+
+    .tier-card.t3.unlocked .tier-status::before {
+      box-shadow: 0 0 8px var(--tier3);
     }
 
     @keyframes pdot {
@@ -1414,25 +1564,28 @@
         </div>
         <div class="tiers-grid">
           <div class="tier-card t1 locked" id="tier-1">
+            <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 1" data-en="Tier 1">Palier 1</div>
             <div class="tier-threshold">1 000</div>
             <div class="tier-reward" data-fr="Débloque de nouveaux émotes" data-en="Unlocks new emotes">Débloque de
               nouveaux émotes</div>
-            <div class="tier-status locked" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
+            <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
           <div class="tier-card t2 locked" id="tier-2">
+            <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 2" data-en="Tier 2">Palier 2</div>
             <div class="tier-threshold">2 500</div>
             <div class="tier-reward" data-fr="Organisation de Gloire à la Compagnie II"
               data-en="Gloire à la Compagnie II confirmed">Organisation de Gloire à la Compagnie II</div>
-            <div class="tier-status locked" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
+            <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
           <div class="tier-card t3 locked" id="tier-3">
+            <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 3" data-en="Tier 3">Palier 3</div>
             <div class="tier-threshold">5 000</div>
             <div class="tier-reward" data-fr="Indice sur le secret de la Saison 1"
               data-en="Hint about Season 1's secret">Indice sur le secret de la Saison 1</div>
-            <div class="tier-status locked" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
+            <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
         </div>
       </div>
@@ -1690,12 +1843,10 @@
         const status = card.querySelector('.tier-status');
         if (total >= threshold) {
           card.classList.remove('locked'); card.classList.add('unlocked');
-          status.classList.remove('locked'); status.classList.add('done');
           status.dataset.fr = 'Débloqué ✓'; status.dataset.en = 'Unlocked ✓';
           status.textContent = currentLang === 'en' ? 'Unlocked ✓' : 'Débloqué ✓';
         } else {
           card.classList.add('locked'); card.classList.remove('unlocked');
-          status.classList.add('locked'); status.classList.remove('done');
           const rem = (threshold - total).toLocaleString('fr-FR');
           status.dataset.fr = `encore ${rem} boss`; status.dataset.en = `${rem} more bosses`;
           status.textContent = currentLang === 'en' ? `${rem} more bosses` : `encore ${rem} boss`;
