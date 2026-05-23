@@ -1145,6 +1145,181 @@
       font-size: 16px;
     }
 
+    /* ── JOIN PAGE ── */
+    .join-page {
+      max-width: 700px;
+    }
+
+    .join-step {
+      display: flex;
+      gap: 22px;
+      margin-bottom: 32px;
+      align-items: flex-start;
+    }
+
+    .join-step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(64, 212, 212, 0.1);
+      border: 1px solid var(--border-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--teal-light);
+      margin-top: 2px;
+    }
+
+    .join-step-body {
+      flex: 1;
+    }
+
+    .join-step-title {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 10px;
+    }
+
+    .join-step-desc {
+      font-size: 16px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .join-step-desc a {
+      color: var(--teal-light);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(64, 212, 212, 0.35);
+      transition: border-color 0.2s;
+    }
+
+    .join-step-desc a:hover {
+      border-bottom-color: var(--teal-light);
+    }
+
+    .join-step-desc strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .join-screenshot {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .join-screenshot-label {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .join-url-demo {
+      padding: 14px 18px;
+    }
+
+    .join-url-bar {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 9px 14px;
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    .url-highlight {
+      color: var(--teal-light);
+      font-weight: 700;
+      background: rgba(64, 212, 212, 0.14);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .url-dim {
+      color: var(--text-muted);
+    }
+
+    .join-url-caption {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 8px;
+      padding: 0 2px 4px;
+    }
+
+    .join-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0 32px;
+    }
+
+    .join-cta-block {
+      background: var(--bg2);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      padding: 28px 32px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(64, 212, 212, 0.06);
+    }
+
+    .join-cta-title {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 10px;
+    }
+
+    .join-cta-desc {
+      font-size: 16px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+
+    .join-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 13px 32px;
+      background: rgba(64, 212, 212, 0.12);
+      border: 1px solid var(--border-bright);
+      border-radius: 4px;
+      color: var(--teal-light);
+      text-decoration: none;
+      transition: all 0.25s;
+      box-shadow: 0 0 20px rgba(64, 212, 212, 0.1);
+    }
+
+    .join-btn:hover {
+      background: rgba(64, 212, 212, 0.22);
+      box-shadow: 0 0 32px rgba(64, 212, 212, 0.2);
+      transform: translateY(-1px);
+    }
+
     /* RESPONSIVE */
     @media (max-width: 600px) {
       main {
@@ -1205,6 +1380,8 @@
     <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement"
       data-en="Leaderboard">Classement</button>
     <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
+    <button class="tab" id="tab-join" onclick="showPage('join',this)" data-fr="Rejoindre"
+      data-en="Join">Rejoindre</button>
     <div class="nav-right">
       <div class="lang-toggle">
         <button class="lang-btn active" id="lang-btn-fr" onclick="setLang('fr')">FR</button>
@@ -1289,6 +1466,11 @@
       <div class="rules-page" id="rules-content"></div>
     </div>
 
+    <!-- ── JOIN ── -->
+    <div id="page-join" class="page">
+      <div class="join-page" id="join-content"></div>
+    </div>
+
     <!-- ── ADMIN (triple clic sur le titre) ── -->
     <div id="page-admin" class="page">
       <div class="admin-gate" id="admin-gate">
@@ -1362,6 +1544,7 @@
       document.getElementById('lang-btn-en').classList.toggle('active', lang === 'en');
       document.querySelectorAll('[data-fr]').forEach(el => el.textContent = el.dataset[lang] || el.dataset.fr);
       renderRules();
+      renderJoin();
       renderSyncInfo();
     }
 
@@ -1539,6 +1722,67 @@
       document.getElementById('lb-content').innerHTML = html;
     }
 
+    // ── JOIN ──
+    function renderJoin() {
+      const fr = currentLang === 'fr';
+      document.getElementById('join-content').innerHTML = `
+        <div class="join-step">
+          <div class="join-step-num">1</div>
+          <div class="join-step-body">
+            <div class="join-step-title">${fr ? 'Activer les logs de combat' : 'Activate combat logs'}</div>
+            <div class="join-step-desc">
+              ${fr
+          ? `Télécharge l'application <strong>Fellowship</strong> et assure-toi que le paramètre <strong>Activate Combat Log</strong> est bien activé dans le jeu.<br><br>
+                   Le guide complet est disponible ici : <a href="https://www.archon.gg/fellowship/articles/help/getting-started" target="_blank" rel="noopener">archon.gg — Getting started</a>`
+          : `Download the <strong>Fellowship</strong> app and make sure the <strong>Activate Combat Log</strong> setting is enabled in-game.<br><br>
+                   Full guide available here: <a href="https://www.archon.gg/fellowship/articles/help/getting-started" target="_blank" rel="noopener">archon.gg — Getting started</a>`
+        }
+            </div>
+          </div>
+        </div>
+
+        <div class="join-step">
+          <div class="join-step-num">2</div>
+          <div class="join-step-body">
+            <div class="join-step-title">${fr ? 'Récupérer ton ID Fellowship' : 'Get your Fellowship ID'}</div>
+            <div class="join-step-desc">
+              ${fr
+          ? `Connecte-toi sur <strong>fellowshiplogs.com</strong> et rends-toi sur ton profil personnage. Ton <strong>ID</strong> est le nombre visible directement dans la barre d'URL.`
+          : `Log in on <strong>fellowshiplogs.com</strong> and go to your character profile. Your <strong>ID</strong> is the number visible directly in the URL bar.`
+        }
+            </div>
+            <div class="join-screenshot">
+              <div class="join-screenshot-label">${fr ? 'Exemple — barre d\'URL' : 'Example — URL bar'}</div>
+              <div class="join-url-demo">
+                <div class="join-url-bar">
+                  <span class="url-dim">fellowshiplogs.com/characters/</span><span class="url-highlight">151451</span><span class="url-dim">/overview</span>
+                </div>
+                <div class="join-url-caption">
+                  ${fr ? '👆 Le nombre en surbrillance, c\'est ton ID. Note-le, tu en auras besoin pour le formulaire.' : '👆 The highlighted number is your ID. Note it down — you\'ll need it for the form.'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="join-divider"></div>
+
+        <div class="join-cta-block">
+          <div class="join-cta-title">${fr ? 'Prêt à rejoindre ?' : 'Ready to join?'}</div>
+          <div class="join-cta-desc">
+            ${fr
+          ? 'Remplis le formulaire d\'inscription avec ton nom de personnage et ton ID Fellowship. Pouf ajoutera ton compte dès que possible.'
+          : 'Fill in the registration form with your character name and Fellowship ID. Pouf will add your account as soon as possible.'
+        }
+          </div>
+          <a class="join-btn" href="https://docs.google.com/forms/d/e/1FAIpQLScs9iALvfOe3cWvW0nudi7zY5cFrSRsdy3_WAMY65HoCaeIag/viewform" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+            ${fr ? 'Formulaire d\'inscription' : 'Registration form'}
+          </a>
+        </div>
+      `;
+    }
+
     // ── RULES ──
     function renderRules() {
       const fr = currentLang === 'fr';
@@ -1626,6 +1870,7 @@
     // ── INIT ──
     setLang(currentLang);
     renderRules();
+    renderJoin();
     loadLeaderboard();
   </script>
 
