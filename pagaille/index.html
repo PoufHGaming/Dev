@@ -354,7 +354,83 @@
     .join-btn { display:inline-flex; align-items:center; gap:10px; font-family:'Cinzel',serif; font-size:14px; letter-spacing:0.12em; text-transform:uppercase; padding:13px 32px; background:rgba(64,212,212,0.12); border:1px solid var(--border-bright); border-radius:4px; color:var(--teal-light); text-decoration:none; transition:all 0.25s; box-shadow:0 0 20px rgba(64,212,212,0.1); }
     .join-btn:hover { background:rgba(64,212,212,0.22); box-shadow:0 0 32px rgba(64,212,212,0.2); transform:translateY(-1px); }
 
-    /* ── RESPONSIVE ── */
+
+    /* ── CAPSTONE DETAIL ── */
+    .dungeon-kills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:7px; }
+
+    .capstone-block {
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      border: 1px solid rgba(64,212,212,0.2);
+    }
+    .capstone-block.has-kills { border-color: rgba(64,212,212,0.45); }
+
+    .capstone-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.28;
+      z-index: 0;
+    }
+
+    .capstone-inner {
+      position: relative;
+      z-index: 1;
+      padding: 12px 16px;
+    }
+
+    .capstone-title {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(64,212,212,0.2);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .capstone-total {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      color: var(--teal-light);
+      text-shadow: 0 0 8px rgba(64,212,212,0.5);
+    }
+
+    .capstone-boss-list { display: flex; flex-direction: column; gap: 5px; }
+
+    .capstone-boss-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 8px;
+      background: rgba(7,11,11,0.55);
+      border-radius: 3px;
+      border: 1px solid transparent;
+      font-size: 14px;
+    }
+    .capstone-boss-row.done { border-color: rgba(64,212,212,0.25); }
+
+    .capstone-boss-name { color: var(--text-dim); }
+    .capstone-boss-row.done .capstone-boss-name { color: var(--text); }
+
+    .capstone-boss-kill {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .capstone-boss-row.done .capstone-boss-kill {
+      color: var(--teal-light);
+      text-shadow: 0 0 6px rgba(64,212,212,0.4);
+    }
+
+        /* ── RESPONSIVE ── */
     @media (max-width:600px) {
       main { padding:20px 14px 64px; }
       .lb-header,.lb-row { grid-template-columns:36px 1fr 78px; }
@@ -399,7 +475,7 @@
     </a>
     <div class="nav-sep"></div>
     <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement" data-en="Leaderboard">Classement</button>
-    <button class="tab" id="tab-stats" onclick="showPage('stats',this)" data-fr="Carnage" data-en="Carnage">Carnage</button>
+    <button class="tab" id="tab-stats" onclick="showPage('stats',this)" data-fr="Carnage" data-en="Slaughtered">Carnage</button>
     <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
     <button class="tab" id="tab-join" onclick="showPage('join',this)" data-fr="Rejoindre" data-en="Join">Rejoindre</button>
     <div class="nav-right">
@@ -537,6 +613,29 @@
       "Marché d'Urrak","Sables Empyréens","Caveau de Lamespectre",
       "Coeur de Tuzari","La chute Cithrel","Saccage de Drakheim"
     ];
+
+    // Donjons capstone : multi-boss, fond image + détail par boss
+    const CAPSTONE_BOSSES = {
+      "Caveau de Lamespectre": ["Deathless Katrine","Bael'Aurum","First Mate Marrow"],
+      "Coeur de Tuzari":       ["Moar'gore, Master of Sacrifice","Vun'Kahr, The Thorned Maw","Prophet Ez'rath"],
+      "La chute Cithrel":      ["Noor, The Betrayer","Ancient Koros","Cithrel"],
+      "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"]
+    };
+
+    const DUNGEON_IMAGES = {
+      "Abime des marins":      "../images/abime-des-marins.jpg",
+      "Bois de L'aube":        "../images/bois-de-laube.jpg",
+      "Carrière tombe-dieu":   "../images/carriere-tombe-dieu.jpg",
+      "Caveau de Lamespectre": "../images/caveau-de-lamespectre.jpg",
+      "Coeur de guivre":       "../images/coeur-de-guivre.jpg",
+      "Coeur de Tuzari":       "../images/coeur-de-tuzari.jpg",
+      "Creux Soyeux":          "../images/creux-soyeux.jpg",
+      "Guet Tempete":          "../images/guet-tempete.jpg",
+      "La chute Cithrel":      "../images/la-chute-cithrel.jpg",
+      "Marché d'Urrak":        "../images/marche-durrak.jpg",
+      "Sables Empyréens":      "../images/sables-empyreens.jpg",
+      "Saccage de Drakheim":   "../images/saccage-de-drakheim.jpg"
+    };
 
     let currentLang = localStorage.getItem('pouf_lang') || 'fr';
 
@@ -681,12 +780,44 @@
         prev = s.total; rank++;
         const rc = dRank <= 3 ? 'rank-'+dRank : '';
         const dngCount = Object.values(s.byDungeon).filter(v => v > 0).length;
-        let detail = '<div class="lb-detail"><div class="dungeon-kills-grid">';
-        DUNGEONS.forEach(d => {
+        let detail = '<div class="lb-detail">';
+        // Capstones : bloc avec fond image + détail par boss
+        const capstones = Object.keys(CAPSTONE_BOSSES);
+        const regular = DUNGEONS.filter(d => !capstones.includes(d));
+
+        // Regular dungeons grid
+        detail += '<div class="dungeon-kills-grid" style="margin-bottom:10px">';
+        regular.forEach(d => {
           const k = s.byDungeon[d] || 0;
           detail += `<div class="dk-item ${k>0?'has':''}"><span class="dk-name">${d}</span><span class="dk-count ${k>0?'has-kills':''}">${k>0?k+' boss':'—'}</span></div>`;
         });
-        detail += '</div></div>';
+        detail += '</div>';
+
+        // Capstone blocks
+        capstones.forEach(d => {
+          const img = DUNGEON_IMAGES[d] || '';
+          const bosses = CAPSTONE_BOSSES[d];
+          const totalKills = s.byDungeon[d] || 0;
+          const hasAny = totalKills > 0;
+          // On estime les boss individuels depuis byDungeon (1 kill = 1 boss dans ce donjon)
+          // Pour l'affichage on montre le total du donjon réparti visuellement
+          detail += `<div class="capstone-block ${hasAny?'has-kills':''}">`;
+          if (img) detail += `<div class="capstone-bg" style="background-image:url('${img}')"></div>`;
+          detail += `<div class="capstone-inner">`;
+          detail += `<div class="capstone-title"><span>${d}</span>${hasAny?`<span class="capstone-total">${totalKills} boss</span>`:''}</div>`;
+          detail += `<div class="capstone-boss-list">`;
+          bosses.forEach((boss, bi) => {
+            // On marque comme fait si le joueur a au moins bi+1 kills dans ce donjon
+            const done = totalKills > bi;
+            detail += `<div class="capstone-boss-row ${done?'done':''}">
+              <span class="capstone-boss-name">${boss}</span>
+              <span class="capstone-boss-kill">${done?'✓ Tué':'—'}</span>
+            </div>`;
+          });
+          detail += '</div></div></div>';
+        });
+
+        detail += '</div>';
         html += `<div class="lb-row ${rc}" onclick="this.classList.toggle('open')"><div class="rank-num">${dRank}</div><div class="player-name" onclick="event.stopPropagation();openProfile(${s.id},'${s.name.replace(/'/g,"\\'")}');" style="cursor:pointer">${s.name}${renderBadgesInline(s.id)}</div><div class="score-boss">${s.total}</div><div class="score-dungeons col-dng">${dngCount}</div>${detail}</div>`;
       });
       document.getElementById('lb-content').innerHTML = html;
@@ -722,8 +853,8 @@
       const maxKills   = sorted[0]?.kills || 1;
 
       const kpiLabels = fr
-        ? ['Boss tués', 'Runs enregistrés', 'Donjons actifs']
-        : ['Bosses killed', 'Runs recorded', 'Active dungeons'];
+        ? ['Boss tués', 'Runs enregistrés', 'Morts (bientôt)']
+        : ['Bosses killed', 'Runs recorded', 'Deaths (soon)'];
 
       let html = `
         <div class="stats-section-title" data-fr="Vue d'ensemble" data-en="Overview">${fr?'Vue d\'ensemble':'Overview'}</div>
@@ -738,7 +869,7 @@
           </div>
           <div class="stats-kpi">
             <div class="stats-kpi-label">${kpiLabels[2]}</div>
-            <div class="stats-kpi-value">${activeDng} / ${DUNGEONS.length}</div>
+            <div class="stats-kpi-value" style="color:var(--text-muted);font-size:20px;letter-spacing:0.05em">— bientôt</div>
           </div>
         </div>
 
