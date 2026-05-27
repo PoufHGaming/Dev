@@ -204,12 +204,7 @@
     .score-dungeons { font-size:15px; color:var(--text-muted); text-align:right; }
     .lb-detail { display:none; padding:14px 18px 18px 66px; grid-column:1/-1; }
     .lb-row.open .lb-detail { display:block; }
-    .dungeon-kills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:7px; }
-    .dk-item { display:flex; align-items:center; justify-content:space-between; padding:7px 12px; background:var(--bg3); border-radius:3px; font-size:14px; border:1px solid transparent; }
-    .dk-item.has { border-color:rgba(64,212,212,0.2); }
-    .dk-name { color:var(--text-dim); }
-    .dk-count { font-family:'Cinzel',serif; font-size:13px; color:var(--text-muted); }
-    .dk-count.has-kills { color:var(--teal-light); font-weight:600; text-shadow:0 0 8px rgba(64,212,212,0.4); }
+
 
     /* ── STATS PAGE ── */
     .stats-section-title {
@@ -355,80 +350,28 @@
     .join-btn:hover { background:rgba(64,212,212,0.22); box-shadow:0 0 32px rgba(64,212,212,0.2); transform:translateY(-1px); }
 
 
-    /* ── CAPSTONE DETAIL ── */
-    .dungeon-kills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:7px; }
+    /* ── DUNGEON DETAIL BLOCKS ── */
+    .lb-detail-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px; }
 
-    .capstone-block {
-      position: relative;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 8px;
-      border: 1px solid rgba(64,212,212,0.2);
-    }
-    .capstone-block.has-kills { border-color: rgba(64,212,212,0.45); }
+    .dng-block { position:relative; border-radius:6px; overflow:hidden; border:1px solid rgba(64,212,212,0.15); transition:border-color 0.2s; }
+    .dng-block.has-kills { border-color:rgba(64,212,212,0.4); }
+    .dng-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.25; z-index:0; }
+    .dng-inner { position:relative; z-index:1; padding:10px 14px 12px; }
 
-    .capstone-bg {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0.28;
-      z-index: 0;
-    }
+    .dng-header { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:8px; padding-bottom:8px; border-bottom:1px solid rgba(64,212,212,0.15); margin-bottom:8px; }
+    .dng-name { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--teal-dim); }
+    .dng-block.has-kills .dng-name { color:var(--teal-light); }
+    .dng-col-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); text-align:right; width:48px; }
 
-    .capstone-inner {
-      position: relative;
-      z-index: 1;
-      padding: 12px 16px;
-    }
+    .dng-boss-list { display:flex; flex-direction:column; gap:4px; }
+    .dng-boss-row { display:grid; grid-template-columns:1fr 48px 48px; align-items:center; gap:6px; padding:4px 6px; background:rgba(7,11,11,0.5); border-radius:3px; border:1px solid transparent; font-size:13px; }
+    .dng-boss-row.done { border-color:rgba(64,212,212,0.2); }
+    .dng-boss-name { color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dng-boss-row.done .dng-boss-name { color:var(--text-dim); }
+    .dng-boss-kills { font-family:'Cinzel',serif; font-size:12px; color:var(--text-muted); text-align:right; }
+    .dng-boss-row.done .dng-boss-kills { color:var(--teal-light); text-shadow:0 0 6px rgba(64,212,212,0.4); }
+    .dng-boss-deaths { font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted); text-align:right; opacity:0.3; }
 
-    .capstone-title {
-      font-family: 'Cinzel', serif;
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--teal-light);
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(64,212,212,0.2);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .capstone-total {
-      font-family: 'Cinzel', serif;
-      font-size: 14px;
-      color: var(--teal-light);
-      text-shadow: 0 0 8px rgba(64,212,212,0.5);
-    }
-
-    .capstone-boss-list { display: flex; flex-direction: column; gap: 5px; }
-
-    .capstone-boss-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 5px 8px;
-      background: rgba(7,11,11,0.55);
-      border-radius: 3px;
-      border: 1px solid transparent;
-      font-size: 14px;
-    }
-    .capstone-boss-row.done { border-color: rgba(64,212,212,0.25); }
-
-    .capstone-boss-name { color: var(--text-dim); }
-    .capstone-boss-row.done .capstone-boss-name { color: var(--text); }
-
-    .capstone-boss-kill {
-      font-family: 'Cinzel', serif;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .capstone-boss-row.done .capstone-boss-kill {
-      color: var(--teal-light);
-      text-shadow: 0 0 6px rgba(64,212,212,0.4);
-    }
 
         /* ── RESPONSIVE ── */
     @media (max-width:600px) {
@@ -637,6 +580,21 @@
       "Saccage de Drakheim":   "../images/saccage-de-drakheim.jpg"
     };
 
+    const DUNGEON_BOSSES = {
+      "Abime des marins":      ["Sinthara"],
+      "Bois de L'aube":        ["Malgut the Fetid"],
+      "Carrière tombe-dieu":   ["Godfall Titan"],
+      "Coeur de guivre":       ["Apostate Veras"],
+      "Creux Soyeux":          ["Vexira, Mother of Nightmares"],
+      "Guet Tempete":          ["Warlord Brogg"],
+      "Marché d'Urrak":        ["Drazhul the Fleshbroker","Slavetrader Brull"],
+      "Sables Empyréens":      ["Sin-Magir"],
+      "Caveau de Lamespectre": ["Deathless Katrine","Bael'Aurum","First Mate Marrow"],
+      "Coeur de Tuzari":       ["Moar'gore, Master of Sacrifice","Vun'Kahr, The Thorned Maw","Prophet Ez'rath"],
+      "La chute Cithrel":      ["Noor, The Betrayer","Ancient Koros","Cithrel"],
+      "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"]
+    };
+
     let currentLang = localStorage.getItem('pouf_lang') || 'fr';
 
     function setLang(lang) {
@@ -780,44 +738,27 @@
         prev = s.total; rank++;
         const rc = dRank <= 3 ? 'rank-'+dRank : '';
         const dngCount = Object.values(s.byDungeon).filter(v => v > 0).length;
-        let detail = '<div class="lb-detail">';
-        // Capstones : bloc avec fond image + détail par boss
-        const capstones = Object.keys(CAPSTONE_BOSSES);
-        const regular = DUNGEONS.filter(d => !capstones.includes(d));
-
-        // Regular dungeons grid
-        detail += '<div class="dungeon-kills-grid" style="margin-bottom:10px">';
-        regular.forEach(d => {
-          const k = s.byDungeon[d] || 0;
-          detail += `<div class="dk-item ${k>0?'has':''}"><span class="dk-name">${d}</span><span class="dk-count ${k>0?'has-kills':''}">${k>0?k+' boss':'—'}</span></div>`;
-        });
-        detail += '</div>';
-
-        // Capstone blocks
-        capstones.forEach(d => {
+        const fr = currentLang === 'fr';
+        let detail = '<div class="lb-detail"><div class="lb-detail-grid">';
+        DUNGEONS.forEach(d => {
           const img = DUNGEON_IMAGES[d] || '';
-          const bosses = CAPSTONE_BOSSES[d];
+          const bosses = DUNGEON_BOSSES[d] || [];
           const totalKills = s.byDungeon[d] || 0;
           const hasAny = totalKills > 0;
-          // On estime les boss individuels depuis byDungeon (1 kill = 1 boss dans ce donjon)
-          // Pour l'affichage on montre le total du donjon réparti visuellement
-          detail += `<div class="capstone-block ${hasAny?'has-kills':''}">`;
-          if (img) detail += `<div class="capstone-bg" style="background-image:url('${img}')"></div>`;
-          detail += `<div class="capstone-inner">`;
-          detail += `<div class="capstone-title"><span>${d}</span>${hasAny?`<span class="capstone-total">${totalKills} boss</span>`:''}</div>`;
-          detail += `<div class="capstone-boss-list">`;
+          const isCap = bosses.length > 1;
+          detail += `<div class="dng-block ${hasAny?'has-kills':''}">`;
+          if (img) detail += `<div class="dng-bg" style="background-image:url('${img}')"></div>`;
+          detail += `<div class="dng-inner">`;
+          detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr?'Tués':'Killed'}</span><span class="dng-col-label">${fr?'Morts':'Deaths'}</span></div>`;
+          detail += `<div class="dng-boss-list">`;
           bosses.forEach((boss, bi) => {
-            // On marque comme fait si le joueur a au moins bi+1 kills dans ce donjon
-            const done = totalKills > bi;
-            detail += `<div class="capstone-boss-row ${done?'done':''}">
-              <span class="capstone-boss-name">${boss}</span>
-              <span class="capstone-boss-kill">${done?'✓ Tué':'—'}</span>
-            </div>`;
+            const done = isCap ? totalKills > bi : hasAny;
+            const killsDisplay = done ? (isCap ? '✓' : totalKills) : '—';
+            detail += `<div class="dng-boss-row ${done?'done':''}"><span class="dng-boss-name" title="${boss}">${boss}</span><span class="dng-boss-kills">${killsDisplay}</span><span class="dng-boss-deaths">—</span></div>`;
           });
-          detail += '</div></div></div>';
+          detail += `</div></div></div>`;
         });
-
-        detail += '</div>';
+        detail += '</div></div>';
         html += `<div class="lb-row ${rc}" onclick="this.classList.toggle('open')"><div class="rank-num">${dRank}</div><div class="player-name" onclick="event.stopPropagation();openProfile(${s.id},'${s.name.replace(/'/g,"\\'")}');" style="cursor:pointer">${s.name}${renderBadgesInline(s.id)}</div><div class="score-boss">${s.total}</div><div class="score-dungeons col-dng">${dngCount}</div>${detail}</div>`;
       });
       document.getElementById('lb-content').innerHTML = html;
