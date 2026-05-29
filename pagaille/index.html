@@ -238,28 +238,6 @@
     .stats-kpi-label { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
     .stats-kpi-value { font-family:'Cinzel',serif; font-size:28px; font-weight:700; color:var(--teal-light); text-shadow:0 0 20px rgba(64,212,212,0.5); }
 
-    .stats-dungeon-list { display:flex; flex-direction:column; gap:8px; }
-    .stats-dungeon-row {
-      display: grid;
-      grid-template-columns: 1fr 90px 110px;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 18px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      transition: border-color 0.2s;
-    }
-    .stats-dungeon-row:hover { border-color: rgba(64,212,212,0.35); }
-    .stats-dungeon-row.top-1 { border-color:rgba(64,212,212,0.55); background:rgba(64,212,212,0.06); }
-    .stats-dungeon-name { font-size:17px; color:var(--text-dim); }
-    .stats-dungeon-row.top-1 .stats-dungeon-name { color:var(--text); }
-    .stats-dungeon-runs { font-family:'Cinzel',serif; font-size:13px; color:var(--text-muted); text-align:right; }
-    .stats-dungeon-kills { font-family:'Cinzel',serif; font-size:18px; color:var(--teal-light); text-align:right; text-shadow:0 0 10px rgba(64,212,212,0.4); }
-    .stats-dungeon-row.top-1 .stats-dungeon-kills { font-size:22px; }
-    .stats-bar-wrap { margin-top:6px; grid-column:1/-1; height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; }
-    .stats-bar-fill { height:100%; background:linear-gradient(90deg,var(--teal-dim),var(--teal-light)); border-radius:2px; transition:width 1s ease; }
-
     /* ── RULES ── */
     .rules-page { max-width:660px; margin:0 auto; }
     .rules-section { margin-bottom:30px; }
@@ -372,8 +350,32 @@
     .dng-boss-row.done .dng-boss-kills { color:var(--teal-light); text-shadow:0 0 6px rgba(64,212,212,0.4); }
     .dng-boss-deaths { font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted); text-align:right; opacity:0.3; }
 
+    /* ── STATS HORIZONTAL BARS ── */
+    .shbar-list { display:flex; flex-direction:column; gap:4px; }
+    .shbar-wrap { border-radius:4px; overflow:hidden; }
+    .shbar-wrap.expanded .shbar-row { border-bottom-left-radius:0; border-bottom-right-radius:0; }
+    .shbar-row { display:grid; grid-template-columns:200px 80px 1fr 60px 20px; align-items:center; gap:12px; padding:0 16px 0 0; height:44px; background:var(--bg2); border:1px solid var(--border); border-radius:4px; transition:border-color 0.2s; overflow:hidden; position:relative; }
+    .shbar-row.top { border-color:rgba(64,212,212,0.5); }
+    .shbar-row.empty { opacity:0.4; }
+    .shbar-row:hover:not(.empty) { border-color:rgba(64,212,212,0.35); }
+    .shbar-name { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--text-dim); padding-left:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .shbar-row.top .shbar-name { color:var(--text); }
+    .shbar-count { font-family:'Cinzel',serif; font-size:14px; color:var(--teal-light); text-align:right; text-shadow:0 0 10px rgba(64,212,212,0.4); }
+    .shbar-track { position:relative; height:100%; overflow:hidden; }
+    .shbar-img { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.35; }
+    .shbar-fill { position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,rgba(64,212,212,0.15),rgba(64,212,212,0.05)); border-right:2px solid rgba(64,212,212,0.6); transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .shbar-row.top .shbar-fill { background:linear-gradient(90deg,rgba(64,212,212,0.25),rgba(64,212,212,0.08)); border-right-color:var(--teal-light); }
+    .shbar-pct { font-family:'Cinzel',serif; font-size:12px; color:var(--text-muted); text-align:right; }
+    .shbar-row.top .shbar-pct { color:var(--text-dim); }
+    .shbar-chevron { font-size:9px; color:var(--text-muted); text-align:center; }
+    .shbar-detail { background:var(--bg3); border:1px solid var(--border); border-top:none; border-bottom-left-radius:4px; border-bottom-right-radius:4px; padding:10px 16px; display:flex; flex-direction:column; gap:6px; }
+    .shbar-boss-row { display:grid; grid-template-columns:1fr 60px 120px; align-items:center; gap:10px; font-size:13px; }
+    .shbar-boss-name { color:var(--text-dim); }
+    .shbar-boss-count { font-family:'Cinzel',serif; font-size:12px; color:var(--teal-light); text-align:right; }
+    .shbar-boss-track { height:4px; background:var(--bg2); border-radius:2px; overflow:hidden; }
+    .shbar-boss-fill { height:100%; background:linear-gradient(90deg,var(--teal-dim),var(--teal-light)); border-radius:2px; transition:width 0.6s ease; }
 
-        /* ── RESPONSIVE ── */
+    /* ── RESPONSIVE ── */
     @media (max-width:600px) {
       main { padding:20px 14px 64px; }
       .lb-header,.lb-row { grid-template-columns:36px 1fr 78px; }
@@ -383,8 +385,7 @@
       .nav-right { margin-left:auto; }
       .dungeon-kills-grid { grid-template-columns:1fr; }
       .stats-summary { grid-template-columns:1fr; }
-      .stats-dungeon-row { grid-template-columns:1fr 80px; }
-      .stats-dungeon-runs { display:none; }
+      .shbar-row { grid-template-columns:140px 60px 1fr 50px 20px; gap:8px; }
     }
   </style>
 </head>
@@ -557,14 +558,6 @@
       "Coeur de Tuzari","La chute Cithrel","Saccage de Drakheim"
     ];
 
-    // Donjons capstone : multi-boss, fond image + détail par boss
-    const CAPSTONE_BOSSES = {
-      "Caveau de Lamespectre": ["Deathless Katrine","Bael'Aurum","First Mate Marrow"],
-      "Coeur de Tuzari":       ["Moar'gore, Master of Sacrifice","Vun'Kahr, The Thorned Maw","Prophet Ez'rath"],
-      "La chute Cithrel":      ["Noor, The Betrayer","Ancient Koros","Cithrel"],
-      "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"]
-    };
-
     const DUNGEON_IMAGES = {
       "Abime des marins":      "../gloire/images/abime-des-marins.jpg",
       "Bois de L'aube":        "../gloire/images/bois-de-laube.jpg",
@@ -671,6 +664,7 @@
     function getCached() { return (_cache && Date.now()-_cacheTs < CACHE_MS) ? _cache : null; }
     function setCache(d) { _cache = d; _cacheTs = Date.now(); }
 
+    // ── PATCH 1 : fetch boss_name + deaths ──
     async function loadLeaderboard(force = false) {
       const cached = force ? null : getCached();
       if (cached) { renderLeaderboard(cached); return; }
@@ -678,7 +672,7 @@
       btn.classList.add('spinning');
       try {
         const [runs, players] = await Promise.all([
-          sbFetch('/rest/v1/pagaille_runs?select=player_id,dungeon_name,boss_kills&order=player_id'),
+          sbFetch('/rest/v1/pagaille_runs?select=player_id,dungeon_name,boss_name,boss_kills,deaths&order=player_id'),
           sbFetch('/rest/v1/players?select=id,name&order=name')
         ]);
         const data = { runs, players };
@@ -693,17 +687,27 @@
     }
     function refreshLeaderboard() { loadLeaderboard(true); }
 
+    // ── PATCH 2 : computeLB avec byBoss ──
     function computeLB({ runs, players }) {
       const byP = {};
-      players.forEach(p => byP[p.id] = { id: p.id, name: p.name, total: 0, byDungeon: {} });
+      players.forEach(p => byP[p.id] = { id: p.id, name: p.name, total: 0, byDungeon: {}, byBoss: {} });
       runs.forEach(r => {
         if (!byP[r.player_id]) return;
-        byP[r.player_id].total += r.boss_kills;
-        byP[r.player_id].byDungeon[r.dungeon_name] = (byP[r.player_id].byDungeon[r.dungeon_name] || 0) + r.boss_kills;
+        byP[r.player_id].total += r.boss_kills || 0;
+        const dk = byP[r.player_id].byDungeon[r.dungeon_name] || { kills: 0, deaths: 0 };
+        dk.kills  += r.boss_kills || 0;
+        dk.deaths += r.deaths     || 0;
+        byP[r.player_id].byDungeon[r.dungeon_name] = dk;
+        const bossKey = r.boss_name || r.dungeon_name;
+        const bk = byP[r.player_id].byBoss[bossKey] || { kills: 0, deaths: 0 };
+        bk.kills  += r.boss_kills || 0;
+        bk.deaths += r.deaths     || 0;
+        byP[r.player_id].byBoss[bossKey] = bk;
       });
       return Object.values(byP).sort((a,b) => b.total - a.total);
     }
 
+    // ── PATCH 3 : renderLeaderboard avec vrais kills/deaths par boss ──
     function renderLeaderboard(data) {
       const scores = computeLB(data);
       const total = scores.reduce((s,p) => s+p.total, 0);
@@ -737,24 +741,23 @@
         if (s.total !== prev) dRank = rank;
         prev = s.total; rank++;
         const rc = dRank <= 3 ? 'rank-'+dRank : '';
-        const dngCount = Object.values(s.byDungeon).filter(v => v > 0).length;
+        const dngCount = Object.values(s.byDungeon).filter(v => v.kills > 0).length;
         const fr = currentLang === 'fr';
         let detail = '<div class="lb-detail"><div class="lb-detail-grid">';
         DUNGEONS.forEach(d => {
           const img = DUNGEON_IMAGES[d] || '';
           const bosses = DUNGEON_BOSSES[d] || [];
-          const totalKills = s.byDungeon[d] || 0;
-          const hasAny = totalKills > 0;
-          const isCap = bosses.length > 1;
+          const dng = s.byDungeon[d] || { kills: 0, deaths: 0 };
+          const hasAny = dng.kills > 0;
           detail += `<div class="dng-block ${hasAny?'has-kills':''}">`;
           if (img) detail += `<div class="dng-bg" style="background-image:url('${img}')"></div>`;
           detail += `<div class="dng-inner">`;
           detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr?'Tués':'Killed'}</span><span class="dng-col-label">${fr?'Morts':'Deaths'}</span></div>`;
           detail += `<div class="dng-boss-list">`;
-          bosses.forEach((boss, bi) => {
-            const done = isCap ? totalKills > bi : hasAny;
-            const killsDisplay = done ? (isCap ? '✓' : totalKills) : '—';
-            detail += `<div class="dng-boss-row ${done?'done':''}"><span class="dng-boss-name" title="${boss}">${boss}</span><span class="dng-boss-kills">${killsDisplay}</span><span class="dng-boss-deaths">—</span></div>`;
+          bosses.forEach(boss => {
+            const bk = s.byBoss[boss] || { kills: 0, deaths: 0 };
+            const done = bk.kills > 0;
+            detail += `<div class="dng-boss-row ${done?'done':''}"><span class="dng-boss-name" title="${boss}">${boss}</span><span class="dng-boss-kills">${bk.kills > 0 ? bk.kills : '—'}</span><span class="dng-boss-deaths" style="opacity:${bk.deaths>0?0.85:0.3}">${bk.deaths > 0 ? bk.deaths : '—'}</span></div>`;
           });
           detail += `</div></div></div>`;
         });
@@ -764,74 +767,89 @@
       document.getElementById('lb-content').innerHTML = html;
     }
 
-    // ── STATS / CARNAGE ──
+    // ── PATCH 4 : renderStats avec barres horizontales ──
+    let _statsExpanded = null;
+
+    function toggleStatsDungeon(name) {
+      _statsExpanded = _statsExpanded === name ? null : name;
+      renderStats();
+    }
+
+    function computeStatsGlobal(runs) {
+      const byDungeon = {};
+      const byBoss = {};
+      DUNGEONS.forEach(d => byDungeon[d] = { kills: 0, deaths: 0 });
+      runs.forEach(r => {
+        if (byDungeon[r.dungeon_name] !== undefined) {
+          byDungeon[r.dungeon_name].kills  += r.boss_kills || 0;
+          byDungeon[r.dungeon_name].deaths += r.deaths     || 0;
+        }
+        const bk = r.boss_name || r.dungeon_name;
+        if (!byBoss[bk]) byBoss[bk] = { kills: 0, deaths: 0, dungeon: r.dungeon_name };
+        byBoss[bk].kills  += r.boss_kills || 0;
+        byBoss[bk].deaths += r.deaths     || 0;
+      });
+      return { byDungeon, byBoss };
+    }
+
     function renderStats() {
       const data = getCached();
-      if (!data) {
-        // Fetch si pas encore en cache
-        loadLeaderboard().then(() => renderStats());
-        return;
-      }
+      if (!data) { loadLeaderboard().then(() => renderStats()); return; }
       const fr = currentLang === 'fr';
-      const { runs } = data;
-
-      // Agrégation par donjon
-      const byDungeon = {};
-      DUNGEONS.forEach(d => byDungeon[d] = { runs: 0, kills: 0 });
-      runs.forEach(r => {
-        if (!byDungeon[r.dungeon_name]) return;
-        byDungeon[r.dungeon_name].runs += 1;
-        byDungeon[r.dungeon_name].kills += r.boss_kills;
-      });
+      const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
 
       const sorted = [...DUNGEONS]
-        .map(d => ({ name: d, ...byDungeon[d] }))
+        .map(d => ({ name: d, kills: byDungeon[d].kills, deaths: byDungeon[d].deaths }))
         .sort((a,b) => b.kills - a.kills);
 
       const totalKills = sorted.reduce((s,d) => s+d.kills, 0);
-      const totalRuns  = sorted.reduce((s,d) => s+d.runs, 0);
-      const activeDng  = sorted.filter(d => d.kills > 0).length;
       const maxKills   = sorted[0]?.kills || 1;
 
-      const kpiLabels = fr
-        ? ['Boss tués', 'Runs enregistrés', 'Morts (bientôt)']
-        : ['Bosses killed', 'Runs recorded', 'Deaths (soon)'];
-
       let html = `
-        <div class="stats-section-title" data-fr="Vue d'ensemble" data-en="Overview">${fr?'Vue d\'ensemble':'Overview'}</div>
+        <div class="stats-section-title">${fr?'Vue d\'ensemble':'Overview'}</div>
         <div class="stats-summary">
-          <div class="stats-kpi">
-            <div class="stats-kpi-label">${kpiLabels[0]}</div>
-            <div class="stats-kpi-value">${totalKills.toLocaleString('fr-FR')}</div>
-          </div>
-          <div class="stats-kpi">
-            <div class="stats-kpi-label">${kpiLabels[1]}</div>
-            <div class="stats-kpi-value">${totalRuns.toLocaleString('fr-FR')}</div>
-          </div>
-          <div class="stats-kpi">
-            <div class="stats-kpi-label">${kpiLabels[2]}</div>
-            <div class="stats-kpi-value" style="color:var(--text-muted);font-size:20px;letter-spacing:0.05em">— bientôt</div>
-          </div>
+          <div class="stats-kpi"><div class="stats-kpi-label">${fr?'Boss tués':'Bosses killed'}</div><div class="stats-kpi-value">${totalKills.toLocaleString('fr-FR')}</div></div>
+          <div class="stats-kpi"><div class="stats-kpi-label">${fr?'Morts (bientôt)':'Deaths (soon)'}</div><div class="stats-kpi-value" style="color:var(--text-muted);font-size:20px">— bientôt</div></div>
+          <div class="stats-kpi"><div class="stats-kpi-label">${fr?'Donjons actifs':'Active dungeons'}</div><div class="stats-kpi-value">${sorted.filter(d=>d.kills>0).length} <span style="font-size:14px;color:var(--text-muted);font-weight:300">/ ${DUNGEONS.length}</span></div></div>
         </div>
-
         <div class="stats-section-title">${fr?'Boss tués par donjon':'Bosses killed per dungeon'}</div>
-        <div class="stats-dungeon-list">
-          <div class="stats-dungeon-row" style="font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);padding:8px 18px;border:none;background:none;">
-            <div>${fr?'Donjon':'Dungeon'}</div>
-            <div style="text-align:right">${fr?'Runs':'Runs'}</div>
-            <div style="text-align:right">${fr?'Boss tués':'Bosses'}</div>
-          </div>`;
+        <div class="shbar-list">`;
 
       sorted.forEach((d, i) => {
-        const pct = maxKills > 0 ? Math.round((d.kills/maxKills)*100) : 0;
-        const isTop = i === 0 && d.kills > 0;
-        html += `
-          <div class="stats-dungeon-row ${isTop?'top-1':''}">
-            <div class="stats-dungeon-name">${d.name}</div>
-            <div class="stats-dungeon-runs">${d.runs > 0 ? d.runs : '—'}</div>
-            <div class="stats-dungeon-kills">${d.kills > 0 ? d.kills : '—'}</div>
-            <div class="stats-bar-wrap"><div class="stats-bar-fill" style="width:${pct}%"></div></div>
+        const pct    = totalKills > 0 ? (d.kills/totalKills*100) : 0;
+        const barPct = maxKills   > 0 ? (d.kills/maxKills*100)   : 0;
+        const img    = DUNGEON_IMAGES[d.name] || '';
+        const isTop  = i === 0 && d.kills > 0;
+        const isExp  = _statsExpanded === d.name;
+        const bosses = DUNGEON_BOSSES[d.name] || [];
+        const clickable = bosses.length > 0 && d.kills > 0;
+
+        html += `<div class="shbar-wrap${isExp?' expanded':''}">
+          <div class="shbar-row${isTop?' top':''}${d.kills===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
+            <div class="shbar-name">${d.name.toUpperCase()}</div>
+            <div class="shbar-count">${d.kills > 0 ? d.kills.toLocaleString('fr-FR') : '—'}</div>
+            <div class="shbar-track">
+              ${img ? `<div class="shbar-img" style="background-image:url('${img}')"></div>` : ''}
+              <div class="shbar-fill" style="width:${barPct}%"></div>
+            </div>
+            <div class="shbar-pct">${d.kills > 0 ? pct.toFixed(1)+'%' : ''}</div>
+            ${clickable ? `<div class="shbar-chevron">${isExp?'▲':'▼'}</div>` : '<div class="shbar-chevron"></div>'}
           </div>`;
+
+        if (isExp && clickable) {
+          const maxBoss = Math.max(...bosses.map(b => byBoss[b]?.kills||0), 1);
+          html += `<div class="shbar-detail">`;
+          bosses.forEach(boss => {
+            const bk = byBoss[boss] || { kills: 0 };
+            html += `<div class="shbar-boss-row">
+              <div class="shbar-boss-name">${boss}</div>
+              <div class="shbar-boss-count">${bk.kills > 0 ? bk.kills.toLocaleString('fr-FR') : '—'}</div>
+              <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bk.kills/maxBoss*100}%"></div></div>
+            </div>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
       });
 
       html += '</div>';
