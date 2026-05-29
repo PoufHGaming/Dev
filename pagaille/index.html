@@ -613,14 +613,14 @@
       el._t = setTimeout(() => el.className = 'toast', 3000);
     }
 
-    function showPage(id, btn) {
+    async function showPage(id, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.getElementById('page-' + id).classList.add('active');
       if (btn) btn.classList.add('active');
       if (id === 'leaderboard') loadLeaderboard();
       if (id === 'rules') renderRules();
-      if (id === 'stats') renderStats();
+      if (id === 'stats') await renderStats();
     }
 
     async function sbFetch(path, key, opts = {}) {
@@ -775,15 +775,15 @@
     let _statsExpanded = null;
     let _statsMode = 'kills'; // 'kills' | 'deaths'
 
-    function toggleStatsDungeon(name) {
+    async function toggleStatsDungeon(name) {
       _statsExpanded = _statsExpanded === name ? null : name;
-      renderStats();
+      await renderStats();
     }
 
-    function setStatsMode(mode) {
+    async function setStatsMode(mode) {
       _statsMode = mode;
       _statsExpanded = null;
-      renderStats();
+      await renderStats();
     }
 
     function computeStatsGlobal(runs) {
@@ -803,9 +803,14 @@
       return { byDungeon, byBoss };
     }
 
-    function renderStats() {
-      const data = getCached();
-      if (!data) { loadLeaderboard().then(() => renderStats()); return; }
+    async function renderStats() {
+      let data = getCached();
+      if (!data) {
+        document.getElementById('stats-content').innerHTML = '<div class="loading">Chargement…</div>';
+        await loadLeaderboard();
+        data = getCached();
+        if (!data) { document.getElementById('stats-content').innerHTML = '<div class="empty">Erreur de chargement.</div>'; return; }
+      }
       const fr = currentLang === 'fr';
       const mode = _statsMode; // 'kills' | 'deaths'
       const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
