@@ -222,7 +222,7 @@
 
     .stats-summary {
       display: grid;
-      grid-template-columns: repeat(3,1fr);
+      grid-template-columns: repeat(2,1fr);
       gap: 14px;
       margin-bottom: 36px;
     }
@@ -233,9 +233,15 @@
       padding: 18px 22px;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
     }
-    .stats-kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--teal-dim),transparent); }
+    .stats-kpi:hover { border-color: rgba(64,212,212,0.4); }
+    .stats-kpi.active { border-color: var(--border-bright); background: rgba(64,212,212,0.07); }
+    .stats-kpi.active::before { background: linear-gradient(90deg,transparent,var(--teal-light),transparent); }
+    .stats-kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--teal-dim),transparent); transition: background 0.2s; }
     .stats-kpi-label { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+    .stats-kpi.active .stats-kpi-label { color: var(--teal-dim); }
     .stats-kpi-value { font-family:'Cinzel',serif; font-size:28px; font-weight:700; color:var(--teal-light); text-shadow:0 0 20px rgba(64,212,212,0.5); }
 
     /* ── RULES ── */
@@ -336,19 +342,18 @@
     .dng-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.25; z-index:0; }
     .dng-inner { position:relative; z-index:1; padding:10px 14px 12px; }
 
-    .dng-header { display:grid; grid-template-columns:1fr auto auto; align-items:center; gap:8px; padding-bottom:8px; border-bottom:1px solid rgba(64,212,212,0.15); margin-bottom:8px; }
+    .dng-header { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px; padding-bottom:8px; border-bottom:1px solid rgba(64,212,212,0.15); margin-bottom:8px; }
     .dng-name { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--teal-dim); }
     .dng-block.has-kills .dng-name { color:var(--teal-light); }
     .dng-col-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); text-align:right; width:48px; }
 
     .dng-boss-list { display:flex; flex-direction:column; gap:4px; }
-    .dng-boss-row { display:grid; grid-template-columns:1fr 48px 48px; align-items:center; gap:6px; padding:4px 6px; background:rgba(7,11,11,0.5); border-radius:3px; border:1px solid transparent; font-size:13px; }
+    .dng-boss-row { display:grid; grid-template-columns:1fr 48px; align-items:center; gap:6px; padding:4px 6px; background:rgba(7,11,11,0.5); border-radius:3px; border:1px solid transparent; font-size:13px; }
     .dng-boss-row.done { border-color:rgba(64,212,212,0.2); }
     .dng-boss-name { color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .dng-boss-row.done .dng-boss-name { color:var(--text-dim); }
     .dng-boss-kills { font-family:'Cinzel',serif; font-size:12px; color:var(--text-muted); text-align:right; }
     .dng-boss-row.done .dng-boss-kills { color:var(--teal-light); text-shadow:0 0 6px rgba(64,212,212,0.4); }
-    .dng-boss-deaths { font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted); text-align:right; opacity:0.3; }
 
     /* ── STATS HORIZONTAL BARS ── */
     .shbar-list { display:flex; flex-direction:column; gap:4px; }
@@ -385,8 +390,7 @@
       .nav-right { margin-left:auto; }
       .dungeon-kills-grid { grid-template-columns:1fr; }
       .stats-summary { grid-template-columns:1fr; }
-      .shbar-row { grid-template-columns:140px 60px 1fr 50px 20px; gap:8px; }
-    }
+      .shbar-row { grid-template-columns:140px 60px 1fr 50px 20px; gap:8px; }    }
   </style>
 </head>
 <body>
@@ -752,12 +756,12 @@
           detail += `<div class="dng-block ${hasAny?'has-kills':''}">`;
           if (img) detail += `<div class="dng-bg" style="background-image:url('${img}')"></div>`;
           detail += `<div class="dng-inner">`;
-          detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr?'Tués':'Killed'}</span><span class="dng-col-label">${fr?'Morts':'Deaths'}</span></div>`;
+          detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr?'Tués':'Killed'}</span></div>`;
           detail += `<div class="dng-boss-list">`;
           bosses.forEach(boss => {
             const bk = s.byBoss[boss] || { kills: 0, deaths: 0 };
             const done = bk.kills > 0;
-            detail += `<div class="dng-boss-row ${done?'done':''}"><span class="dng-boss-name" title="${boss}">${boss}</span><span class="dng-boss-kills">${bk.kills > 0 ? bk.kills : '—'}</span><span class="dng-boss-deaths" style="opacity:${bk.deaths>0?0.85:0.3}">${bk.deaths > 0 ? bk.deaths : '—'}</span></div>`;
+            detail += `<div class="dng-boss-row ${done?'done':''}"><span class="dng-boss-name" title="${boss}">${boss}</span><span class="dng-boss-kills">${bk.kills > 0 ? bk.kills : '—'}</span></div>`;
           });
           detail += `</div></div></div>`;
         });
@@ -767,11 +771,18 @@
       document.getElementById('lb-content').innerHTML = html;
     }
 
-    // ── PATCH 4 : renderStats avec barres horizontales ──
+    // ── STATS : barres horizontales kills/deaths toggle ──
     let _statsExpanded = null;
+    let _statsMode = 'kills'; // 'kills' | 'deaths'
 
     function toggleStatsDungeon(name) {
       _statsExpanded = _statsExpanded === name ? null : name;
+      renderStats();
+    }
+
+    function setStatsMode(mode) {
+      _statsMode = mode;
+      _statsExpanded = null;
       renderStats();
     }
 
@@ -796,55 +807,70 @@
       const data = getCached();
       if (!data) { loadLeaderboard().then(() => renderStats()); return; }
       const fr = currentLang === 'fr';
+      const mode = _statsMode; // 'kills' | 'deaths'
       const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
 
+      const totalKills  = DUNGEONS.reduce((s,d) => s + byDungeon[d].kills,  0);
+      const totalDeaths = DUNGEONS.reduce((s,d) => s + byDungeon[d].deaths, 0);
+
+      // Tri selon le mode actif
       const sorted = [...DUNGEONS]
         .map(d => ({ name: d, kills: byDungeon[d].kills, deaths: byDungeon[d].deaths }))
-        .sort((a,b) => b.kills - a.kills);
+        .sort((a,b) => b[mode] - a[mode]);
 
-      const totalKills = sorted.reduce((s,d) => s+d.kills, 0);
-      const maxKills   = sorted[0]?.kills || 1;
+      const totalVal = mode === 'kills' ? totalKills : totalDeaths;
+      const maxVal   = sorted[0]?.[mode] || 1;
+      const sectionLabel = mode === 'kills'
+        ? (fr ? 'Boss tués par donjon' : 'Bosses killed per dungeon')
+        : (fr ? 'Morts par donjon'     : 'Deaths per dungeon');
 
       let html = `
         <div class="stats-section-title">${fr?'Vue d\'ensemble':'Overview'}</div>
         <div class="stats-summary">
-          <div class="stats-kpi"><div class="stats-kpi-label">${fr?'Boss tués':'Bosses killed'}</div><div class="stats-kpi-value">${totalKills.toLocaleString('fr-FR')}</div></div>
-          <div class="stats-kpi"><div class="stats-kpi-label">${fr?'Morts (bientôt)':'Deaths (soon)'}</div><div class="stats-kpi-value" style="color:var(--text-muted);font-size:20px">— bientôt</div></div>
-          <div class="stats-kpi"><div class="stats-kpi-label">${fr?'Donjons actifs':'Active dungeons'}</div><div class="stats-kpi-value">${sorted.filter(d=>d.kills>0).length} <span style="font-size:14px;color:var(--text-muted);font-weight:300">/ ${DUNGEONS.length}</span></div></div>
+          <div class="stats-kpi ${mode==='kills'?'active':''}" onclick="setStatsMode('kills')">
+            <div class="stats-kpi-label">${fr?'Boss tués':'Bosses killed'}</div>
+            <div class="stats-kpi-value">${totalKills.toLocaleString('fr-FR')}</div>
+          </div>
+          <div class="stats-kpi ${mode==='deaths'?'active':''}" onclick="setStatsMode('deaths')">
+            <div class="stats-kpi-label">${fr?'Morts':'Deaths'}</div>
+            <div class="stats-kpi-value">${totalDeaths > 0 ? totalDeaths.toLocaleString('fr-FR') : `<span style="color:var(--text-muted);font-size:20px">—</span>`}</div>
+          </div>
         </div>
-        <div class="stats-section-title">${fr?'Boss tués par donjon':'Bosses killed per dungeon'}</div>
+        <div class="stats-section-title">${sectionLabel}</div>
         <div class="shbar-list">`;
 
       sorted.forEach((d, i) => {
-        const pct    = totalKills > 0 ? (d.kills/totalKills*100) : 0;
-        const barPct = maxKills   > 0 ? (d.kills/maxKills*100)   : 0;
+        const val    = d[mode];
+        const pct    = totalVal > 0 ? (val/totalVal*100) : 0;
+        const barPct = maxVal   > 0 ? (val/maxVal*100)   : 0;
         const img    = DUNGEON_IMAGES[d.name] || '';
-        const isTop  = i === 0 && d.kills > 0;
+        const isTop  = i === 0 && val > 0;
         const isExp  = _statsExpanded === d.name;
         const bosses = DUNGEON_BOSSES[d.name] || [];
-        const clickable = bosses.length > 0 && d.kills > 0;
+        const clickable = bosses.length > 0 && val > 0;
 
         html += `<div class="shbar-wrap${isExp?' expanded':''}">
-          <div class="shbar-row${isTop?' top':''}${d.kills===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
+          <div class="shbar-row${isTop?' top':''}${val===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
             <div class="shbar-name">${d.name.toUpperCase()}</div>
-            <div class="shbar-count">${d.kills > 0 ? d.kills.toLocaleString('fr-FR') : '—'}</div>
+            <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
             <div class="shbar-track">
               ${img ? `<div class="shbar-img" style="background-image:url('${img}')"></div>` : ''}
               <div class="shbar-fill" style="width:${barPct}%"></div>
             </div>
-            <div class="shbar-pct">${d.kills > 0 ? pct.toFixed(1)+'%' : ''}</div>
+            <div class="shbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
             ${clickable ? `<div class="shbar-chevron">${isExp?'▲':'▼'}</div>` : '<div class="shbar-chevron"></div>'}
           </div>`;
 
         if (isExp && clickable) {
-          const maxBoss = Math.max(...bosses.map(b => byBoss[b]?.kills||0), 1);
+          const maxBoss = Math.max(...bosses.map(b => byBoss[b]?.[mode]||0), 1);
           html += `<div class="shbar-detail">`;
           bosses.forEach(boss => {
-            const bk = byBoss[boss] || { kills: 0 };
+            const bk = byBoss[boss] || { kills: 0, deaths: 0 };
+            const bval = bk[mode] || 0;
             html += `<div class="shbar-boss-row">
               <div class="shbar-boss-name">${boss}</div>
-              <div class="shbar-boss-count">${bk.kills > 0 ? bk.kills.toLocaleString('fr-FR') : '—'}</div>
-              <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bk.kills/maxBoss*100}%"></div></div>
+              <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString('fr-FR') : '—'}</div>
+              <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bval/maxBoss*100}%"></div></div>
             </div>`;
           });
           html += `</div>`;
