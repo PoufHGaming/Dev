@@ -577,6 +577,35 @@
       "Saccage de Drakheim":   "../gloire/images/saccage-de-drakheim.jpg"
     };
 
+    // Mapping noms BDD (anglais Fellowship) → noms affichés (français)
+    const DUNGEON_NAME_MAP = {
+      "Sailor Abyss":           "Abime des marins",
+      "Abime des marins":       "Abime des marins",
+      "Dawn Wood":              "Bois de L'aube",
+      "Bois de L'aube":         "Bois de L'aube",
+      "Godfell Quarry":         "Carrière tombe-dieu",
+      "Carrière tombe-dieu":    "Carrière tombe-dieu",
+      "Wyrm Heart":             "Coeur de guivre",
+      "Coeur de guivre":        "Coeur de guivre",
+      "Silken Hollow":          "Creux Soyeux",
+      "Creux Soyeux":           "Creux Soyeux",
+      "Stormwatch":             "Guet Tempete",
+      "Guet Tempete":           "Guet Tempete",
+      "Urrak's Market":         "Marché d'Urrak",
+      "Marché d'Urrak":         "Marché d'Urrak",
+      "Empyrean Sands":         "Sables Empyréens",
+      "Sables Empyréens":       "Sables Empyréens",
+      "Ghostblade Vault":       "Caveau de Lamespectre",
+      "Caveau de Lamespectre":  "Caveau de Lamespectre",
+      "Heart of Tuzari":        "Coeur de Tuzari",
+      "Coeur de Tuzari":        "Coeur de Tuzari",
+      "Cithrel's Fall":         "La chute Cithrel",
+      "La chute Cithrel":       "La chute Cithrel",
+      "Drakheim Raid":          "Saccage de Drakheim",
+      "Saccage de Drakheim":    "Saccage de Drakheim"
+    };
+    function normDungeon(name) { return DUNGEON_NAME_MAP[name] || name; }
+
     const DUNGEON_BOSSES = {
       "Abime des marins":      ["Sinthara"],
       "Bois de L'aube":        ["Malgut the Fetid"],
@@ -702,12 +731,13 @@
       players.forEach(p => byP[p.id] = { id: p.id, name: p.name, total: 0, byDungeon: {}, byBoss: {} });
       runs.forEach(r => {
         if (!byP[r.player_id]) return;
+        const dng = normDungeon(r.dungeon_name);
         byP[r.player_id].total += r.boss_kills || 0;
-        const dk = byP[r.player_id].byDungeon[r.dungeon_name] || { kills: 0, deaths: 0 };
+        const dk = byP[r.player_id].byDungeon[dng] || { kills: 0, deaths: 0 };
         dk.kills  += r.boss_kills || 0;
         dk.deaths += r.deaths     || 0;
-        byP[r.player_id].byDungeon[r.dungeon_name] = dk;
-        const bossKey = r.boss_name || r.dungeon_name;
+        byP[r.player_id].byDungeon[dng] = dk;
+        const bossKey = r.boss_name || dng;
         const bk = byP[r.player_id].byBoss[bossKey] || { kills: 0, deaths: 0 };
         bk.kills  += r.boss_kills || 0;
         bk.deaths += r.deaths     || 0;
@@ -796,12 +826,13 @@
       const byBoss = {};
       DUNGEONS.forEach(d => byDungeon[d] = { kills: 0, deaths: 0 });
       runs.forEach(r => {
-        if (byDungeon[r.dungeon_name] !== undefined) {
-          byDungeon[r.dungeon_name].kills  += r.boss_kills || 0;
-          byDungeon[r.dungeon_name].deaths += r.deaths     || 0;
+        const dng = normDungeon(r.dungeon_name);
+        if (byDungeon[dng] !== undefined) {
+          byDungeon[dng].kills  += r.boss_kills || 0;
+          byDungeon[dng].deaths += r.deaths     || 0;
         }
-        const bk = r.boss_name || r.dungeon_name;
-        if (!byBoss[bk]) byBoss[bk] = { kills: 0, deaths: 0, dungeon: r.dungeon_name };
+        const bk = r.boss_name || dng;
+        if (!byBoss[bk]) byBoss[bk] = { kills: 0, deaths: 0, dungeon: dng };
         byBoss[bk].kills  += r.boss_kills || 0;
         byBoss[bk].deaths += r.deaths     || 0;
       });
