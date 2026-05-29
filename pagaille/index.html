@@ -577,33 +577,69 @@
       "Saccage de Drakheim":   "../gloire/images/saccage-de-drakheim.jpg"
     };
 
-    // Mapping noms BDD (anglais Fellowship) → noms affichés (français)
+    // Mapping : tout nom Fellowship (boss, alias donjon, nom FR) → nom FR canonique
+    // Source de vérité : BOSS_TO_DUNGEON dans sync-pagaille/index.ts
     const DUNGEON_NAME_MAP = {
-      "Sailor Abyss":           "Abime des marins",
-      "Abime des marins":       "Abime des marins",
-      "Dawn Wood":              "Bois de L'aube",
-      "Bois de L'aube":         "Bois de L'aube",
-      "Godfell Quarry":         "Carrière tombe-dieu",
-      "Carrière tombe-dieu":    "Carrière tombe-dieu",
-      "Wyrm Heart":             "Coeur de guivre",
-      "Coeur de guivre":        "Coeur de guivre",
-      "Silken Hollow":          "Creux Soyeux",
-      "Creux Soyeux":           "Creux Soyeux",
-      "Stormwatch":             "Guet Tempete",
-      "Guet Tempete":           "Guet Tempete",
-      "Urrak's Market":         "Marché d'Urrak",
-      "Marché d'Urrak":         "Marché d'Urrak",
-      "Empyrean Sands":         "Sables Empyréens",
-      "Sables Empyréens":       "Sables Empyréens",
-      "Ghostblade Vault":       "Caveau de Lamespectre",
-      "Caveau de Lamespectre":  "Caveau de Lamespectre",
-      "Heart of Tuzari":        "Coeur de Tuzari",
-      "Coeur de Tuzari":        "Coeur de Tuzari",
-      "Cithrel's Fall":         "La chute Cithrel",
-      "La chute Cithrel":       "La chute Cithrel",
-      "Drakheim Raid":          "Saccage de Drakheim",
-      "Saccage de Drakheim":    "Saccage de Drakheim"
+      // Abime des marins
+      "Sinthara":                        "Abime des marins",
+      "Sailor's Abyss":                  "Abime des marins",
+      "Abime des marins":                "Abime des marins",
+      // Bois de L'aube
+      "Malgut the Fetid":                "Bois de L'aube",
+      "Everdawn Grove":                  "Bois de L'aube",
+      "Bois de L'aube":                  "Bois de L'aube",
+      // Carrière tombe-dieu
+      "Godfall Titan":                   "Carrière tombe-dieu",
+      "Godfall Quarry":                  "Carrière tombe-dieu",
+      "Carrière tombe-dieu":             "Carrière tombe-dieu",
+      // Caveau de Lamespectre
+      "Deathless Katrine":               "Caveau de Lamespectre",
+      "Bael'Aurum":                      "Caveau de Lamespectre",
+      "First Mate Marrow":               "Caveau de Lamespectre",
+      "Wraithtide Vault":                "Caveau de Lamespectre",
+      "Caveau de Lamespectre":           "Caveau de Lamespectre",
+      // Coeur de guivre
+      "Apostate Veras":                  "Coeur de guivre",
+      "Wyrmheart":                       "Coeur de guivre",
+      "The Wyrmheart":                   "Coeur de guivre",
+      "Coeur de guivre":                 "Coeur de guivre",
+      // Coeur de Tuzari
+      "Moar'gore, Master of Sacrifice":  "Coeur de Tuzari",
+      "Vun'Kahr, The Thorned Maw":       "Coeur de Tuzari",
+      "Prophet Ez'rath":                 "Coeur de Tuzari",
+      "The Heart of Tuzari":             "Coeur de Tuzari",
+      "Coeur de Tuzari":                 "Coeur de Tuzari",
+      // Creux Soyeux
+      "Vexira, Mother of Nightmares":    "Creux Soyeux",
+      "Silken Hollow":                   "Creux Soyeux",
+      "Creux Soyeux":                    "Creux Soyeux",
+      // Guet Tempete
+      "Warlord Brogg":                   "Guet Tempete",
+      "Stormwatch":                      "Guet Tempete",
+      "Guet Tempete":                    "Guet Tempete",
+      // La chute Cithrel
+      "Noor, The Betrayer":              "La chute Cithrel",
+      "Ancient Koros":                   "La chute Cithrel",
+      "Cithrel":                         "La chute Cithrel",
+      "Cithrel's Fall":                  "La chute Cithrel",
+      "La chute Cithrel":                "La chute Cithrel",
+      // Marché d'Urrak
+      "Drazhul the Fleshbroker":         "Marché d'Urrak",
+      "Slavetrader Brull":               "Marché d'Urrak",
+      "Urrak Markets":                   "Marché d'Urrak",
+      "Marché d'Urrak":                  "Marché d'Urrak",
+      // Sables Empyréens
+      "Sin-Magir":                       "Sables Empyréens",
+      "Empyrean Sands":                  "Sables Empyréens",
+      "Sables Empyréens":                "Sables Empyréens",
+      // Saccage de Drakheim
+      "Fodir Kaldur":                    "Saccage de Drakheim",
+      "Chilgar the Drowned":             "Saccage de Drakheim",
+      "Auga Handhafi the Blind":         "Saccage de Drakheim",
+      "Ransack of Drakheim":             "Saccage de Drakheim",
+      "Saccage de Drakheim":             "Saccage de Drakheim",
     };
+    // Normalise dungeon_name ou boss_name Fellowship → nom FR canonique du donjon
     function normDungeon(name) { return DUNGEON_NAME_MAP[name] || name; }
 
     const DUNGEON_BOSSES = {
@@ -847,7 +883,6 @@
         data = getCached();
         if (!data) { document.getElementById('stats-content').innerHTML = '<div class="empty">Erreur de chargement.</div>'; return; }
       }
-      console.log('[Massacre] runs:', data.runs?.length, '| sample:', data.runs?.[0]);
       const fr = currentLang === 'fr';
       const mode = _statsMode; // 'kills' | 'deaths'
       const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
