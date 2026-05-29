@@ -673,7 +673,7 @@
       const cached = force ? null : getCached();
       if (cached) { renderLeaderboard(cached); return; }
       const btn = document.getElementById('refresh-btn');
-      btn.classList.add('spinning');
+      if (btn) btn.classList.add('spinning');
       try {
         const [runs, players] = await Promise.all([
           sbFetch('/rest/v1/pagaille_runs?select=player_id,dungeon_name,boss_name,boss_kills,deaths&order=player_id'),
@@ -682,12 +682,17 @@
         const data = { runs, players };
         setCache(data);
         await loadBadges();
-        renderLeaderboard(data);
+        // Ne render le leaderboard que si on est sur cet onglet
+        if (document.getElementById('page-leaderboard').classList.contains('active')) {
+          renderLeaderboard(data);
+        }
         loadSyncMeta();
       } catch(e) {
-        document.getElementById('lb-content').innerHTML = `<div class="empty">Erreur de chargement. <a href="#" onclick="refreshLeaderboard()" style="color:var(--teal-light)">Réessayer</a></div>`;
+        console.error('loadLeaderboard error:', e);
+        const lbContent = document.getElementById('lb-content');
+        if (lbContent) lbContent.innerHTML = `<div class="empty">Erreur de chargement. <a href="#" onclick="refreshLeaderboard()" style="color:var(--teal-light)">Réessayer</a></div>`;
       }
-      btn.classList.remove('spinning');
+      if (btn) btn.classList.remove('spinning');
     }
     function refreshLeaderboard() { loadLeaderboard(true); }
 
@@ -811,6 +816,7 @@
         data = getCached();
         if (!data) { document.getElementById('stats-content').innerHTML = '<div class="empty">Erreur de chargement.</div>'; return; }
       }
+      console.log('[Massacre] runs:', data.runs?.length, '| sample:', data.runs?.[0]);
       const fr = currentLang === 'fr';
       const mode = _statsMode; // 'kills' | 'deaths'
       const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
