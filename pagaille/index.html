@@ -424,7 +424,7 @@
     .bossbar-left {
       display:flex; align-items:center; gap:12px;
       flex-shrink:0; width:290px;
-      padding:0 0 0 16px;
+      padding:0 16px 0 16px;
       background:var(--bg2);
       position:relative; z-index:1;
     }
@@ -471,13 +471,19 @@
       border-color:var(--teal-light);
       box-shadow:0 0 0 2px var(--bg), 0 0 16px rgba(64,212,212,0.6);
     }
-    /* pct à droite, toujours visible */
-    .bossbar-pct {
-      position:absolute; right:12px; top:50%; transform:translateY(-50%);
-      font-family:'Cinzel',serif; font-size:12px;
-      color:var(--text-muted); z-index:3;
+    /* pct dans sa propre colonne après le track, fond noir */
+    .bossbar-pct-col {
+      flex-shrink:0; width:64px;
+      display:flex; align-items:center; justify-content:flex-end;
+      padding-right:14px;
+      background:var(--bg2);
+      position:relative; z-index:1;
+      font-family:'Cinzel',serif; font-size:12px; color:var(--text-muted);
     }
-    .bossbar-wrap.top .bossbar-pct { color:var(--text-dim); }
+    .bossbar-wrap.top .bossbar-pct-col { color:var(--text-dim); }
+
+    /* pct à droite, toujours visible — supprimé du track */
+    .bossbar-pct { display:none; }
 
     /* ── RESPONSIVE ── */
     @media (max-width:600px) {
@@ -1135,8 +1141,9 @@
             <div class="bossbar-right">
               ${dngImg ? `<div class="bossbar-dng-img" style="width:${barPct}%;background-image:url('${dngImg}')"></div>` : ''}
               <div class="bossbar-avatar" style="left:${barPct}%;background-image:url('${avatarSrc}')"></div>
-              <div class="bossbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
             </div>
+            <div class="bossbar-sep"></div>
+            <div class="bossbar-pct-col">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
           </div>`;
         });
         html += '</div>';
