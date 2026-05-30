@@ -366,10 +366,28 @@
     .shbar-name { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em; color:var(--text-dim); padding-left:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .shbar-row.top .shbar-name { color:var(--text); }
     .shbar-count { font-family:'Cinzel',serif; font-size:14px; color:var(--teal-light); text-align:right; text-shadow:0 0 10px rgba(64,212,212,0.4); }
-    .shbar-track { position:relative; height:100%; overflow:hidden; }
-    .shbar-img { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.35; }
-    .shbar-fill { position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,rgba(64,212,212,0.15),rgba(64,212,212,0.05)); border-right:2px solid rgba(64,212,212,0.6); transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
-    .shbar-row.top .shbar-fill { background:linear-gradient(90deg,rgba(64,212,212,0.25),rgba(64,212,212,0.08)); border-right-color:var(--teal-light); }
+    .shbar-track { position:relative; height:100%; overflow:hidden; background:var(--bg); }
+    .shbar-img {
+      position:absolute; left:0; top:0; bottom:0;
+      background-size:cover; background-position:center left;
+      transition:width 0.8s cubic-bezier(0.4,0,0.2,1);
+      /* Léger assombrissement sur l'image pour lisibilité */
+      filter: brightness(0.55);
+    }
+    .shbar-img::after {
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, transparent 60%, rgba(7,11,11,0.6) 100%);
+    }
+    /* Trait teal à droite de la barre image */
+    .shbar-marker {
+      position:absolute; top:0; bottom:0; width:2px;
+      background: rgba(64,212,212,0.7);
+      box-shadow: 0 0 6px rgba(64,212,212,0.5);
+      transition:left 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+    .shbar-row.top .shbar-marker { background:var(--teal-light); box-shadow:0 0 10px rgba(64,212,212,0.8); }
+    .shbar-row.empty .shbar-marker { display:none; }
     .shbar-pct { font-family:'Cinzel',serif; font-size:12px; color:var(--text-muted); text-align:right; }
     .shbar-row.top .shbar-pct { color:var(--text-dim); }
     .shbar-chevron { font-size:9px; color:var(--text-muted); text-align:center; }
@@ -883,6 +901,7 @@
         data = getCached();
         if (!data) { document.getElementById('stats-content').innerHTML = '<div class="empty">Erreur de chargement.</div>'; return; }
       }
+      console.log('[Massacre] runs:', data.runs?.length, '| sample:', data.runs?.[0]);
       const fr = currentLang === 'fr';
       const mode = _statsMode; // 'kills' | 'deaths'
       const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
@@ -931,8 +950,7 @@
             <div class="shbar-name">${d.name.toUpperCase()}</div>
             <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
             <div class="shbar-track">
-              ${img ? `<div class="shbar-img" style="background-image:url('${img}')"></div>` : ''}
-              <div class="shbar-fill" style="width:${barPct}%"></div>
+              ${img ? `<div class="shbar-img" style="width:${barPct}%;background-image:url('${img}')"></div><div class="shbar-marker" style="left:${barPct}%"></div>` : ''}
             </div>
             <div class="shbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
             ${clickable ? `<div class="shbar-chevron">${isExp?'▲':'▼'}</div>` : '<div class="shbar-chevron"></div>'}
