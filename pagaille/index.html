@@ -956,10 +956,31 @@
       await renderStats();
     }
 
-    // Nom de fichier image boss : retire ', espaces → tirets, minuscules
-    function bossImgName(boss) {
-      return boss.replace(/'/g,'').replace(/,/g,'').replace(/\s+/g,'-').toLowerCase();
-    }
+    // Mapping exact boss → nom de fichier image (sans extension)
+    const BOSS_IMG = {
+      "Sinthara":                        "sinthara",
+      "Malgut the Fetid":                "malgutthefetid",
+      "Godfall Titan":                   "godfalltitan",
+      "Deathless Katrine":               "deathlesskatrine",
+      "Bael'Aurum":                      "baelaurum",
+      "First Mate Marrow":               "firstmatemarrow",
+      "Apostate Veras":                  "apostateveras",
+      "Moar'gore, Master of Sacrifice":  "moargoremasterofsacrifice",
+      "Vun'Kahr, The Thorned Maw":       "vunkahrthethornedmaw",
+      "Prophet Ez'rath":                 "prophetezrath",
+      "Vexira, Mother of Nightmares":    "vexira",
+      "Warlord Brogg":                   "warlordbrogg",
+      "Noor, The Betrayer":              "noor",
+      "Ancient Koros":                   "koros",
+      "Cithrel":                         "cithrel",
+      "Drazhul the Fleshbroker":         "drazhulthefleshbroker",
+      "Slavetrader Brull":               "slavetraderbrull",
+      "Sin-Magir":                       "sinmagir",
+      "Fodir Kaldur":                    "fodirkaldur",
+      "Chilgar the Drowned":             "chilgarthedrowned",
+      "Auga Handhafi the Blind":         "augahandhafitheblind",
+    };
+    function bossImgName(boss) { return BOSS_IMG[boss] || boss.replace(/'/g,'').replace(/,/g,'').replace(/\s+/g,'').toLowerCase(); }
 
     function computeStatsGlobal(runs) {
       const byDungeon = {};
