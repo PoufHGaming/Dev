@@ -398,6 +398,61 @@
     .shbar-boss-track { height:4px; background:var(--bg2); border-radius:2px; overflow:hidden; }
     .shbar-boss-fill { height:100%; background:linear-gradient(90deg,var(--teal-dim),var(--teal-light)); border-radius:2px; transition:width 0.6s ease; }
 
+    /* ── STATS TOGGLE VIEW ── */
+    .stats-view-toggle { display:flex; justify-content:center; gap:6px; margin-bottom:28px; }
+    .stats-view-btn {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+      padding:7px 18px; background:var(--bg2); border:1px solid var(--border);
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s; border-radius:3px;
+    }
+    .stats-view-btn:first-child { border-radius:3px 0 0 3px; }
+    .stats-view-btn:last-child  { border-radius:0 3px 3px 0; }
+    .stats-view-btn.active { color:var(--teal-light); border-color:var(--border-bright); background:rgba(64,212,212,0.08); }
+
+    /* ── BOSS BARS ── */
+    .bossbar-list { display:flex; flex-direction:column; gap:4px; }
+    .bossbar-row {
+      display:grid; grid-template-columns:52px 200px 80px 1fr 60px;
+      align-items:center; gap:12px;
+      height:52px; padding:0 16px 0 6px;
+      background:var(--bg2); border:1px solid var(--border); border-radius:4px;
+      overflow:hidden; position:relative; transition:border-color 0.2s;
+    }
+    .bossbar-row.top  { border-color:rgba(64,212,212,0.5); }
+    .bossbar-row.empty{ opacity:0.4; }
+    /* fond donjon derrière toute la ligne */
+    .bossbar-bg {
+      position:absolute; inset:0;
+      background-size:cover; background-position:center;
+      filter:brightness(0.3);
+      z-index:0;
+    }
+    /* tout le contenu au dessus du fond */
+    .bossbar-row > * { position:relative; z-index:1; }
+
+    /* rond portrait boss */
+    .bossbar-avatar {
+      width:40px; height:40px; border-radius:50%;
+      background:var(--bg3) center/cover no-repeat;
+      border:2px solid rgba(64,212,212,0.3);
+      flex-shrink:0;
+    }
+    .bossbar-row.top .bossbar-avatar { border-color:var(--teal-light); box-shadow:0 0 10px rgba(64,212,212,0.4); }
+
+    .bossbar-name  { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.08em; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .bossbar-row.top .bossbar-name { color:var(--text); }
+    .bossbar-count { font-family:'Cinzel',serif; font-size:14px; color:var(--teal-light); text-align:right; text-shadow:0 0 10px rgba(64,212,212,0.4); }
+    .bossbar-track { position:relative; height:100%; overflow:hidden; background:rgba(7,11,11,0.4); }
+    .bossbar-fill  {
+      position:absolute; left:0; top:0; bottom:0;
+      background:linear-gradient(90deg,rgba(64,212,212,0.2),rgba(64,212,212,0.06));
+      border-right:2px solid rgba(64,212,212,0.6);
+      transition:width 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+    .bossbar-row.top .bossbar-fill { background:linear-gradient(90deg,rgba(64,212,212,0.3),rgba(64,212,212,0.1)); border-right-color:var(--teal-light); }
+    .bossbar-pct   { font-family:'Cinzel',serif; font-size:12px; color:var(--text-muted); text-align:right; }
+    .bossbar-row.top .bossbar-pct { color:var(--text-dim); }
+
     /* ── RESPONSIVE ── */
     @media (max-width:600px) {
       main { padding:20px 14px 64px; }
@@ -408,7 +463,8 @@
       .nav-right { margin-left:auto; }
       .dungeon-kills-grid { grid-template-columns:1fr; }
       .stats-summary { grid-template-columns:1fr; }
-      .shbar-row { grid-template-columns:140px 60px 1fr 50px 20px; gap:8px; }    }
+      .shbar-row { grid-template-columns:140px 60px 1fr 50px 20px; gap:8px; }
+      .bossbar-row { grid-template-columns:44px 130px 60px 1fr 50px; gap:8px; padding-right:8px; }    }
   </style>
 </head>
 <body>
@@ -863,6 +919,7 @@
     // ── STATS : barres horizontales kills/deaths toggle ──
     let _statsExpanded = null;
     let _statsMode = 'kills'; // 'kills' | 'deaths'
+    let _statsView = 'dungeon'; // 'dungeon' | 'boss'
 
     async function toggleStatsDungeon(name) {
       _statsExpanded = _statsExpanded === name ? null : name;
@@ -873,6 +930,17 @@
       _statsMode = mode;
       _statsExpanded = null;
       await renderStats();
+    }
+
+    async function setStatsView(view) {
+      _statsView = view;
+      _statsExpanded = null;
+      await renderStats();
+    }
+
+    // Nom de fichier image boss : retire ', espaces → tirets, minuscules
+    function bossImgName(boss) {
+      return boss.replace(/'/g,'').replace(/,/g,'').replace(/\s+/g,'-').toLowerCase();
     }
 
     function computeStatsGlobal(runs) {
@@ -901,25 +969,16 @@
         data = getCached();
         if (!data) { document.getElementById('stats-content').innerHTML = '<div class="empty">Erreur de chargement.</div>'; return; }
       }
-      console.log('[Massacre] runs:', data.runs?.length, '| sample:', data.runs?.[0]);
-      const fr = currentLang === 'fr';
-      const mode = _statsMode; // 'kills' | 'deaths'
+      const fr   = currentLang === 'fr';
+      const mode = _statsMode;
+      const view = _statsView;
       const { byDungeon, byBoss } = computeStatsGlobal(data.runs);
 
       const totalKills  = DUNGEONS.reduce((s,d) => s + byDungeon[d].kills,  0);
       const totalDeaths = DUNGEONS.reduce((s,d) => s + byDungeon[d].deaths, 0);
+      const totalVal    = mode === 'kills' ? totalKills : totalDeaths;
 
-      // Tri selon le mode actif
-      const sorted = [...DUNGEONS]
-        .map(d => ({ name: d, kills: byDungeon[d].kills, deaths: byDungeon[d].deaths }))
-        .sort((a,b) => b[mode] - a[mode]);
-
-      const totalVal = mode === 'kills' ? totalKills : totalDeaths;
-      const maxVal   = sorted[0]?.[mode] || 1;
-      const sectionLabel = mode === 'kills'
-        ? (fr ? 'Boss tués par donjon' : 'Bosses killed per dungeon')
-        : (fr ? 'Morts par donjon'     : 'Deaths per dungeon');
-
+      // ── KPI + toggle vue ──
       let html = `
         <div class="stats-section-title">${fr?'Vue d\'ensemble':'Overview'}</div>
         <div class="stats-summary">
@@ -932,48 +991,108 @@
             <div class="stats-kpi-value">${totalDeaths > 0 ? totalDeaths.toLocaleString('fr-FR') : `<span style="color:var(--text-muted);font-size:20px">—</span>`}</div>
           </div>
         </div>
-        <div class="stats-section-title">${sectionLabel}</div>
-        <div class="shbar-list">`;
+        <div class="stats-view-toggle">
+          <button class="stats-view-btn ${view==='dungeon'?'active':''}" onclick="setStatsView('dungeon')">
+            ${fr?'Par donjon':'By dungeon'}
+          </button><button class="stats-view-btn ${view==='boss'?'active':''}" onclick="setStatsView('boss')">
+            ${fr?'Par boss':'By boss'}
+          </button>
+        </div>`;
 
-      sorted.forEach((d, i) => {
-        const val    = d[mode];
-        const pct    = totalVal > 0 ? (val/totalVal*100) : 0;
-        const barPct = maxVal   > 0 ? (val/maxVal*100)   : 0;
-        const img    = DUNGEON_IMAGES[d.name] || '';
-        const isTop  = i === 0 && val > 0;
-        const isExp  = _statsExpanded === d.name;
-        const bosses = DUNGEON_BOSSES[d.name] || [];
-        const clickable = bosses.length > 0 && val > 0;
+      // ── VUE DONJON ──
+      if (view === 'dungeon') {
+        const sectionLabel = mode === 'kills'
+          ? (fr ? 'Boss tués par donjon'  : 'Bosses killed per dungeon')
+          : (fr ? 'Morts par donjon'      : 'Deaths per dungeon');
 
-        html += `<div class="shbar-wrap${isExp?' expanded':''}">
-          <div class="shbar-row${isTop?' top':''}${val===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
-            <div class="shbar-name">${d.name.toUpperCase()}</div>
-            <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
-            <div class="shbar-track">
-              ${img ? `<div class="shbar-img" style="width:${barPct}%;background-image:url('${img}')"></div><div class="shbar-marker" style="left:${barPct}%"></div>` : ''}
-            </div>
-            <div class="shbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
-            ${clickable ? `<div class="shbar-chevron">${isExp?'▲':'▼'}</div>` : '<div class="shbar-chevron"></div>'}
-          </div>`;
+        const sorted = [...DUNGEONS]
+          .map(d => ({ name: d, kills: byDungeon[d].kills, deaths: byDungeon[d].deaths }))
+          .sort((a,b) => b[mode] - a[mode]);
+        const maxVal = sorted[0]?.[mode] || 1;
 
-        if (isExp && clickable) {
-          const maxBoss = Math.max(...bosses.map(b => byBoss[b]?.[mode]||0), 1);
-          html += `<div class="shbar-detail">`;
-          bosses.forEach(boss => {
-            const bk = byBoss[boss] || { kills: 0, deaths: 0 };
-            const bval = bk[mode] || 0;
-            html += `<div class="shbar-boss-row">
-              <div class="shbar-boss-name">${boss}</div>
-              <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString('fr-FR') : '—'}</div>
-              <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bval/maxBoss*100}%"></div></div>
+        html += `<div class="stats-section-title">${sectionLabel}</div><div class="shbar-list">`;
+
+        sorted.forEach((d, i) => {
+          const val    = d[mode];
+          const pct    = totalVal > 0 ? (val/totalVal*100) : 0;
+          const barPct = maxVal   > 0 ? (val/maxVal*100)   : 0;
+          const img    = DUNGEON_IMAGES[d.name] || '';
+          const isTop  = i === 0 && val > 0;
+          const isExp  = _statsExpanded === d.name;
+          const bosses = DUNGEON_BOSSES[d.name] || [];
+          const clickable = bosses.length > 0 && val > 0;
+
+          html += `<div class="shbar-wrap${isExp?' expanded':''}">
+            <div class="shbar-row${isTop?' top':''}${val===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
+              <div class="shbar-name">${d.name.toUpperCase()}</div>
+              <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
+              <div class="shbar-track">
+                ${img ? `<div class="shbar-img" style="width:${barPct}%;background-image:url('${img}')"></div><div class="shbar-marker" style="left:${barPct}%"></div>` : ''}
+              </div>
+              <div class="shbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
+              ${clickable ? `<div class="shbar-chevron">${isExp?'▲':'▼'}</div>` : '<div class="shbar-chevron"></div>'}
             </div>`;
-          });
-          html += `</div>`;
-        }
-        html += `</div>`;
-      });
 
-      html += '</div>';
+          if (isExp && clickable) {
+            const maxBoss = Math.max(...bosses.map(b => byBoss[b]?.[mode]||0), 1);
+            html += `<div class="shbar-detail">`;
+            bosses.forEach(boss => {
+              const bk   = byBoss[boss] || { kills: 0, deaths: 0 };
+              const bval = bk[mode] || 0;
+              html += `<div class="shbar-boss-row">
+                <div class="shbar-boss-name">${boss}</div>
+                <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString('fr-FR') : '—'}</div>
+                <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bval/maxBoss*100}%"></div></div>
+              </div>`;
+            });
+            html += `</div>`;
+          }
+          html += `</div>`;
+        });
+        html += '</div>';
+
+      // ── VUE BOSS ──
+      } else {
+        const sectionLabel = mode === 'kills'
+          ? (fr ? 'Boss tués'  : 'Bosses killed')
+          : (fr ? 'Morts par boss' : 'Deaths per boss');
+
+        // Tous les boss de tous les donjons, triés desc par mode
+        const allBosses = [];
+        DUNGEONS.forEach(d => {
+          (DUNGEON_BOSSES[d] || []).forEach(boss => {
+            const bk  = byBoss[boss] || { kills: 0, deaths: 0 };
+            allBosses.push({ boss, dungeon: d, kills: bk.kills, deaths: bk.deaths });
+          });
+        });
+        allBosses.sort((a,b) => b[mode] - a[mode]);
+
+        const maxVal = allBosses[0]?.[mode] || 1;
+
+        html += `<div class="stats-section-title">${sectionLabel}</div><div class="bossbar-list">`;
+
+        allBosses.forEach((b, i) => {
+          const val    = b[mode];
+          const pct    = totalVal > 0 ? (val/totalVal*100) : 0;
+          const barPct = maxVal   > 0 ? (val/maxVal*100)   : 0;
+          const dngImg = DUNGEON_IMAGES[b.dungeon] || '';
+          const avatarSrc = `../images/bosses/${bossImgName(b.boss)}.jpg`;
+          const isTop  = i === 0 && val > 0;
+
+          html += `<div class="bossbar-row${isTop?' top':''}${val===0?' empty':''}">
+            ${dngImg ? `<div class="bossbar-bg" style="background-image:url('${dngImg}')"></div>` : ''}
+            <div class="bossbar-avatar" style="background-image:url('${avatarSrc}')"></div>
+            <div class="bossbar-name">${b.boss}</div>
+            <div class="bossbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
+            <div class="bossbar-track">
+              <div class="bossbar-fill" style="width:${barPct}%"></div>
+            </div>
+            <div class="bossbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
+          </div>`;
+        });
+        html += '</div>';
+      }
+
       document.getElementById('stats-content').innerHTML = html;
     }
 
