@@ -412,24 +412,28 @@
     /* ── BOSS BARS ── */
     .bossbar-list { display:flex; flex-direction:column; gap:4px; }
     .bossbar-row {
-      display:grid; grid-template-columns:200px 80px 1fr 60px;
+      display:grid;
+      grid-template-columns:200px 80px 1fr 60px 52px;
       align-items:center; gap:12px;
-      height:52px; padding:0 16px 0 0;
-      background:var(--bg2); border:1px solid var(--border); border-radius:4px;
+      height:52px; padding:0 8px 0 0;
+      border:1px solid var(--border); border-radius:4px;
       overflow:hidden; position:relative; transition:border-color 0.2s;
     }
     .bossbar-row.top   { border-color:rgba(64,212,212,0.5); }
     .bossbar-row.empty { opacity:0.4; }
-    /* image donjon en fond toute la ligne */
-    .bossbar-bg {
+
+    /* fond donjon pleine ligne en pseudo-element */
+    .bossbar-row::before {
+      content:'';
       position:absolute; inset:0;
+      background-image:var(--dng-bg);
       background-size:cover; background-position:center;
       filter:brightness(0.28);
       z-index:0;
     }
+    /* tous les enfants directs au dessus du fond */
     .bossbar-row > * { position:relative; z-index:1; }
 
-    /* nom du boss à gauche (même style que shbar-name) */
     .bossbar-name {
       font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.1em;
       color:var(--text-dim); padding-left:16px;
@@ -443,33 +447,35 @@
       text-shadow:0 0 10px rgba(64,212,212,0.4);
     }
 
-    /* zone track : fond sombre, le rond se positionne dedans */
-    .bossbar-track {
-      position:relative; height:100%; overflow:visible;
+    /* track : barre teal de remplissage (même logique que shbar) */
+    .bossbar-track { position:relative; height:100%; overflow:hidden; background:transparent; }
+    .bossbar-fill {
+      position:absolute; left:0; top:0; bottom:0;
+      background:linear-gradient(90deg,rgba(64,212,212,0.12),rgba(64,212,212,0.04));
+      border-right:2px solid rgba(64,212,212,0.55);
+      transition:width 0.8s cubic-bezier(0.4,0,0.2,1);
     }
-
-    /* rond portrait boss — positionné à left:barPct% dans le track */
-    .bossbar-avatar {
-      position:absolute;
-      top:50%; transform:translate(-50%,-50%);
-      width:38px; height:38px; border-radius:50%;
-      background:var(--bg3) center/cover no-repeat;
-      border:2px solid rgba(64,212,212,0.45);
-      box-shadow:0 0 0 2px rgba(7,11,11,0.8);
-      transition:left 0.8s cubic-bezier(0.4,0,0.2,1);
-      z-index:2;
-      flex-shrink:0;
-    }
-    .bossbar-row.top .bossbar-avatar {
-      border-color:var(--teal-light);
-      box-shadow:0 0 10px rgba(64,212,212,0.55), 0 0 0 2px rgba(7,11,11,0.8);
-    }
+    .bossbar-row.top .bossbar-fill { border-right-color:var(--teal-light); background:linear-gradient(90deg,rgba(64,212,212,0.22),rgba(64,212,212,0.07)); }
 
     .bossbar-pct {
       font-family:'Cinzel',serif; font-size:12px;
       color:var(--text-muted); text-align:right;
     }
     .bossbar-row.top .bossbar-pct { color:var(--text-dim); }
+
+    /* rond avatar boss — dernière colonne, centré */
+    .bossbar-avatar {
+      width:38px; height:38px; border-radius:50%;
+      background:var(--bg3) center/cover no-repeat;
+      border:2px solid rgba(64,212,212,0.4);
+      box-shadow:0 0 8px rgba(64,212,212,0.2);
+      flex-shrink:0; justify-self:center;
+      transition:box-shadow 0.2s;
+    }
+    .bossbar-row.top .bossbar-avatar {
+      border-color:var(--teal-light);
+      box-shadow:0 0 14px rgba(64,212,212,0.5);
+    }
 
     /* ── RESPONSIVE ── */
     @media (max-width:600px) {
@@ -482,7 +488,7 @@
       .dungeon-kills-grid { grid-template-columns:1fr; }
       .stats-summary { grid-template-columns:1fr; }
       .shbar-row { grid-template-columns:140px 60px 1fr 50px 20px; gap:8px; }
-      .bossbar-row { grid-template-columns:130px 55px 1fr 46px; gap:8px; padding-right:8px; }    }
+      .bossbar-row { grid-template-columns:1fr 55px 1fr 44px 44px; gap:6px; padding-right:6px; }    }
   </style>
 </head>
 <body>
@@ -1118,14 +1124,12 @@
           const avatarSrc = `../images/bosses/${bossImgName(b.boss)}.jpg`;
           const isTop  = i === 0 && val > 0;
 
-          html += `<div class="bossbar-row${isTop?' top':''}${val===0?' empty':''}">
-            ${dngImg ? `<div class="bossbar-bg" style="background-image:url('${dngImg}')"></div>` : ''}
+          html += `<div class="bossbar-row${isTop?' top':''}${val===0?' empty':''}" style="--dng-bg:url('${dngImg}')">
             <div class="bossbar-name">${b.boss}</div>
             <div class="bossbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
-            <div class="bossbar-track">
-              <div class="bossbar-avatar" style="left:${barPct}%;background-image:url('${avatarSrc}')"></div>
-            </div>
+            <div class="bossbar-track"><div class="bossbar-fill" style="width:${barPct}%"></div></div>
             <div class="bossbar-pct">${val > 0 ? pct.toFixed(1)+'%' : ''}</div>
+            <div class="bossbar-avatar" style="background-image:url('${avatarSrc}')"></div>
           </div>`;
         });
         html += '</div>';
