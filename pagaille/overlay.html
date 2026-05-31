@@ -190,10 +190,8 @@
         nextLbl.textContent = '✓ Tous les paliers débloqués';
         remLbl.textContent  = '';
       } else {
-        const prevVal = idx === 0 ? 0 : tiers[idx - 1];
-        const nextVal = tiers[idx];
-        // Progression entre le palier précédent et le prochain
-        const pct = Math.min(100, Math.max(0, (total - prevVal) / (nextVal - prevVal) * 100));
+        const maxVal = tiers[tiers.length - 1];
+        const pct = Math.min(100, Math.max(0, total / maxVal * 100));
         const rem = nextVal - total;
 
         fill.style.width = pct + '%';
