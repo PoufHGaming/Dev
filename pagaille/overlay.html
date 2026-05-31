@@ -190,9 +190,10 @@
         nextLbl.textContent = '✓ Tous les paliers débloqués';
         remLbl.textContent  = '';
       } else {
-        const maxVal = tiers[tiers.length - 1];
-        const pct = Math.min(100, Math.max(0, total / maxVal * 100));
-        const rem = nextVal - total;
+        const nextVal = tiers[idx];
+        const maxVal  = tiers[tiers.length - 1];
+        const pct     = Math.min(100, Math.max(0, total / maxVal * 100));
+        const rem     = nextVal - total;
 
         fill.style.width = pct + '%';
         fill.className   = `bar-fill t${idx}`;
