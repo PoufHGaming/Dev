@@ -1078,24 +1078,6 @@
     };
     function bossImgName(boss) { return BOSS_IMG[boss] || boss.replace(/'/g,'').replace(/,/g,'').replace(/\s+/g,'').toLowerCase(); }
 
-    function computeStatsGlobal(runs) {
-      const byDungeon = {};
-      const byBoss = {};
-      DUNGEONS.forEach(d => byDungeon[d] = { kills: 0, deaths: 0 });
-      runs.forEach(r => {
-        const dng = normDungeon(r.dungeon_name);
-        if (byDungeon[dng] !== undefined) {
-          byDungeon[dng].kills  += r.boss_kills || 0;
-          byDungeon[dng].deaths += r.deaths     || 0;
-        }
-        const bk = r.boss_name || dng;
-        if (!byBoss[bk]) byBoss[bk] = { kills: 0, deaths: 0, dungeon: dng };
-        byBoss[bk].kills  += r.boss_kills || 0;
-        byBoss[bk].deaths += r.deaths     || 0;
-      });
-      return { byDungeon, byBoss };
-    }
-
     async function renderStats() {
       let data = getCached();
       if (!data) {
