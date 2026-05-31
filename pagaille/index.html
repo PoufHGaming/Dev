@@ -848,7 +848,7 @@
       if (btn) btn.classList.add('spinning');
       try {
         const [runs, players] = await Promise.all([
-          sbFetch(`/rest/v1/pagaille_runs?select=player_id,dungeon_name,boss_name,boss_kills,deaths&season=eq.${SEASON}&order=player_id`),
+          sbFetch(`/rest/v1/pagaille_runs?select=player_id,dungeon_name,boss_name,boss_kills,deaths&season=eq.${SEASON}&order=player_id&limit=10000`),
           sbFetch('/rest/v1/players?select=id,name&order=name')
         ]);
         const data = { runs, players };
