@@ -549,10 +549,6 @@
           <span class="progress-title" data-fr="Boss tués — total communauté" data-en="Bosses killed — community total">Boss tués — total communauté</span>
           <span class="progress-count"><span id="total-kills">—</span><span data-fr=" boss" data-en=" bosses"> boss</span></span>
         </div>
-        <div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;color:var(--text-muted);letter-spacing:0.12em;opacity:0.7;">
-          <span id="tier-player-label" data-fr="Paliers calculés pour" data-en="Tiers calculated for">Tiers calculated for</span>
-          <span id="tier-player-count" style="color:var(--teal-dim)">—</span>
-        </div>
         <div class="progress-track">
           <div class="progress-fill" id="progress-fill" style="width:0%"></div>
           <div class="tier-markers">
@@ -560,6 +556,10 @@
             <div class="tier-marker t2" data-label="2 500"></div>
             <div class="tier-marker t3" data-label="5 000"></div>
           </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:8px;font-family:'Cinzel',serif;font-size:10px;color:var(--text-muted);letter-spacing:0.12em;opacity:0.7;">
+          <span id="tier-player-label" data-fr="Paliers calculés pour" data-en="Tiers calculated for">Tiers calculated for</span>
+          <span id="tier-player-count" style="color:var(--teal-dim)">—</span>
         </div>
         <div class="tiers-grid">
           <div class="tier-card t1 locked" id="tier-1">
@@ -666,7 +666,7 @@
     const CACHE_MS = 60 * 1000;
     const SEASON   = 'S1';
     const TIERS_BASE = [1000, 2500, 5000]; // paliers calibrés pour N_REF joueurs
-    const N_REF      = 25;                  // référence de calibration
+    const N_REF      = 20;                  // référence de calibration
     // Formule : palier(N) = base × √(N / N_REF)  — racine carrée
     function computeTiers(n) {
       const factor = Math.sqrt(Math.max(1, n) / N_REF);
