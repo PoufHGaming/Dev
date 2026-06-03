@@ -244,13 +244,72 @@
     .stats-kpi.active .stats-kpi-label { color: var(--teal-dim); }
     .stats-kpi-value { font-family:'Cinzel',serif; font-size:28px; font-weight:700; color:var(--teal-light); text-shadow:0 0 20px rgba(64,212,212,0.5); }
 
-    /* ── RULES ── */
+    /* ── RULES / LOGS ── */
     .rules-page { max-width:660px; margin:0 auto; }
     .rules-section { margin-bottom:30px; }
     .rules-section-title { font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:var(--teal-dim); margin-bottom:14px; padding-bottom:9px; border-bottom:1px solid var(--border); }
     .rules-list { display:flex; flex-direction:column; gap:9px; }
     .rules-item { padding:13px 18px; background:var(--bg2); border:1px solid var(--border); border-left:3px solid var(--teal-dim); border-radius:0 4px 4px 0; font-size:16px; color:var(--text-dim); line-height:1.65; }
     .rules-item strong { color:var(--text); font-weight:400; }
+
+    /* Sous-tabs logs */
+    .logs-subtabs { display:flex; gap:6px; margin-bottom:24px; }
+    .logs-subtab {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+      padding:8px 18px; background:var(--bg2); border:1px solid var(--border);
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s; border-radius:3px;
+    }
+    .logs-subtab.active { color:var(--teal-light); border-color:var(--border-bright); background:rgba(64,212,212,0.08); }
+
+    /* Warning block */
+    .logs-warning {
+      display:flex; align-items:flex-start; gap:12px;
+      padding:14px 18px; margin-bottom:24px;
+      background:rgba(240,180,50,0.07); border:1px solid rgba(240,180,50,0.35);
+      border-left:3px solid #f0b432; border-radius:0 6px 6px 0;
+      font-size:15px; color:#f0d080; line-height:1.6;
+    }
+    .logs-warning .warn-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+
+    /* Étapes tuto */
+    .logs-steps { display:flex; flex-direction:column; gap:20px; }
+    .logs-step { display:flex; gap:18px; align-items:flex-start; }
+    .logs-step-num {
+      flex-shrink:0; width:32px; height:32px; border-radius:50%;
+      background:rgba(64,212,212,0.1); border:1px solid var(--border-bright);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:var(--teal-light);
+    }
+    .logs-step-body { flex:1; }
+    .logs-step-title { font-family:'Cinzel',serif; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal-light); margin-bottom:8px; }
+    .logs-step-desc { font-size:16px; color:var(--text-dim); line-height:1.7; margin-bottom:12px; }
+    .logs-step-desc strong { color:var(--text); font-weight:400; }
+    .logs-step-desc a { color:var(--teal-light); text-decoration:none; border-bottom:1px solid rgba(64,212,212,0.35); }
+    .logs-step-desc a:hover { border-bottom-color:var(--teal-light); }
+
+    /* Placeholder screenshot */
+    .screenshot-placeholder {
+      background:var(--bg2); border:1px dashed rgba(64,212,212,0.25);
+      border-radius:6px; overflow:hidden;
+    }
+    .screenshot-placeholder-label {
+      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--text-muted); padding:7px 14px; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:8px;
+    }
+    .screenshot-placeholder-label::before { content:'📷'; font-size:12px; }
+    .screenshot-placeholder-img {
+      height:140px; display:flex; align-items:center; justify-content:center;
+      color:var(--text-muted); font-size:13px; font-style:italic; letter-spacing:0.05em;
+      background:repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(64,212,212,0.02) 10px, rgba(64,212,212,0.02) 20px);
+    }
+    /* Tip inline */
+    .logs-tip {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:8px 14px; margin-top:8px;
+      background:rgba(64,212,212,0.06); border:1px solid rgba(64,212,212,0.2);
+      border-radius:4px; font-size:14px; color:var(--text-dim); font-style:italic;
+    }
 
     /* ── ADMIN ── */
     .admin-gate { text-align:center; padding:48px 24px; }
@@ -530,7 +589,7 @@
     <div class="nav-sep"></div>
     <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement" data-en="Leaderboard">Classement</button>
     <button class="tab" id="tab-stats" onclick="showPage('stats',this)" data-fr="Carnage" data-en="Slaughtered">Carnage</button>
-    <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
+    <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Logs & Règles" data-en="Logs & Rules">Logs & Règles</button>
     <button class="tab" id="tab-join" onclick="showPage('join',this)" data-fr="Rejoindre" data-en="Join">Rejoindre</button>
     <div class="nav-right">
       <div class="lang-toggle">
@@ -1253,22 +1312,117 @@
         </div>`;
     }
 
-    // ── RULES ──
+    // ── RULES / LOGS ──
+    let _logsTab = 'live';
+    function setLogsTab(t) { _logsTab = t; renderRules(); }
+
     function renderRules() {
       const fr = currentLang === 'fr';
+      const t  = _logsTab;
+
+      const warning = `
+        <div class="logs-warning">
+          <span class="warn-icon">⚠️</span>
+          <span>${fr
+            ? '<strong>Tout donjon effectué sans logs actifs ne sera pas comptabilisé.</strong> Assure-toi que tes logs sont activés avant chaque session de jeu.'
+            : '<strong>Any dungeon completed without active logs will not be counted.</strong> Make sure your logs are enabled before each gaming session.'}</span>
+        </div>`;
+
+      const liveContent = `
+        <div class="logs-steps">
+          <div class="logs-step">
+            <div class="logs-step-num">1</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Ouvrir Archon' : 'Open Archon'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'Lance l\'application <strong>Archon</strong> sur ton PC. Elle doit tourner en arrière-plan pendant que tu joues.'
+                : 'Launch the <strong>Archon</strong> application on your PC. It must run in the background while you play.'}</div>
+            </div>
+          </div>
+          <div class="logs-step">
+            <div class="logs-step-num">2</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Activer les Live Logs' : 'Enable Live Logs'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'Dans Archon, clique sur le bouton <strong>"Live Logs"</strong> pour démarrer l\'enregistrement en temps réel. Le bouton doit passer au vert.'
+                : 'In Archon, click the <strong>"Live Logs"</strong> button to start real-time recording. The button should turn green.'}</div>
+              <div class="screenshot-placeholder">
+                <div class="screenshot-placeholder-label">${fr ? 'Bouton Live Logs dans Archon' : 'Live Logs button in Archon'}</div>
+                <div class="screenshot-placeholder-img">${fr ? '[ Screenshot à ajouter — bouton Live Logs ]' : '[ Screenshot to add — Live Logs button ]'}</div>
+              </div>
+              <div class="logs-tip">💡 ${fr ? 'Le bouton doit être vert avant de lancer un donjon.' : 'The button must be green before starting a dungeon.'}</div>
+            </div>
+          </div>
+          <div class="logs-step">
+            <div class="logs-step-num">3</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Joue normalement' : 'Play normally'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'C\'est tout. Tes runs sont enregistrés automatiquement et synchronisés sur le leaderboard toutes les 15 minutes.'
+                : 'That\'s it. Your runs are recorded automatically and synced to the leaderboard every 15 minutes.'}</div>
+            </div>
+          </div>
+        </div>`;
+
+      const uploadContent = `
+        <div class="logs-steps">
+          <div class="logs-step">
+            <div class="logs-step-num">1</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Ouvrir Archon' : 'Open Archon'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'Lance l\'application <strong>Archon</strong>. Tes logs locaux sont stockés automatiquement sur ton PC après chaque session.'
+                : 'Launch the <strong>Archon</strong> application. Your local logs are automatically stored on your PC after each session.'}</div>
+            </div>
+          </div>
+          <div class="logs-step">
+            <div class="logs-step-num">2</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Uploader les logs' : 'Upload the logs'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'Dans Archon, retrouve la session que tu veux uploader et clique sur <strong>"Upload"</strong>. Le rapport sera disponible sur <a href="https://www.fellowshiplogs.com" target="_blank" rel="noopener">fellowshiplogs.com</a> dans quelques minutes.'
+                : 'In Archon, find the session you want to upload and click <strong>"Upload"</strong>. The report will be available on <a href="https://www.fellowshiplogs.com" target="_blank" rel="noopener">fellowshiplogs.com</a> within a few minutes.'}</div>
+              <div class="screenshot-placeholder">
+                <div class="screenshot-placeholder-label">${fr ? 'Bouton Upload dans Archon' : 'Upload button in Archon'}</div>
+                <div class="screenshot-placeholder-img">${fr ? '[ Screenshot à ajouter — bouton Upload ]' : '[ Screenshot to add — Upload button ]'}</div>
+              </div>
+            </div>
+          </div>
+          <div class="logs-step">
+            <div class="logs-step-num">3</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Attendre la synchronisation' : 'Wait for sync'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'Une fois uploadé, le leaderboard se met à jour automatiquement lors du prochain sync (toutes les 15 min). Pas besoin de faire quoi que ce soit d\'autre.'
+                : 'Once uploaded, the leaderboard updates automatically at the next sync (every 15 min). No further action needed.'}</div>
+              <div class="logs-tip">💡 ${fr
+                ? 'Si un donjon n\'apparaît pas après 30 min, contacte Pouf sur Discord.'
+                : 'If a dungeon doesn\'t appear after 30 min, contact Pouf on Discord.'}</div>
+            </div>
+          </div>
+        </div>`;
+
       document.getElementById('rules-content').innerHTML = `
         <div class="rules-section">
-          <div class="rules-section-title">${fr?'Objectif':'Objective'}</div>
+          <div class="rules-section-title">${fr ? 'Logs de combat' : 'Combat Logs'}</div>
+          ${warning}
+          <div class="logs-subtabs">
+            <button class="logs-subtab ${t==='live'?'active':''}" onclick="setLogsTab('live')">
+              ${fr ? '⚡ Live Logs (recommandé)' : '⚡ Live Logs (recommended)'}
+            </button>
+            <button class="logs-subtab ${t==='upload'?'active':''}" onclick="setLogsTab('upload')">
+              ${fr ? '📤 Upload manuel' : '📤 Manual upload'}
+            </button>
+          </div>
+          ${t === 'live' ? liveContent : uploadContent}
+        </div>
+        <div class="rules-section" style="margin-top:36px;">
+          <div class="rules-section-title">${fr?'Règles de l\'event':'Event Rules'}</div>
           <div class="rules-list">
             <div class="rules-item">⚔️ ${fr?'Tuez le plus de <strong>boss de donjons</strong> possible en équipe pendant la durée de l\'événement.':'Kill as many <strong>dungeon bosses</strong> as possible as a group during the event.'}</div>
             <div class="rules-item">✅ ${fr?'Seuls les boss de <strong>donjons complétés</strong> sont comptabilisés.':'Only bosses in <strong>completed dungeons</strong> count.'}</div>
-            <div class="rules-item">👥 ${fr?'Les kills sont liés au compte. Un boss tué par ton groupe compte pour toi et tous les membres du groupe qui participent.':'Kills are account-wide. A boss killed by your party counts toward you and all participating party members.'}</div>
-          </div>
-        </div>
-        <div class="rules-section">
-          <div class="rules-section-title">${fr?'Validation':'Validation'}</div>
-          <div class="rules-list">
-            <div class="rules-item">📋 ${fr?'Les scores sont importés via les logs Fellowship. Pas besoin de valider manuellement.':'Scores are imported via Fellowship logs. No manual validation needed.'}</div>
+            <div class="rules-item">🚫 ${fr?'<strong>Tout donjon sans logs actifs</strong> ne sera pas pris en compte, sans exception.':'<strong>Any dungeon without active logs</strong> will not be counted, no exceptions.'}</div>
+            <div class="rules-item">👥 ${fr?'Les kills sont liés au compte. Un boss tué par ton groupe compte pour toi et tous les membres participants.':'Kills are account-wide. A boss killed by your party counts toward all participating members.'}</div>
             <div class="rules-item">💬 ${fr?'En cas de problème, contacte Pouf sur Discord.':'For issues, contact Pouf on Discord.'}</div>
           </div>
         </div>`;
