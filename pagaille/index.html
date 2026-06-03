@@ -197,9 +197,13 @@
     .lb-row.rank-1 .rank-num { color:var(--teal-light); font-size:18px; text-shadow:0 0 14px rgba(64,212,212,0.7); }
     .lb-row.rank-2 .rank-num { color:var(--text-dim); font-size:16px; }
     .lb-row.rank-3 .rank-num { color:var(--text-dim); }
-    .player-name { font-size:19px; font-weight:400; color:var(--text); }
+    .player-name { font-size:19px; font-weight:400; color:var(--text); display:flex; align-items:center; gap:4px; overflow:hidden; }
+    .player-name-text { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .player-badges { display:inline-flex; align-items:center; gap:3px; flex-shrink:0; position:relative; z-index:10; }
     .lb-chevron { font-size:11px; color:var(--text-muted); transition:transform 0.2s; display:inline-block; }
     .lb-row.open .lb-chevron { transform:rotate(90deg); }
+    .badge-wrap .badge-tooltip { display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#071212; border:1px solid rgba(64,212,212,0.35); border-radius:4px; padding:6px 10px; white-space:nowrap; font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.08em; color:var(--teal-light); z-index:50; pointer-events:none; box-shadow:0 4px 16px rgba(0,0,0,0.5); }
+    .badge-wrap:hover .badge-tooltip { display:block; }
     .score-boss { font-family:'Cinzel',serif; font-size:22px; color:var(--teal-light); text-align:right; text-shadow:0 0 14px rgba(64,212,212,0.55); }
     .score-dungeons { font-size:15px; color:var(--text-muted); text-align:right; }
     .lb-detail { display:none; padding:14px 18px 18px 66px; grid-column:1/-1; }
@@ -1085,7 +1089,7 @@
           detail += `</div></div></div>`;
         });
         detail += '</div></div>';
-        html += `<div class="lb-row ${rc}" onclick="this.classList.toggle('open')" style="cursor:pointer"><div class="rank-num">${dRank}</div><div class="player-name" onclick="event.stopPropagation();openProfile(${s.id},'${s.name.replace(/'/g,"\\'")}');" style="cursor:pointer">${s.name}${renderBadgesInline(s.id)}</div><div class="score-boss">${s.total}</div><div class="score-dungeons col-dng">${dngCount}</div>${detail}</div>`;
+        html += `<div class="lb-row ${rc}" onclick="this.classList.toggle('open')" style="cursor:pointer"><div class="rank-num">${dRank}</div><div class="player-name" onclick="event.stopPropagation();openProfile(${s.id},'${s.name.replace(/'/g,"\\'")}');" style="cursor:pointer"><span class="player-name-text">${s.name}</span><span class="player-badges" onclick="event.stopPropagation()">${renderBadgesInline(s.id)}</span></div><div class="score-boss">${s.total}</div><div class="score-dungeons col-dng">${dngCount}</div>${detail}</div>`;
       });
       document.getElementById('lb-content').innerHTML = html;
     }
