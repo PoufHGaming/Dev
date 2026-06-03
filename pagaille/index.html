@@ -199,6 +199,7 @@
     .lb-row.rank-3 .rank-num { color:var(--text-dim); }
     .player-name { font-size:19px; font-weight:400; color:var(--text); display:flex; align-items:center; gap:4px; overflow:hidden; }
     .player-name-text { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .player-name-text:hover { text-decoration:underline; text-decoration-color:rgba(64,212,212,0.4); text-underline-offset:3px; }
     .player-badges { display:inline-flex; align-items:center; gap:3px; flex-shrink:0; position:relative; z-index:10; }
     .lb-chevron { font-size:11px; color:var(--text-muted); transition:transform 0.2s; display:inline-block; }
     .lb-row.open .lb-chevron { transform:rotate(90deg); }
@@ -1089,7 +1090,7 @@
           detail += `</div></div></div>`;
         });
         detail += '</div></div>';
-        html += `<div class="lb-row ${rc}" onclick="this.classList.toggle('open')" style="cursor:pointer"><div class="rank-num">${dRank}</div><div class="player-name" onclick="event.stopPropagation();openProfile(${s.id},'${s.name.replace(/'/g,"\\'")}');" style="cursor:pointer"><span class="player-name-text">${s.name}</span><span class="player-badges" onclick="event.stopPropagation()">${renderBadgesInline(s.id)}</span></div><div class="score-boss">${s.total}</div><div class="score-dungeons col-dng">${dngCount}</div>${detail}</div>`;
+        html += `<div class="lb-row ${rc}" onclick="this.classList.toggle('open')" style="cursor:pointer"><div class="rank-num">${dRank}</div><div class="player-name"><span class="player-name-text" onclick="event.stopPropagation();openProfile(${s.id},'${s.name.replace(/'/g,"\\'")}');" style="cursor:pointer">${s.name}</span><span class="player-badges" onclick="event.stopPropagation()">${renderBadgesInline(s.id)}</span></div><div class="score-boss">${s.total}</div><div class="score-dungeons col-dng">${dngCount}</div>${detail}</div>`;
       });
       document.getElementById('lb-content').innerHTML = html;
     }
