@@ -1328,8 +1328,25 @@
             : '<strong>Any dungeon completed without active logs will not be counted.</strong> Make sure your logs are enabled before each gaming session.'}</span>
         </div>`;
 
+      const step0 = `
+          <div class="logs-step">
+            <div class="logs-step-num">0</div>
+            <div class="logs-step-body">
+              <div class="logs-step-title">${fr ? 'Activer les journaux de combat avancés' : 'Enable advanced combat logs'}</div>
+              <div class="logs-step-desc">${fr
+                ? 'Dans <strong>Fellowship</strong>, ouvre les paramètres du jeu et active l\'option <strong>"Journaux de combat avancés"</strong> (Advanced Combat Logging). Sans cette option, aucun log ne sera enregistré.'
+                : 'In <strong>Fellowship</strong>, open the game settings and enable the <strong>"Advanced Combat Logging"</strong> option. Without this setting, no logs will be recorded.'}</div>
+              <div class="screenshot-placeholder">
+                <div class="screenshot-placeholder-label">${fr ? 'Paramètre dans Fellowship' : 'Setting in Fellowship'}</div>
+                <div class="screenshot-placeholder-img">${fr ? '[ Screenshot à ajouter — paramètre Advanced Combat Logging ]' : '[ Screenshot to add — Advanced Combat Logging setting ]'}</div>
+              </div>
+              <div class="logs-tip">⚠️ ${fr ? 'Ce paramètre est à activer <strong>une seule fois</strong> — il reste actif entre les sessions.' : 'This setting only needs to be enabled <strong>once</strong> — it stays active between sessions.'}</div>
+            </div>
+          </div>`;
+
       const liveContent = `
         <div class="logs-steps">
+          ${step0}
           <div class="logs-step">
             <div class="logs-step-num">1</div>
             <div class="logs-step-body">
@@ -1366,6 +1383,7 @@
 
       const uploadContent = `
         <div class="logs-steps">
+          ${step0}
           <div class="logs-step">
             <div class="logs-step-num">1</div>
             <div class="logs-step-body">
