@@ -1192,7 +1192,7 @@
         const bonusLabel = fr
           ? (PAGAILLE_CONFIG.BONUS_LABEL_FR || 'bonus weekend')
           : (PAGAILLE_CONFIG.BONUS_LABEL_EN || 'weekend bonus');
-        killsEl.innerHTML = `${total.toLocaleString('fr-FR')} <span style="font-size:18px;color:var(--teal-dim);font-weight:300">+ ${bonus.toLocaleString('fr-FR')} <em style="font-size:14px;letter-spacing:0.08em">${bonusLabel}</em></span>`;
+        killsEl.innerHTML = `${total.toLocaleString('fr-FR')} <span style="font-size:14px;color:#00ffff;font-weight:300">+ ${bonus.toLocaleString('fr-FR')} <em style="font-size:12px;letter-spacing:0.08em">${bonusLabel}</em></span>`;
       } else {
         killsEl.textContent = total.toLocaleString('fr-FR');
       }
