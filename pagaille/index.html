@@ -666,21 +666,25 @@
             <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 1" data-en="Tier 1">Palier 1</div>
             <div class="tier-threshold">1 000</div>
-            <div class="tier-reward" data-fr="Débloque de nouveaux émotes" data-en="Unlocks new emotes">Débloque de nouveaux émotes</div>
+            <div class="tier-reward" data-fr="Nouvelles emotes faites par Ciri" data-en="New emotes made by Ciri">Nouvelles emotes faites par Ciri</div>
             <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
           <div class="tier-card t2 locked" id="tier-2">
             <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 2" data-en="Tier 2">Palier 2</div>
             <div class="tier-threshold">2 500</div>
-            <div class="tier-reward" data-fr="Organisation de Gloire à la Compagnie II" data-en="Gloire à la Compagnie II confirmed">Organisation de Gloire à la Compagnie II</div>
+            <div class="tier-reward" data-fr="Glory to the Fellowship Saison II confirmée & Badge débloqué" data-en="Glory to the Fellowship Season II confirmed & Badge unlocked">Glory to the Fellowship Saison II confirmée & Badge débloqué</div>
+            <div style="margin:10px 0 6px;display:flex;align-items:center;gap:8px;">
+              <img src="../images/DM1.png" alt="Badge Palier 2" style="width:36px;height:36px;border-radius:6px;object-fit:cover;border:1px solid rgba(64,212,212,0.3);">
+              <span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;color:var(--text-muted);" data-fr="Badge exclusif" data-en="Exclusive badge">Badge exclusif</span>
+            </div>
             <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
           <div class="tier-card t3 locked" id="tier-3">
             <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 3" data-en="Tier 3">Palier 3</div>
             <div class="tier-threshold">5 000</div>
-            <div class="tier-reward" data-fr="Indice sur le secret de la Saison 1" data-en="Hint about Season 1's secret">Indice sur le secret de la Saison 1</div>
+            <div class="tier-reward" data-fr="Indice sur le secret de la Saison 1 & Fellowship Hardcore débloqué" data-en="Hint about Season 1's secret & Fellowship Hardcore unlocked">Indice sur le secret de la Saison 1 & Fellowship Hardcore débloqué</div>
             <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
         </div>
@@ -699,7 +703,7 @@
       <div class="lb-search-row">
         <div class="lb-search-wrap">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);flex-shrink:0"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input type="text" id="lb-search" placeholder="${fr ? 'Rechercher un joueur…' : 'Search a player…'}" oninput="onLbSearch()" autocomplete="off">
+          <input type="text" id="lb-search" placeholder="Rechercher un joueur…" oninput="onLbSearch()" autocomplete="off">
           <button class="lb-search-clear" id="lb-search-clear" onclick="clearLbSearch()" style="display:none">✕</button>
         </div>
         <div class="lb-count" id="lb-count"></div>
@@ -769,8 +773,8 @@
     });
   </script>
 
-  <script>
-    const SUPABASE_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+  <script src="pagaille-config.js"></script>
+  <script> = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
     const CACHE_MS = 60 * 1000;
     const SEASON   = 'S1';
@@ -1114,8 +1118,8 @@
       } else {
         let html = '';
         slice.forEach(s => {
-          // Rang global (dans filtered, pas juste la page)
-          const globalIdx = filtered.indexOf(s);
+          // Rang global = position dans _lbScores complet (indépendant de la recherche)
+          const globalIdx = _lbScores.indexOf(s);
           const dRank     = globalIdx + 1;
           const rc        = dRank <= 3 ? 'rank-' + dRank : '';
           const dngCount  = Object.values(s.byDungeon).filter(v => v.kills > 0).length;
@@ -1170,15 +1174,29 @@
       const N      = N_PLAYERS_AT_LAUNCH;
       const TIERS  = computeTiers(N);
       const total  = scores.reduce((s,p) => s+p.total, 0);
-      document.getElementById('total-kills').textContent = total.toLocaleString('fr-FR');
+      const fr     = currentLang === 'fr';
+
+      // Bonus weekend
+      const bonus = (typeof PAGAILLE_CONFIG !== 'undefined' && PAGAILLE_CONFIG.BONUS_KILLS) || 0;
+      const totalDisplay = total + bonus;
+      const killsEl = document.getElementById('total-kills');
+      if (bonus > 0) {
+        const bonusLabel = fr
+          ? (PAGAILLE_CONFIG.BONUS_LABEL_FR || 'bonus weekend')
+          : (PAGAILLE_CONFIG.BONUS_LABEL_EN || 'weekend bonus');
+        killsEl.innerHTML = `${total.toLocaleString('fr-FR')} <span style="font-size:18px;color:var(--teal-dim);font-weight:300">+ ${bonus.toLocaleString('fr-FR')} <em style="font-size:14px;letter-spacing:0.08em">${bonusLabel}</em></span>`;
+      } else {
+        killsEl.textContent = total.toLocaleString('fr-FR');
+      }
+
       const playerCountEl = document.getElementById('tier-player-count');
-      if (playerCountEl) playerCountEl.textContent = currentLang === 'en' ? `${N} players` : `${N} joueurs`;
-      const pct  = Math.min(100, (total/TIERS[TIERS.length-1])*100);
+      if (playerCountEl) playerCountEl.textContent = fr ? `${N} joueurs` : `${N} players`;
+      const pct  = Math.min(100, (totalDisplay / TIERS[TIERS.length-1]) * 100);
       const fill = document.getElementById('progress-fill');
       fill.style.width = pct + '%';
       fill.classList.remove('tier-2','tier-3');
-      if (total >= TIERS[1]) fill.classList.add('tier-3');
-      else if (total >= TIERS[0]) fill.classList.add('tier-2');
+      if (totalDisplay >= TIERS[1]) fill.classList.add('tier-3');
+      else if (totalDisplay >= TIERS[0]) fill.classList.add('tier-2');
       // Mise à jour des marqueurs et labels sur la barre
       const markers = document.querySelectorAll('.tier-marker');
       const maxTier = TIERS[TIERS.length-1];
@@ -1191,17 +1209,16 @@
         const card   = document.getElementById('tier-'+(i+1));
         const status = card.querySelector('.tier-status');
         const thresh = card.querySelector('.tier-threshold');
-        // Mise à jour du seuil affiché
         if (thresh) thresh.textContent = threshold.toLocaleString('fr-FR');
-        if (total >= threshold) {
+        if (totalDisplay >= threshold) {
           card.classList.remove('locked'); card.classList.add('unlocked');
           status.dataset.fr = 'Débloqué ✓'; status.dataset.en = 'Unlocked ✓';
-          status.textContent = currentLang==='en' ? 'Unlocked ✓' : 'Débloqué ✓';
+          status.textContent = fr ? 'Débloqué ✓' : 'Unlocked ✓';
         } else {
           card.classList.add('locked'); card.classList.remove('unlocked');
-          const rem = (threshold-total).toLocaleString('fr-FR');
+          const rem = (threshold - totalDisplay).toLocaleString('fr-FR');
           status.dataset.fr = `encore ${rem} boss`; status.dataset.en = `${rem} more bosses`;
-          status.textContent = currentLang==='en' ? `${rem} more bosses` : `encore ${rem} boss`;
+          status.textContent = fr ? `encore ${rem} boss` : `${rem} more bosses`;
         }
       });
       if (!scores.length) {
