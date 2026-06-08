@@ -698,7 +698,9 @@
             <div class="tier-badge-unlocked" data-fr="Débloqué ✓" data-en="Unlocked ✓">Débloqué ✓</div>
             <div class="tier-num" data-fr="Palier 1" data-en="Tier 1">Palier 1</div>
             <div class="tier-threshold">1 000</div>
-            <div class="tier-reward" data-fr="Nouvelles emotes faites par Ciri" data-en="New emotes made by Ciri">Nouvelles emotes faites par Ciri</div>
+            <div class="tier-reward-item">
+              <span class="tier-reward" data-fr="Nouvelles emotes faites par Ciri" data-en="New emotes made by Ciri">Nouvelles emotes faites par Ciri</span>
+            </div>      
             <div class="tier-status" data-fr="Verrouillé" data-en="Locked">Verrouillé</div>
           </div>
           <div class="tier-card t2 locked" id="tier-2">
@@ -707,7 +709,6 @@
             <div class="tier-threshold">2 500</div>
             <div class="tier-rewards">
               <div class="tier-reward-item">
-                <span class="tier-reward-icon">🎉</span>
                 <span data-fr="Glory to the Fellowship Saison II confirmée" data-en="Glory to the Fellowship Season II confirmed">Glory to the Fellowship Saison II confirmée</span>
               </div>
               <div class="tier-reward-item">
@@ -723,11 +724,9 @@
             <div class="tier-threshold">5 000</div>
             <div class="tier-rewards">
               <div class="tier-reward-item">
-                <span class="tier-reward-icon">🔍</span>
                 <span data-fr="Indice sur le secret de la Saison 1" data-en="Hint about Season 1's secret">Indice sur le secret de la Saison 1</span>
               </div>
               <div class="tier-reward-item">
-                <span class="tier-reward-icon">⚔️</span>
                 <span data-fr="Fellowship Hardcore débloqué" data-en="Fellowship Hardcore unlocked">Fellowship Hardcore débloqué</span>
               </div>
             </div>
@@ -820,14 +819,14 @@
   </script>
 
   <script>
-    // ── CONFIG EVENT — modifier BONUS_KILLS pour activer le bonus weekend ──
+    // HERE CHANGE BONUS ── CONFIG EVENT — modifier BONUS_KILLS pour activer le bonus weekend ──
     const PAGAILLE_CONFIG = {
-      BONUS_KILLS:    300,       // ← mettre ex: 300 pour afficher "+300 bonus weekend"
+      BONUS_KILLS:    0,       // ← mettre ex: 300 pour afficher "+300 bonus weekend"
       BONUS_LABEL_FR: 'bonus weekend',
       BONUS_LABEL_EN: 'weekend bonus',
       // Dates du weekend double boss (inclusives)
-      DOUBLE_BOSS_START: new Date('2026-06-08T00:00:00'),
-      DOUBLE_BOSS_END:   new Date('2026-06-10T23:59:59'),
+      DOUBLE_BOSS_START: new Date('2026-06-26T18:00:00'),
+      DOUBLE_BOSS_END:   new Date('2026-06-29T9:00:00'),
     };
   </script>
   <script> 
