@@ -822,7 +822,7 @@
   <script>
     // ── CONFIG EVENT — modifier BONUS_KILLS pour activer le bonus weekend ──
     const PAGAILLE_CONFIG = {
-      BONUS_KILLS:    123,       // ← mettre ex: 300 pour afficher "+300 bonus weekend"
+      BONUS_KILLS:    300,       // ← mettre ex: 300 pour afficher "+300 bonus weekend"
       BONUS_LABEL_FR: 'bonus weekend',
       BONUS_LABEL_EN: 'weekend bonus',
       // Dates du weekend double boss (inclusives)
@@ -1687,10 +1687,14 @@
 
     function updateWeekendBanner() {
       const banner = document.getElementById('weekend-banner');
-      if (!banner) return;
-      const cfg = typeof PAGAILLE_CONFIG !== 'undefined' ? PAGAILLE_CONFIG : null;
-      if (!cfg || !cfg.DOUBLE_BOSS_START || !cfg.DOUBLE_BOSS_END) return;
+      const cfg    = typeof PAGAILLE_CONFIG !== 'undefined' ? PAGAILLE_CONFIG : null;
       const now    = new Date();
+      console.log('[Banner] now:', now.toISOString());
+      console.log('[Banner] cfg:', cfg);
+      console.log('[Banner] start:', cfg?.DOUBLE_BOSS_START, '| end:', cfg?.DOUBLE_BOSS_END);
+      console.log('[Banner] active:', cfg && now >= cfg.DOUBLE_BOSS_START && now <= cfg.DOUBLE_BOSS_END);
+      if (!banner) { console.warn('[Banner] element not found'); return; }
+      if (!cfg || !cfg.DOUBLE_BOSS_START || !cfg.DOUBLE_BOSS_END) { console.warn('[Banner] config missing'); return; }
       const active = now >= cfg.DOUBLE_BOSS_START && now <= cfg.DOUBLE_BOSS_END;
       banner.classList.toggle('visible', active);
       banner.querySelectorAll('[data-fr]').forEach(el => {
