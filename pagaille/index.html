@@ -126,41 +126,42 @@
     .progress-title { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); }
     .progress-count { font-family: 'Cinzel', serif; font-size: 32px; color: var(--teal-light); font-weight: 700; text-shadow: 0 0 28px rgba(64,212,212,0.65); }
     .progress-count span { font-size: 15px; color: var(--text-dim); font-weight: 300; margin-left: 5px; }
-    .progress-track { position: relative; height: 16px; background: var(--bg3); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 12px; }
-    /* Gradient complet toujours visible sur toute la track */
+    .progress-track { position: relative; height: 16px; background: var(--bg3); border-radius: 8px; border: 1px solid var(--border); overflow: visible; margin-bottom: 12px; }
+    /* Fond atténué pleine largeur */
     .progress-track::before {
       content: '';
       position: absolute; inset: 0;
       border-radius: 8px;
       background: linear-gradient(90deg,
-        #1a991a 0%,
-        var(--tier1) 20%,
-        #1f8888 40%,
-        var(--tier2) 55%,
-        #7744cc 78%,
-        var(--tier3) 100%
+        #1a991a 0%, var(--tier1) 20%,
+        #1f8888 40%, var(--tier2) 55%,
+        #7744cc 78%, var(--tier3) 100%
       );
-      opacity: 0.15; /* partie non atteinte : très atténuée */
-    }
-    /* La fill révèle le gradient en pleine opacité */
-    .progress-fill {
-      position: absolute; left: 0; top: 0; bottom: 0;
+      opacity: 0.18;
+      overflow: hidden;
       border-radius: 8px;
+    }
+    /* Clip interne pour la fill */
+    .progress-track-inner {
+      position: absolute; inset: 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 8px;
+      /* background-size en % de la track via padding trick */
       background: linear-gradient(90deg,
-        #1a991a 0%,
-        var(--tier1) 20%,
-        #1f8888 40%,
-        var(--tier2) 55%,
-        #7744cc 78%,
-        var(--tier3) 100%
+        #1a991a 0%, var(--tier1) 20%,
+        #1f8888 40%, var(--tier2) 55%,
+        #7744cc 78%, var(--tier3) 100%
       );
-      background-size: var(--track-width, 100%) 100%;
+      background-size: var(--track-w, 900px) 100%;
       background-repeat: no-repeat;
       transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-      min-width: 0;
+      min-width: 0; position: relative;
     }
     .progress-fill::after { content:''; position:absolute; right:-1px; top:2px; bottom:2px; width:5px; background:white; border-radius:3px; opacity:0.85; box-shadow:0 0 10px white; }
-    /* Les classes tier-2/tier-3 gèrent juste le box-shadow */
     .progress-fill.tier-2 { box-shadow: 0 0 22px rgba(64,212,212,0.75), 0 0 44px rgba(64,212,212,0.3); }
     .progress-fill.tier-3 { box-shadow: 0 0 22px rgba(196,160,255,0.75), 0 0 44px rgba(196,160,255,0.3); }
     .tier-markers { position: absolute; inset: 0; pointer-events: none; }
@@ -711,7 +712,9 @@
           <span class="progress-count"><span id="total-kills">—</span><span data-fr=" boss" data-en=" bosses"> boss</span></span>
         </div>
         <div class="progress-track">
-          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          <div class="progress-track-inner">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
           <div class="tier-markers">
             <div class="tier-marker t1" data-label="1 000"></div>
             <div class="tier-marker t2" data-label="2 500"></div>
@@ -1307,11 +1310,17 @@
       const pct  = Math.min(100, (totalDisplay / TIERS[TIERS.length-1]) * 100);
       const fill = document.getElementById('progress-fill');
       fill.style.width = pct + '%';
-      // Sync background-size avec la largeur réelle de la track
-      requestAnimationFrame(() => {
-        const track = document.querySelector('.progress-track');
-        if (track) fill.style.setProperty('--track-width', track.offsetWidth + 'px');
-      });
+      // Sync background-size avec largeur réelle de la track (responsive)
+      const syncTrackW = () => {
+        const inner = document.querySelector('.progress-track-inner');
+        if (inner) fill.style.setProperty('--track-w', inner.offsetWidth + 'px');
+      };
+      syncTrackW();
+      if (!window._trackObserver) {
+        window._trackObserver = new ResizeObserver(syncTrackW);
+        const inner = document.querySelector('.progress-track-inner');
+        if (inner) window._trackObserver.observe(inner);
+      }
       fill.classList.remove('tier-2','tier-3');
       if (totalDisplay >= TIERS[1]) fill.classList.add('tier-3');
       else if (totalDisplay >= TIERS[0]) fill.classList.add('tier-2');
