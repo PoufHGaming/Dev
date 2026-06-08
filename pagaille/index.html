@@ -773,8 +773,15 @@
     });
   </script>
 
-  <script src="pagaille-config.js"></script>
   <script>
+    // ── CONFIG EVENT — modifier BONUS_KILLS pour activer le bonus weekend ──
+    const PAGAILLE_CONFIG = {
+      BONUS_KILLS:    300,       // ← mettre ex: 300 pour afficher "+300 bonus weekend"
+      BONUS_LABEL_FR: 'bonus weekend',
+      BONUS_LABEL_EN: 'weekend bonus',
+    };
+  </script>
+  <script> 
     const SUPABASE_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
     const CACHE_MS = 60 * 1000;
