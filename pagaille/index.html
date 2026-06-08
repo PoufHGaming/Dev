@@ -140,7 +140,7 @@
         #7744cc 78%,
         var(--tier3) 100%
       );
-      opacity: 0.25; /* partie non atteinte : très atténuée */
+      opacity: 0.15; /* partie non atteinte : très atténuée */
     }
     /* La fill révèle le gradient en pleine opacité */
     .progress-fill {
@@ -993,6 +993,8 @@
     };
     // Les noms de boss sont déjà en anglais — pas de traduction nécessaire
 
+    let currentLang = localStorage.getItem('pouf_lang') || 'fr';
+
     // Retourne le nom du donjon dans la langue courante
     function tDungeon(nameFR) {
       return currentLang === 'en' ? (DUNGEON_NAMES_EN[nameFR] || nameFR) : nameFR;
@@ -1326,7 +1328,15 @@
         const status = card.querySelector('.tier-status');
         const thresh = card.querySelector('.tier-threshold');
         if (thresh) thresh.textContent = threshold.toLocaleString('fr-FR');
-        if (totalDisplay >= threshold) {
+
+        // Un palier atteint est définitivement acquis — on stocke en localStorage
+        const storageKey = `pagaille_tier_${i+1}_unlocked`;
+        const alreadyUnlocked = localStorage.getItem(storageKey) === '1';
+        const nowUnlocked = totalDisplay >= threshold;
+        if (nowUnlocked) localStorage.setItem(storageKey, '1');
+        const isUnlocked = alreadyUnlocked || nowUnlocked;
+
+        if (isUnlocked) {
           card.classList.remove('locked'); card.classList.add('unlocked');
           status.dataset.fr = 'Débloqué ✓'; status.dataset.en = 'Unlocked ✓';
           status.textContent = fr ? 'Débloqué ✓' : 'Unlocked ✓';
