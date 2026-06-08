@@ -126,11 +126,43 @@
     .progress-title { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); }
     .progress-count { font-family: 'Cinzel', serif; font-size: 32px; color: var(--teal-light); font-weight: 700; text-shadow: 0 0 28px rgba(64,212,212,0.65); }
     .progress-count span { font-size: 15px; color: var(--text-dim); font-weight: 300; margin-left: 5px; }
-    .progress-track { position: relative; height: 16px; background: var(--bg3); border-radius: 8px; border: 1px solid var(--border); overflow: visible; margin-bottom: 12px; }
-    .progress-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg,#1a991a,var(--tier1)); transition: width 1.2s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 22px rgba(68,238,68,0.75), 0 0 44px rgba(68,238,68,0.3); min-width: 0; position: relative; }
+    .progress-track { position: relative; height: 16px; background: var(--bg3); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 12px; }
+    /* Gradient complet toujours visible sur toute la track */
+    .progress-track::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 8px;
+      background: linear-gradient(90deg,
+        #1a991a 0%,
+        var(--tier1) 20%,
+        #1f8888 40%,
+        var(--tier2) 55%,
+        #7744cc 78%,
+        var(--tier3) 100%
+      );
+      opacity: 0.25; /* partie non atteinte : très atténuée */
+    }
+    /* La fill révèle le gradient en pleine opacité */
+    .progress-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      border-radius: 8px;
+      background: linear-gradient(90deg,
+        #1a991a 0%,
+        var(--tier1) 20%,
+        #1f8888 40%,
+        var(--tier2) 55%,
+        #7744cc 78%,
+        var(--tier3) 100%
+      );
+      background-size: var(--track-width, 100%) 100%;
+      background-repeat: no-repeat;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+      min-width: 0;
+    }
     .progress-fill::after { content:''; position:absolute; right:-1px; top:2px; bottom:2px; width:5px; background:white; border-radius:3px; opacity:0.85; box-shadow:0 0 10px white; }
-    .progress-fill.tier-2 { background: linear-gradient(90deg,#1a991a 0%,var(--tier1) 20%,#1f8888 45%,var(--tier2) 100%); box-shadow: 0 0 22px rgba(64,212,212,0.75), 0 0 44px rgba(64,212,212,0.3); }
-    .progress-fill.tier-3 { background: linear-gradient(90deg,#1a991a 0%,var(--tier1) 20%,#1f8888 40%,var(--tier2) 55%,#7744cc 78%,var(--tier3) 100%); box-shadow: 0 0 22px rgba(196,160,255,0.75), 0 0 44px rgba(196,160,255,0.3); }
+    /* Les classes tier-2/tier-3 gèrent juste le box-shadow */
+    .progress-fill.tier-2 { box-shadow: 0 0 22px rgba(64,212,212,0.75), 0 0 44px rgba(64,212,212,0.3); }
+    .progress-fill.tier-3 { box-shadow: 0 0 22px rgba(196,160,255,0.75), 0 0 44px rgba(196,160,255,0.3); }
     .tier-markers { position: absolute; inset: 0; pointer-events: none; }
     .tier-marker { position: absolute; top: -6px; bottom: -6px; width: 2px; border-radius: 2px; transform: translateX(-50%); }
     .tier-marker::after { content: attr(data-label); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; white-space: nowrap; color: inherit; }
@@ -944,7 +976,27 @@
       "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"]
     };
 
-    let currentLang = localStorage.getItem('pouf_lang') || 'fr';
+    // Traductions FR → EN des noms de donjons
+    const DUNGEON_NAMES_EN = {
+      "Abime des marins":      "Sailor's Abyss",
+      "Bois de L'aube":        "Everdawn Grove",
+      "Carrière tombe-dieu":   "Godfall Quarry",
+      "Coeur de guivre":       "Wyrmheart",
+      "Creux Soyeux":          "Silken Hollow",
+      "Guet Tempete":          "Stormwatch",
+      "Marché d'Urrak":        "Urrak Markets",
+      "Sables Empyréens":      "Empyrean Sands",
+      "Caveau de Lamespectre": "Wraithtide Vault",
+      "Coeur de Tuzari":       "Heart of Tuzari",
+      "La chute Cithrel":      "Cithrel's Fall",
+      "Saccage de Drakheim":   "Ransack of Drakheim",
+    };
+    // Les noms de boss sont déjà en anglais — pas de traduction nécessaire
+
+    // Retourne le nom du donjon dans la langue courante
+    function tDungeon(nameFR) {
+      return currentLang === 'en' ? (DUNGEON_NAMES_EN[nameFR] || nameFR) : nameFR;
+    }
 
     function setLang(lang) {
       currentLang = lang;
@@ -1189,7 +1241,7 @@
             detail += `<div class="dng-block ${hasAny ? 'has-kills' : ''}">`;
             if (img) detail += `<div class="dng-bg" style="background-image:url('${img}')"></div>`;
             detail += `<div class="dng-inner">`;
-            detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr2 ? 'Tués' : 'Killed'}</span></div>`;
+            detail += `<div class="dng-header"><span class="dng-name">${tDungeon(d)}</span><span class="dng-col-label">${fr2 ? 'Tués' : 'Killed'}</span></div>`;
             detail += `<div class="dng-boss-list">`;
             bosses.forEach(boss => {
               const bk   = s.byBoss[boss] || { kills: 0, deaths: 0 };
@@ -1253,6 +1305,11 @@
       const pct  = Math.min(100, (totalDisplay / TIERS[TIERS.length-1]) * 100);
       const fill = document.getElementById('progress-fill');
       fill.style.width = pct + '%';
+      // Sync background-size avec la largeur réelle de la track
+      requestAnimationFrame(() => {
+        const track = document.querySelector('.progress-track');
+        if (track) fill.style.setProperty('--track-width', track.offsetWidth + 'px');
+      });
       fill.classList.remove('tier-2','tier-3');
       if (totalDisplay >= TIERS[1]) fill.classList.add('tier-3');
       else if (totalDisplay >= TIERS[0]) fill.classList.add('tier-2');
@@ -1400,7 +1457,7 @@
 
           html += `<div class="shbar-wrap${isExp?' expanded':''}">
             <div class="shbar-row${isTop?' top':''}${val===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
-              <div class="shbar-name">${d.name.toUpperCase()}</div>
+              <div class="shbar-name">${tDungeon(d.name).toUpperCase()}</div>
               <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
               <div class="shbar-track">
                 ${img ? `<div class="shbar-img" style="width:${barPct}%;background-image:url('${img}')"></div><div class="shbar-marker" style="left:${barPct}%"></div>` : ''}
@@ -1417,7 +1474,7 @@
               const bval = bk[mode] || 0;
               html += `<div class="shbar-boss-row">
                 <div class="shbar-boss-name">${boss}</div>
-                <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString('fr-FR') : '—'}</div>
+                <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString(fr ? 'fr-FR' : 'en-US') : '—'}</div>
                 <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bval/maxBoss*100}%"></div></div>
               </div>`;
             });
