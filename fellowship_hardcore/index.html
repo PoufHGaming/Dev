@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fellowship Hardcore</title>
+  <link rel="icon" type="image/png" href="../images/pouf.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #40d4d4;
+      --teal-light: #72e8e8;
+      --teal-dim: #2a9898;
+      --bg: #070b0b;
+      --bg2: #0d1a1a;
+      --bg3: #122424;
+      --border: rgba(64,212,212,0.22);
+      --border-bright: rgba(64,212,212,0.65);
+      --text: #f0fafa;
+      --text-dim: #9fd8d8;
+      --text-muted: #4d8080;
+      --tier1: #44ee44;
+      --tier2: #40d4d4;
+      --tier3: #c4a0ff;
+      --hc-red: #ff4444;
+      --hc-red-dim: rgba(255,68,68,0.18);
+      --hc-gold: #f0c040;
+      --hc-champion: #44ee44;
+      --hc-paragon: #40d4d4;
+      --hc-eternal: #c4a0ff;
+      --twitch: #9147ff;
+      --discord: #5865f2;
+      --youtube: #ff0000;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      min-height: 100vh;
+      font-size: 19px;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -5%, rgba(64,212,212,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 5% 85%, rgba(255,68,68,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 30% 30% at 95% 15%, rgba(196,160,255,0.05) 0%, transparent 50%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .top-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #882222 15%, var(--hc-red) 40%, #882222 60%, rgba(196,160,255,0.6) 80%, transparent);
+    }
+
+    /* ── SOCIAL ── */
+    .social-links { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:10px; }
+    .social-link {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:6px 14px; border:1px solid var(--border); border-radius:3px;
+      text-decoration:none; color:var(--text-dim); font-size:12px;
+      font-family:'Cinzel',serif; letter-spacing:0.1em; text-transform:uppercase;
+      transition:all 0.25s; background:rgba(255,255,255,0.02); white-space:nowrap;
+    }
+    .social-link svg { flex-shrink:0; width:14px; height:14px; }
+    .social-link:hover { color:var(--text); background:rgba(255,255,255,0.04); }
+    .social-link.twitch:hover  { border-color:var(--twitch); color:var(--twitch); box-shadow:0 0 12px rgba(145,71,255,0.15); }
+    .social-link.discord:hover { border-color:var(--discord); color:var(--discord); box-shadow:0 0 12px rgba(88,101,242,0.15); }
+    .social-link.youtube:hover { border-color:var(--youtube); color:var(--youtube); box-shadow:0 0 12px rgba(255,0,0,0.12); }
+
+    /* ── HEADER ── */
+    header {
+      text-align:center; padding:44px 24px 28px;
+      border-bottom:1px solid var(--border);
+      position:relative; z-index:1;
+    }
+    .event-skull { font-size:32px; margin-bottom:8px; filter:drop-shadow(0 0 12px rgba(255,68,68,0.5)); }
+    .event-title {
+      font-family:'Cinzel',serif; font-size:clamp(24px,5vw,44px); font-weight:700;
+      color:var(--hc-red); letter-spacing:0.12em; text-transform:uppercase;
+      text-shadow:0 0 40px rgba(255,68,68,0.5), 0 0 80px rgba(255,68,68,0.2);
+    }
+    .event-subtitle { font-size:15px; color:var(--text-dim); margin-top:8px; letter-spacing:0.18em; text-transform:uppercase; font-weight:300; }
+    .event-season { display:inline-flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:var(--text-muted); font-family:'Cinzel',serif; letter-spacing:0.12em; }
+
+    /* ── NAV ── */
+    nav {
+      display:flex; align-items:center; gap:2px;
+      padding:10px 24px;
+      border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:100;
+      background:rgba(7,11,11,0.95);
+      backdrop-filter:blur(12px);
+    }
+    .tab {
+      font-family:'Cinzel',serif; font-size:13px; letter-spacing:0.12em;
+      text-transform:uppercase; padding:8px 16px;
+      background:none; border:1px solid transparent;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s; border-radius:3px;
+    }
+    .tab:hover { border-color:var(--border); color:var(--text-dim); }
+    .tab.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.06); }
+    .home-btn { opacity:0.65; color:var(--text-dim); }
+    .home-btn:hover { opacity:1; color:var(--teal-light); }
+    .nav-sep { width:1px; height:20px; background:var(--border); margin:0 4px; align-self:center; }
+    .nav-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .lang-toggle { display:flex; gap:2px; }
+    .lang-btn {
+      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
+      padding:6px 11px; background:var(--bg2); border:1px solid var(--border);
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
+    }
+    .lang-btn:first-child { border-radius:3px 0 0 3px; }
+    .lang-btn:last-child  { border-radius:0 3px 3px 0; }
+    .lang-btn.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.08); font-weight:600; }
+
+    /* ── MAIN ── */
+    main { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:36px 24px 80px; }
+    .page { display:none; }
+    .page.active { display:block; }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:20px; padding-bottom:10px;
+      border-bottom:1px solid var(--border);
+    }
+
+    /* ── SYNC BAR ── */
+    .lb-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:12px; }
+    .sync-info { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-muted); font-style:italic; }
+    .sync-dot { width:8px; height:8px; border-radius:50%; background:var(--text-muted); flex-shrink:0; }
+    .sync-dot.ok   { background:var(--tier1); box-shadow:0 0 7px var(--tier1); }
+    .sync-dot.error { background:var(--hc-red); box-shadow:0 0 7px var(--hc-red); }
+    .sync-dot.live { background:var(--teal); box-shadow:0 0 7px var(--teal); animation:sdot 1s ease-in-out infinite; }
+    @keyframes sdot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .refresh-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+      padding:7px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:3px;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
+    }
+    .refresh-btn:hover { border-color:var(--border-bright); color:var(--text-dim); }
+    .refresh-btn.spinning svg { animation:spin 0.8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── SEARCH ── */
+    .lb-search-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .lb-search-wrap {
+      flex:1; display:flex; align-items:center; gap:8px;
+      background:var(--bg2); border:1px solid var(--border); border-radius:4px;
+      padding:0 12px; transition:border-color 0.2s;
+    }
+    .lb-search-wrap:focus-within { border-color:rgba(255,68,68,0.5); }
+    .lb-search-wrap input {
+      flex:1; background:none; border:none; outline:none;
+      color:var(--text); font-family:'Crimson Pro',serif; font-size:16px;
+      padding:9px 0; caret-color:var(--hc-red);
+    }
+    .lb-search-wrap input::placeholder { color:var(--text-muted); }
+    .lb-search-clear { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; padding:4px; transition:color 0.2s; }
+    .lb-search-clear:hover { color:var(--text); }
+    .lb-count { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; color:var(--text-muted); white-space:nowrap; }
+
+    /* ── LEADERBOARD TABLE ── */
+    .lb-header {
+      display:grid; grid-template-columns:44px 1fr 100px 100px 110px;
+      padding:0 14px 10px; gap:8px;
+      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.18em;
+      text-transform:uppercase; color:var(--text-muted);
+      border-bottom:1px solid var(--border);
+    }
+    .lb-row {
+      display:grid; grid-template-columns:44px 1fr 100px 100px 110px;
+      padding:0 14px; gap:8px; align-items:center;
+      border-bottom:1px solid rgba(64,212,212,0.07);
+      cursor:pointer; transition:background 0.15s; min-height:52px;
+    }
+    .lb-row:hover { background:rgba(255,68,68,0.04); }
+    .lb-row.expanded { background:rgba(255,68,68,0.06); border-bottom:none; }
+    .lb-rank {
+      font-family:'Cinzel',serif; font-size:13px; font-weight:700;
+      color:var(--text-muted); text-align:center;
+    }
+    .lb-rank.r1 { color:var(--hc-gold); text-shadow:0 0 14px rgba(240,192,64,0.5); }
+    .lb-rank.r2 { color:#c0c0c0; }
+    .lb-rank.r3 { color:#cd7f32; }
+    .lb-player { display:flex; flex-direction:column; gap:2px; }
+    .lb-player-name { font-size:17px; color:var(--text); }
+    .lb-char-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+    .lb-char-tag {
+      display:inline-flex; align-items:center; gap:5px;
+      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.1em;
+      padding:2px 8px; border-radius:20px; border:1px solid;
+    }
+    .lb-char-tag.alive  { border-color:rgba(64,212,212,0.3); color:var(--teal-dim); background:rgba(64,212,212,0.06); }
+    .lb-char-tag.dead   { border-color:rgba(255,68,68,0.3); color:rgba(255,68,68,0.6); background:rgba(255,68,68,0.05); text-decoration:line-through; }
+    .lb-char-skull { font-size:10px; }
+    .lb-ilvl { font-family:'Cinzel',serif; font-size:14px; color:var(--teal-light); text-align:right; }
+    .lb-ilvl.dead { color:var(--text-muted); }
+    .lb-attempts { font-family:'Cinzel',serif; font-size:13px; color:var(--text-muted); text-align:right; }
+    .lb-capstone { text-align:right; }
+    .capstone-badge {
+      display:inline-block; font-family:'Cinzel',serif; font-size:10px;
+      letter-spacing:0.12em; padding:3px 9px; border-radius:20px; border:1px solid;
+      white-space:nowrap;
+    }
+    .capstone-badge.champion { color:var(--hc-champion); border-color:rgba(68,238,68,0.4); background:rgba(68,238,68,0.08); }
+    .capstone-badge.paragon  { color:var(--hc-paragon);  border-color:rgba(64,212,212,0.4); background:rgba(64,212,212,0.08); }
+    .capstone-badge.eternal  { color:var(--hc-eternal);  border-color:rgba(196,160,255,0.4); background:rgba(196,160,255,0.08); }
+
+    /* ── EXPAND PANEL ── */
+    .lb-expand {
+      background:rgba(7,11,11,0.8); border-bottom:1px solid var(--border);
+      padding:18px 14px 22px 58px;
+      display:none;
+    }
+    .lb-expand.open { display:block; }
+    .expand-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .expand-char-card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:6px;
+      padding:16px 18px;
+    }
+    .expand-char-card.dead-card { border-color:rgba(255,68,68,0.25); background:rgba(255,68,68,0.03); }
+    .expand-char-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .expand-char-name { font-family:'Cinzel',serif; font-size:14px; color:var(--text); }
+    .expand-char-class { font-size:13px; color:var(--text-muted); font-style:italic; }
+    .expand-stat-row { display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid rgba(64,212,212,0.07); font-size:15px; }
+    .expand-stat-row:last-child { border-bottom:none; }
+    .expand-stat-label { color:var(--text-muted); font-size:13px; }
+    .expand-stat-value { color:var(--teal-light); font-family:'Cinzel',serif; font-size:13px; }
+    .expand-stat-value.red { color:rgba(255,68,68,0.8); }
+    .expand-death-info { margin-top:10px; padding:8px 10px; background:rgba(255,68,68,0.06); border-radius:4px; border-left:2px solid rgba(255,68,68,0.4); font-size:14px; color:rgba(255,68,68,0.7); }
+    .expand-capstones { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+
+    /* ── PAGINATION ── */
+    #lb-pagination { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:16px; flex-wrap:wrap; }
+    .pg-btn {
+      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.08em;
+      min-width:36px; height:36px; padding:0 10px;
+      background:var(--bg2); border:1px solid var(--border); border-radius:3px;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .pg-btn:hover:not(:disabled) { border-color:var(--border-bright); color:var(--text-dim); }
+    .pg-btn.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.07); }
+    .pg-btn:disabled { opacity:0.3; cursor:default; }
+
+    /* ── EVENTS CATALOGUE ── */
+    .events-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+    .evt-filter {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+      padding:6px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:3px;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
+    }
+    .evt-filter:hover { border-color:var(--border-bright); color:var(--text-dim); }
+    .evt-filter.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.07); }
+    .evt-list { display:flex; flex-direction:column; gap:8px; }
+    .evt-item {
+      display:flex; align-items:center; gap:14px;
+      padding:12px 16px; background:var(--bg2); border:1px solid var(--border);
+      border-radius:5px; transition:border-color 0.15s;
+    }
+    .evt-item.death    { border-left:3px solid rgba(255,68,68,0.6); }
+    .evt-item.capstone { border-left:3px solid rgba(196,160,255,0.6); }
+    .evt-item.new_attempt { border-left:3px solid rgba(64,212,212,0.4); }
+    .evt-icon { font-size:20px; flex-shrink:0; width:28px; text-align:center; }
+    .evt-body { flex:1; }
+    .evt-title { font-size:16px; color:var(--text); }
+    .evt-title strong { color:var(--hc-red); }
+    .evt-title.cap strong { color:var(--hc-eternal); }
+    .evt-meta { font-size:13px; color:var(--text-muted); margin-top:2px; font-style:italic; }
+    .evt-time { font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted); white-space:nowrap; flex-shrink:0; }
+
+    /* ── RULES PAGE ── */
+    .rules-section { margin-bottom:36px; }
+    .rules-section-title {
+      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--text-dim); margin-bottom:16px; padding-bottom:10px;
+      border-bottom:1px solid var(--border);
+    }
+    .rules-list { display:flex; flex-direction:column; gap:10px; }
+    .rules-item {
+      padding:12px 16px; background:var(--bg2); border:1px solid var(--border);
+      border-radius:4px; font-size:16px; line-height:1.6; color:var(--text-dim);
+    }
+    .rules-item strong { color:var(--text); }
+    .rules-item.warning { border-color:rgba(255,68,68,0.3); background:rgba(255,68,68,0.04); }
+    .rules-item.warning strong { color:var(--hc-red); }
+    .capstone-table { width:100%; border-collapse:collapse; margin-top:8px; }
+    .capstone-table th {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+      padding:8px 12px; text-align:left; color:var(--text-muted);
+      border-bottom:1px solid var(--border);
+    }
+    .capstone-table td { padding:10px 12px; font-size:15px; border-bottom:1px solid rgba(64,212,212,0.07); }
+    .capstone-table tr:last-child td { border-bottom:none; }
+    .ct-champion { color:var(--hc-champion); font-family:'Cinzel',serif; font-size:13px; }
+    .ct-paragon  { color:var(--hc-paragon);  font-family:'Cinzel',serif; font-size:13px; }
+    .ct-eternal  { color:var(--hc-eternal);  font-family:'Cinzel',serif; font-size:13px; }
+
+    /* ── REGISTER PAGE ── */
+    .register-card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+      padding:28px 32px; max-width:540px; margin:0 auto;
+    }
+    .register-title {
+      font-family:'Cinzel',serif; font-size:14px; letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--text-dim); margin-bottom:8px;
+    }
+    .register-desc { font-size:15px; color:var(--text-muted); margin-bottom:28px; line-height:1.6; font-style:italic; }
+    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+    .field label { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); }
+    .field input, .field select {
+      background:var(--bg3); border:1px solid var(--border); border-radius:4px;
+      color:var(--text); font-family:'Crimson Pro',serif; font-size:16px;
+      padding:10px 14px; outline:none; transition:border-color 0.2s;
+    }
+    .field input:focus, .field select:focus { border-color:rgba(255,68,68,0.5); }
+    .field input::placeholder { color:var(--text-muted); }
+    .field select option { background:var(--bg3); }
+    .field-hint { font-size:13px; color:var(--text-muted); font-style:italic; margin-top:2px; }
+    .btn-register {
+      width:100%; padding:12px; font-family:'Cinzel',serif; font-size:13px; letter-spacing:0.2em;
+      text-transform:uppercase; background:rgba(255,68,68,0.1); border:1px solid rgba(255,68,68,0.4);
+      color:var(--hc-red); border-radius:4px; cursor:pointer; transition:all 0.2s; margin-top:8px;
+    }
+    .btn-register:hover { background:rgba(255,68,68,0.18); border-color:rgba(255,68,68,0.7); }
+    .btn-register:disabled { opacity:0.4; cursor:default; }
+    .register-result { margin-top:16px; padding:12px 16px; border-radius:4px; font-size:15px; display:none; }
+    .register-result.ok  { background:rgba(68,238,68,0.08); border:1px solid rgba(68,238,68,0.3); color:var(--tier1); }
+    .register-result.err { background:rgba(255,68,68,0.08); border:1px solid rgba(255,68,68,0.3); color:var(--hc-red); }
+    .register-result.show { display:block; }
+    .register-warning {
+      padding:12px 16px; background:rgba(255,68,68,0.06); border:1px solid rgba(255,68,68,0.25);
+      border-radius:4px; font-size:14px; color:rgba(255,68,68,0.8); margin-bottom:22px; line-height:1.6;
+    }
+
+    /* ── LOADING / EMPTY ── */
+    .loading { text-align:center; padding:48px 0; color:var(--text-muted); font-style:italic; font-size:16px; }
+    .empty   { text-align:center; padding:48px 0; color:var(--text-muted); font-style:italic; font-size:16px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:var(--bg3); border:1px solid var(--border); border-radius:4px;
+      padding:10px 20px; font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
+      color:var(--text-dim); pointer-events:none; transition:transform 0.3s; z-index:999;
+      white-space:nowrap;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+    .toast.error { border-color:rgba(255,68,68,0.4); color:var(--hc-red); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
+      backdrop-filter:blur(4px); z-index:500; align-items:center; justify-content:center;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+      max-width:680px; width:calc(100% - 32px); max-height:85vh; overflow-y:auto;
+    }
+    .modal-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 22px; border-bottom:1px solid var(--border);
+      position:sticky; top:0; background:var(--bg2); z-index:1;
+    }
+    .modal-player-name { font-family:'Cinzel',serif; font-size:16px; color:var(--text); }
+    .modal-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:18px; padding:4px 8px; transition:color 0.2s; }
+    .modal-close:hover { color:var(--text); }
+    .modal-body { padding:20px 22px 24px; }
+    .modal-section-title { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
+    .modal-chars { display:flex; flex-direction:column; gap:14px; }
+    .modal-char {
+      background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:14px 16px;
+    }
+    .modal-char.dead-char { border-color:rgba(255,68,68,0.2); }
+    .modal-char-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .modal-char-name { font-family:'Cinzel',serif; font-size:14px; color:var(--text); }
+    .modal-char-status-alive { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; color:var(--teal-dim); padding:2px 8px; border:1px solid rgba(64,212,212,0.3); border-radius:20px; }
+    .modal-char-status-dead  { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; color:rgba(255,68,68,0.7); padding:2px 8px; border:1px solid rgba(255,68,68,0.3); border-radius:20px; }
+    .modal-stats-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .modal-stat { text-align:center; padding:8px; background:rgba(0,0,0,0.2); border-radius:4px; }
+    .modal-stat-val { font-family:'Cinzel',serif; font-size:18px; color:var(--teal-light); }
+    .modal-stat-val.red { color:rgba(255,68,68,0.8); }
+    .modal-stat-lbl { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-top:2px; }
+    .modal-capstones { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+    .modal-death-info { margin-top:10px; padding:8px 12px; background:rgba(255,68,68,0.06); border-radius:4px; border-left:2px solid rgba(255,68,68,0.4); font-size:14px; color:rgba(255,68,68,0.65); font-style:italic; }
+
+    @media (max-width:700px) {
+      main { padding:20px 14px 64px; }
+      .lb-header, .lb-row { grid-template-columns:36px 1fr 80px 70px; }
+      .lb-header .col-attempts, .lb-row .col-attempts { display:none; }
+      .expand-grid { grid-template-columns:1fr; }
+      .modal-stats-grid { grid-template-columns:1fr 1fr; }
+      nav { padding:8px 10px; flex-wrap:wrap; gap:4px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-line"></div>
+
+<header>
+  <div class="event-skull">💀</div>
+  <div class="event-title">Fellowship Hardcore</div>
+  <div class="event-subtitle" data-fr="Mourir, c'est recommencer." data-en="Death is just the beginning.">Mourir, c'est recommencer.</div>
+  <div class="event-season">
+    <span data-fr="Saison 1" data-en="Season 1">Saison 1</span>
+    <span style="color:var(--border)">·</span>
+    <span id="active-count">— <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">aventuriers actifs</span></span>
+  </div>
+  <div class="social-links">
+    <a href="https://twitch.tv/pouf_hgaming" target="_blank" class="social-link twitch">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+      Twitch
+    </a>
+    <a href="https://discord.gg/3WH65QCARa" target="_blank" class="social-link discord">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.132 18.114a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.04.001-.088-.041-.104a13.2 13.2 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+      Discord
+    </a>
+    <a href="https://www.youtube.com/@PoufHGaming" target="_blank" class="social-link youtube">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      YouTube
+    </a>
+  </div>
+</header>
+
+<nav>
+  <a href="../index.html" class="tab home-btn" title="Accueil" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:8px 14px;">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+  </a>
+  <div class="nav-sep"></div>
+  <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement" data-en="Leaderboard">Classement</button>
+  <button class="tab" id="tab-events" onclick="showPage('events',this)" data-fr="Événements" data-en="Events">Événements</button>
+  <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
+  <button class="tab" id="tab-register" onclick="showPage('register',this)" data-fr="S'inscrire" data-en="Register">S'inscrire</button>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="lang-btn-fr" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ── LEADERBOARD ── -->
+  <div id="page-leaderboard" class="page active">
+    <div class="lb-toolbar">
+      <div class="sync-info" id="sync-info">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-text">—</span>
+      </div>
+      <button class="refresh-btn" id="refresh-btn" onclick="refreshLeaderboard()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        <span data-fr="Actualiser" data-en="Refresh">Actualiser</span>
+      </button>
+    </div>
+    <div class="lb-search-row">
+      <div class="lb-search-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);flex-shrink:0"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="lb-search" placeholder="Rechercher un joueur…" oninput="onLbSearch()" autocomplete="off">
+        <button class="lb-search-clear" id="lb-search-clear" onclick="clearLbSearch()" style="display:none">✕</button>
+      </div>
+      <div class="lb-count" id="lb-count"></div>
+    </div>
+    <div class="lb-header">
+      <div>#</div>
+      <div data-fr="Joueur / Personnage(s)" data-en="Player / Character(s)">Joueur / Personnage(s)</div>
+      <div style="text-align:right" data-fr="Meilleur ilvl" data-en="Best ilvl">Meilleur ilvl</div>
+      <div class="col-attempts" style="text-align:right" data-fr="Tentatives" data-en="Attempts">Tentatives</div>
+      <div style="text-align:right" data-fr="Capstone" data-en="Capstone">Capstone</div>
+    </div>
+    <div id="lb-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
+    <div id="lb-pagination"></div>
+  </div>
+
+  <!-- ── EVENTS ── -->
+  <div id="page-events" class="page">
+    <div class="section-title" data-fr="Catalogue des événements" data-en="Event Catalogue">Catalogue des événements</div>
+    <div class="events-filters">
+      <button class="evt-filter active" onclick="setEvtFilter('all',this)" data-fr="Tous" data-en="All">Tous</button>
+      <button class="evt-filter" onclick="setEvtFilter('death',this)" data-fr="💀 Morts" data-en="💀 Deaths">💀 Morts</button>
+      <button class="evt-filter" onclick="setEvtFilter('capstone',this)" data-fr="👑 Capstones" data-en="👑 Capstones">👑 Capstones</button>
+      <button class="evt-filter" onclick="setEvtFilter('new_attempt',this)" data-fr="🔄 Revenants" data-en="🔄 Reborn">🔄 Revenants</button>
+    </div>
+    <div id="events-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
+  </div>
+
+  <!-- ── RULES ── -->
+  <div id="page-rules" class="page">
+    <div id="rules-content"></div>
+  </div>
+
+  <!-- ── REGISTER ── -->
+  <div id="page-register" class="page">
+    <div id="register-content"></div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- ── MODAL DÉTAIL JOUEUR ── -->
+<div class="modal-overlay" id="player-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-player-name" id="modal-player-name">—</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────────────────────
+  const SUPABASE_URL      = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
+  const SEASON            = 'S1';
+  const PAGE_SIZE         = 20;
+  const CACHE_MS          = 60_000;
+
+  // Mapping classe → couleur
+  const CLASS_COLORS = {
+    'Helena':  '#c4a0ff',
+    'Aeona':   '#72e8e8',
+    'Elarion': '#44ee44',
+  };
+  function classColor(cls) { return CLASS_COLORS[cls] || 'var(--text-muted)'; }
+
+  // Capstone tier → classe CSS
+  function capstoneCls(tierName) {
+    if (!tierName) return '';
+    const t = tierName.toLowerCase();
+    if (t === 'champion') return 'champion';
+    if (t === 'paragon')  return 'paragon';
+    if (t.startsWith('eternal')) return 'eternal';
+    return '';
+  }
+
+  // ── LANG ────────────────────────────────────────────────────────────────────
+  let currentLang = localStorage.getItem('pouf_lang') || 'fr';
+  const fr = () => currentLang === 'fr';
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('pouf_lang', lang);
+    document.getElementById('lang-btn-fr').classList.toggle('active', lang === 'fr');
+    document.getElementById('lang-btn-en').classList.toggle('active', lang === 'en');
+    document.querySelectorAll('[data-fr]').forEach(el => {
+      el.textContent = el.dataset[lang] || el.dataset.fr;
+    });
+    const s = document.getElementById('lb-search');
+    if (s) s.placeholder = fr() ? 'Rechercher un joueur…' : 'Search a player…';
+    renderSyncInfo();
+    renderRules();
+    renderRegister();
+    if (_lbData) renderLbPage();
+    if (_eventsData) renderEvents();
+  }
+
+  // ── TOAST ───────────────────────────────────────────────────────────────────
+  function toast(msg, err = false) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (err ? ' error' : '');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.className = 'toast', 3000);
+  }
+
+  // ── NAVIGATION ──────────────────────────────────────────────────────────────
+  async function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (id === 'leaderboard') loadLeaderboard();
+    if (id === 'events')      loadEvents();
+    if (id === 'rules')       renderRules();
+    if (id === 'register')    renderRegister();
+  }
+
+  // ── SUPABASE FETCH ───────────────────────────────────────────────────────────
+  async function sbFetch(path, opts = {}) {
+    const res = await fetch(SUPABASE_URL + path, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': opts.prefer || '',
+      },
+      method: opts.method || 'GET',
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    if (!res.ok) throw new Error(await res.text());
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  // ── SYNC META ────────────────────────────────────────────────────────────────
+  let _syncMeta = null, _syncTimer = null;
+  async function loadSyncMeta() {
+    try {
+      const data = await sbFetch('/rest/v1/hm_sync_meta?id=eq.1&select=last_sync,next_sync,last_status,runs_added,deaths_found');
+      _syncMeta = data?.[0] ?? null;
+      renderSyncInfo();
+      clearInterval(_syncTimer);
+      _syncTimer = setInterval(renderSyncInfo, 1000);
+    } catch(e) { console.warn('sync_meta unavailable'); }
+  }
+
+  function renderSyncInfo() {
+    const dot  = document.getElementById('sync-dot');
+    const text = document.getElementById('sync-text');
+    if (!dot || !text) return;
+    if (!_syncMeta) { text.textContent = '—'; return; }
+    const { last_sync, next_sync, last_status } = _syncMeta;
+    const now = Date.now();
+    dot.className = 'sync-dot ' + (last_status === 'ok' ? 'ok' : last_status === 'error' ? 'error' : '');
+    const agoMs  = last_sync ? now - new Date(last_sync).getTime() : null;
+    const nextMs = next_sync ? new Date(next_sync).getTime() - now : null;
+    let agoStr = '';
+    if (agoMs !== null) { const s = Math.round(agoMs/1000); agoStr = s < 60 ? `${s}s` : `${Math.round(s/60)}min`; }
+    let nextStr = '';
+    if (nextMs !== null && nextMs > 0) {
+      const s = Math.round(nextMs/1000);
+      nextStr = s < 60
+        ? (fr() ? `prochain sync dans ${s}s`   : `next sync in ${s}s`)
+        : (fr() ? `prochain sync dans ${Math.round(s/60)}min` : `next sync in ${Math.round(s/60)}min`);
+    } else if (nextMs !== null) {
+      nextStr = fr() ? 'sync imminent…' : 'syncing soon…';
+      dot.className = 'sync-dot live';
+    }
+    if (last_status === 'error') text.textContent = fr() ? `Erreur sync · ${nextStr}` : `Sync error · ${nextStr}`;
+    else if (agoStr && nextStr)  text.textContent = fr() ? `Mis à jour il y a ${agoStr} · ${nextStr}` : `Updated ${agoStr} ago · ${nextStr}`;
+    else text.textContent = nextStr || '—';
+  }
+
+  // ── LEADERBOARD ─────────────────────────────────────────────────────────────
+  let _lbData = null, _lbCacheTs = 0;
+  let _lbFiltered = [], _lbPage = 1, _expandedPlayer = null;
+
+  async function loadLeaderboard(force = false) {
+    if (!force && _lbData && Date.now() - _lbCacheTs < CACHE_MS) {
+      renderLeaderboard(_lbData); return;
+    }
+    const btn = document.getElementById('refresh-btn');
+    if (btn) btn.classList.add('spinning');
+    try {
+      // Charger la vue hm_summary + capstones + unlocks en parallèle
+      const [summary, capstones, unlocks] = await Promise.all([
+        sbFetch(`/rest/v1/hm_summary?season=eq.${SEASON}&order=ilvl_best.desc`),
+        sbFetch('/rest/v1/hm_capstones?select=id,tier_name,ilvl_threshold&order=ilvl_threshold.asc'),
+        sbFetch(`/rest/v1/hm_capstone_unlocks?select=player_id,character_id,capstone_id,attempt_number&season=eq.${SEASON}`),
+      ]);
+      _lbData = { summary: summary ?? [], capstones: capstones ?? [], unlocks: unlocks ?? [] };
+      _lbCacheTs = Date.now();
+      renderLeaderboard(_lbData);
+      loadSyncMeta();
+    } catch(e) {
+      document.getElementById('lb-content').innerHTML = `<div class="empty">${fr() ? 'Erreur de chargement.' : 'Loading error.'}</div>`;
+      console.error(e);
+    } finally {
+      if (btn) btn.classList.remove('spinning');
+    }
+  }
+
+  function refreshLeaderboard() { loadLeaderboard(true); }
+
+  function renderLeaderboard(data) {
+    // Grouper par player_id
+    const playerMap = new Map();
+    for (const row of data.summary) {
+      if (!playerMap.has(row.player_id)) {
+        playerMap.set(row.player_id, { player_id: row.player_id, player_name: row.player_name, chars: [] });
+      }
+      playerMap.get(row.player_id).chars.push(row);
+    }
+
+    // Calculer best ilvl + total tentatives par joueur
+    const players = [...playerMap.values()].map(p => {
+      const aliveChars = p.chars.filter(c => c.status === 'alive');
+      const bestIlvl   = Math.max(...p.chars.map(c => c.character_all_time_best_ilvl || 0), 0);
+      const totalAttempts = p.chars.reduce((s, c) => s + (c.character_total_attempts || 1), 0);
+      // Capstone le plus haut toutes tentatives
+      const playerUnlocks = data.unlocks.filter(u => u.player_id === p.player_id);
+      const unlockedIds   = new Set(playerUnlocks.map(u => u.capstone_id));
+      const topCap = data.capstones.filter(c => unlockedIds.has(c.id)).at(-1);
+      return { ...p, aliveChars, bestIlvl, totalAttempts, topCap };
+    });
+
+    // Tri : bestIlvl desc, puis totalAttempts asc
+    players.sort((a, b) => b.bestIlvl - a.bestIlvl || a.totalAttempts - b.totalAttempts);
+
+    // Mise à jour compteur header
+    const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
+    const countEl = document.getElementById('active-count');
+    if (countEl) countEl.innerHTML = `${activeCount} <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">${fr() ? 'aventuriers actifs' : 'active adventurers'}</span>`;
+
+    // Filtre search
+    const q = (document.getElementById('lb-search')?.value || '').toLowerCase().trim();
+    _lbFiltered = q ? players.filter(p => p.player_name.toLowerCase().includes(q) || p.chars.some(c => c.character_name.toLowerCase().includes(q))) : players;
+
+    const countEl2 = document.getElementById('lb-count');
+    if (countEl2) countEl2.textContent = q ? `${_lbFiltered.length} / ${players.length}` : `${players.length} ${fr() ? 'joueur(s)' : 'player(s)'}`;
+
+    _lbPage = 1;
+    renderLbPage(_lbFiltered, data);
+  }
+
+  function renderLbPage(filtered, data) {
+    filtered = filtered || _lbFiltered;
+    data = data || _lbData;
+    const total  = filtered.length;
+    const pages  = Math.ceil(total / PAGE_SIZE);
+    _lbPage      = Math.min(_lbPage, pages || 1);
+    const slice  = filtered.slice((_lbPage-1)*PAGE_SIZE, _lbPage*PAGE_SIZE);
+
+    const cont = document.getElementById('lb-content');
+    if (!slice.length) { cont.innerHTML = `<div class="empty">${fr() ? 'Aucun joueur inscrit.' : 'No registered players.'}</div>`; return; }
+
+    // Trouver le rang réel (dans filtered, pas dans slice)
+    cont.innerHTML = slice.map((p, i) => {
+      const rank     = (_lbPage-1)*PAGE_SIZE + i + 1;
+      const rankCls  = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+      const capHtml  = p.topCap
+        ? `<span class="capstone-badge ${capstoneCls(p.topCap.tier_name)}">${p.topCap.tier_name} ${p.topCap.ilvl_threshold}</span>`
+        : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
+      const charTags = p.chars.map(c =>
+        `<span class="lb-char-tag ${c.status}" style="${c.status==='alive'?`border-color:${classColor(c.character_class)}40;color:${classColor(c.character_class)}`:''}">
+          ${c.status === 'dead' ? '<span class="lb-char-skull">💀</span>' : ''}
+          ${c.character_name}${c.character_class ? ` · ${c.character_class}` : ''}
+        </span>`
+      ).join('');
+      const ilvlColor = p.bestIlvl >= 15 ? 'var(--hc-eternal)' : p.bestIlvl >= 10 ? 'var(--hc-paragon)' : p.bestIlvl >= 5 ? 'var(--hc-champion)' : 'var(--teal-light)';
+      return `
+        <div class="lb-row" id="lbrow-${p.player_id}" onclick="toggleExpand(${p.player_id})">
+          <div class="lb-rank ${rankCls}">${rank}</div>
+          <div class="lb-player">
+            <div class="lb-player-name">${p.player_name}</div>
+            <div class="lb-char-list">${charTags}</div>
+          </div>
+          <div class="lb-ilvl" style="color:${ilvlColor}">${p.bestIlvl || '—'}</div>
+          <div class="lb-attempts col-attempts">${p.totalAttempts}</div>
+          <div class="lb-capstone">${capHtml}</div>
+        </div>
+        <div class="lb-expand" id="lbexpand-${p.player_id}">
+          ${renderExpandedPlayer(p, data)}
+        </div>`;
+    }).join('');
+
+    // Pagination
+    renderPagination(pages, filtered, data);
+  }
+
+  function renderExpandedPlayer(p, data) {
+    if (!p.chars.length) return '';
+    const cards = p.chars.map(c => {
+      const unlocks = data.unlocks.filter(u => u.character_id === c.character_id);
+      const unlockedCaps = data.capstones.filter(cap => unlocks.some(u => u.capstone_id === cap.id));
+      const capHtml = unlockedCaps.length
+        ? unlockedCaps.map(cap => `<span class="capstone-badge ${capstoneCls(cap.tier_name)}">${cap.tier_name} ${cap.ilvl_threshold}</span>`).join('')
+        : `<span style="color:var(--text-muted);font-size:13px;font-style:italic">${fr() ? 'Aucun capstone' : 'No capstone'}</span>`;
+      const diedHtml = c.died_at
+        ? `<div class="expand-death-info">💀 ${fr() ? 'Mort le' : 'Died on'} ${new Date(c.died_at).toLocaleDateString(fr()?'fr-FR':'en-GB')} — ${c.dungeon_name || ''}</div>`
+        : '';
+      return `
+        <div class="expand-char-card ${c.status === 'dead' ? 'dead-card' : ''}">
+          <div class="expand-char-header">
+            <div>
+              <div class="expand-char-name">${c.character_name}</div>
+              <div class="expand-char-class" style="color:${classColor(c.character_class)}">${c.character_class || '—'}</div>
+            </div>
+            ${c.status === 'dead'
+              ? `<span style="color:rgba(255,68,68,0.6);font-size:20px">💀</span>`
+              : `<span style="color:var(--teal-dim);font-size:20px">⚔️</span>`}
+          </div>
+          <div class="expand-stat-row">
+            <span class="expand-stat-label">${fr() ? 'ilvl actuel' : 'current ilvl'}</span>
+            <span class="expand-stat-value ${c.status==='dead'?'red':''}">${c.ilvl_current}</span>
+          </div>
+          <div class="expand-stat-row">
+            <span class="expand-stat-label">${fr() ? 'meilleur ilvl' : 'best ilvl'}</span>
+            <span class="expand-stat-value">${c.character_all_time_best_ilvl || c.ilvl_best}</span>
+          </div>
+          <div class="expand-stat-row">
+            <span class="expand-stat-label">${fr() ? 'tentative #' : 'attempt #'}</span>
+            <span class="expand-stat-value">${c.current_attempt_number}</span>
+          </div>
+          ${diedHtml}
+          <div class="expand-capstones">${capHtml}</div>
+        </div>`;
+    }).join('');
+    return `<div class="expand-grid">${cards}</div>`;
+  }
+
+  function toggleExpand(playerId) {
+    const row = document.getElementById(`lbrow-${playerId}`);
+    const exp = document.getElementById(`lbexpand-${playerId}`);
+    if (!row || !exp) return;
+    const isOpen = exp.classList.contains('open');
+    // Fermer tous
+    document.querySelectorAll('.lb-expand.open').forEach(e => { e.classList.remove('open'); });
+    document.querySelectorAll('.lb-row.expanded').forEach(r => { r.classList.remove('expanded'); });
+    if (!isOpen) { exp.classList.add('open'); row.classList.add('expanded'); }
+  }
+
+  function renderPagination(pages, filtered, data) {
+    const el = document.getElementById('lb-pagination');
+    if (pages <= 1) { el.innerHTML = ''; return; }
+    let html = `<button class="pg-btn" onclick="goLbPage(${_lbPage-1},event)" ${_lbPage===1?'disabled':''}>‹</button>`;
+    for (let i = 1; i <= pages; i++) {
+      if (pages > 7 && Math.abs(i - _lbPage) > 2 && i !== 1 && i !== pages) {
+        if (i === _lbPage - 3 || i === _lbPage + 3) html += `<span class="pg-sep">…</span>`;
+        continue;
+      }
+      html += `<button class="pg-btn ${i===_lbPage?'active':''}" onclick="goLbPage(${i},event)">${i}</button>`;
+    }
+    html += `<button class="pg-btn" onclick="goLbPage(${_lbPage+1},event)" ${_lbPage===pages?'disabled':''}>›</button>`;
+    el.innerHTML = html;
+  }
+
+  function goLbPage(p, e) {
+    e?.stopPropagation();
+    _lbPage = p;
+    renderLbPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── SEARCH ──────────────────────────────────────────────────────────────────
+  function onLbSearch() {
+    const q = document.getElementById('lb-search').value;
+    document.getElementById('lb-search-clear').style.display = q ? 'block' : 'none';
+    if (_lbData) renderLeaderboard(_lbData);
+  }
+  function clearLbSearch() {
+    document.getElementById('lb-search').value = '';
+    document.getElementById('lb-search-clear').style.display = 'none';
+    if (_lbData) renderLeaderboard(_lbData);
+  }
+
+  // ── MODAL ───────────────────────────────────────────────────────────────────
+  function openModal(playerId) {
+    if (!_lbData) return;
+    const p = [...new Map(_lbData.summary.map(r => [r.player_id, r])).values()]
+      .find(r => r.player_id === playerId);
+    if (!p) return;
+    document.getElementById('modal-player-name').textContent = p.player_name;
+    // corps généré par renderExpandedPlayer via lbData
+    document.getElementById('player-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('player-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── EVENTS CATALOGUE ────────────────────────────────────────────────────────
+  let _eventsData = null, _evtFilter = 'all';
+
+  async function loadEvents(force = false) {
+    if (!force && _eventsData) { renderEvents(); return; }
+    document.getElementById('events-content').innerHTML = `<div class="loading">${fr() ? 'Chargement…' : 'Loading…'}</div>`;
+    try {
+      const events = await sbFetch(
+        `/rest/v1/hm_events?season=eq.${SEASON}&order=created_at.desc&limit=200` +
+        `&select=id,event_type,player_id,character_name,character_class,capstone_id,metadata,attempt_number,created_at`
+      );
+      // Charger capstones pour le libellé
+      const caps = _lbData?.capstones || await sbFetch('/rest/v1/hm_capstones?select=id,tier_name,ilvl_threshold');
+      _eventsData = { events: events ?? [], capstones: caps ?? [] };
+      renderEvents();
+    } catch(e) {
+      document.getElementById('events-content').innerHTML = `<div class="empty">${fr() ? 'Erreur de chargement.' : 'Loading error.'}</div>`;
+    }
+  }
+
+  function setEvtFilter(f, btn) {
+    _evtFilter = f;
+    document.querySelectorAll('.evt-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderEvents();
+  }
+
+  function renderEvents() {
+    if (!_eventsData) return;
+    const { events, capstones } = _eventsData;
+    const capMap = Object.fromEntries(capstones.map(c => [c.id, c]));
+    const filtered = _evtFilter === 'all' ? events : events.filter(e => e.event_type === _evtFilter);
+    const cont = document.getElementById('events-content');
+    if (!filtered.length) {
+      cont.innerHTML = `<div class="empty">${fr() ? 'Aucun événement.' : 'No events.'}</div>`; return;
+    }
+    cont.innerHTML = `<div class="evt-list">${filtered.map(e => {
+      const d = new Date(e.created_at);
+      const timeStr = d.toLocaleDateString(fr()?'fr-FR':'en-GB', { day:'2-digit', month:'short' })
+        + ' ' + d.toLocaleTimeString(fr()?'fr-FR':'en-GB', { hour:'2-digit', minute:'2-digit' });
+      let icon = '📜', titleHtml = '', metaHtml = '';
+      const cls = e.character_class ? `<span style="color:${classColor(e.character_class)}">${e.character_class}</span>` : '';
+      if (e.event_type === 'death') {
+        icon = '💀';
+        const meta = e.metadata || {};
+        titleHtml = `<div class="evt-title"><strong>${e.character_name}</strong> ${cls ? `(${cls}) ` : ''}${fr() ? 'est mort(e)' : 'has died'}</div>`;
+        metaHtml  = meta.dungeon ? `<div class="evt-meta">${fr() ? 'Donjon' : 'Dungeon'} : ${meta.dungeon}${meta.ilvl_at_death ? ` · ilvl ${meta.ilvl_at_death}` : ''}</div>` : '';
+      } else if (e.event_type === 'capstone') {
+        icon = '👑';
+        const cap = capMap[e.capstone_id];
+        const capLabel = cap ? `${cap.tier_name} ${cap.ilvl_threshold}` : '';
+        titleHtml = `<div class="evt-title cap"><strong>${e.character_name}</strong> ${cls ? `(${cls}) ` : ''}${fr() ? 'atteint' : 'reached'} <strong>${capLabel}</strong></div>`;
+        const meta = e.metadata || {};
+        metaHtml  = meta.dungeon ? `<div class="evt-meta">${meta.dungeon}${meta.ilvl_reached ? ` · ilvl ${meta.ilvl_reached}` : ''}</div>` : '';
+      } else if (e.event_type === 'new_attempt') {
+        icon = '🔄';
+        const meta = e.metadata || {};
+        titleHtml = `<div class="evt-title"><strong>${e.character_name}</strong> ${fr() ? 'reprend le combat' : 'rises again'} <span style="color:var(--text-muted);font-size:14px">(${fr()?'tentative':'attempt'} #${meta.new_attempt || e.attempt_number})</span></div>`;
+        metaHtml  = '';
+      } else {
+        titleHtml = `<div class="evt-title">${e.character_name} · ${e.event_type}</div>`;
+      }
+      return `<div class="evt-item ${e.event_type}">
+        <div class="evt-icon">${icon}</div>
+        <div class="evt-body">${titleHtml}${metaHtml}</div>
+        <div class="evt-time">${timeStr}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // ── RULES ───────────────────────────────────────────────────────────────────
+  function renderRules() {
+    const f = fr();
+    document.getElementById('rules-content').innerHTML = `
+      <div class="rules-section">
+        <div class="rules-section-title">${f ? 'Règles Hardcore' : 'Hardcore Rules'}</div>
+        <div class="rules-list">
+          <div class="rules-item warning">
+            ☠️ <strong>${f ? 'Mort permanente' : 'Permanent Death'}</strong> — ${f
+              ? 'Si ton personnage meurt, il repart de zéro. Pas de résurrection via le grimoire.'
+              : 'If your character dies, they start over from scratch. No resurrection via grimoire.'}
+          </div>
+          <div class="rules-item">
+            ⚔️ ${f
+              ? 'Chaque joueur peut avoir <strong>plusieurs personnages HM actifs</strong> simultanément, à condition que ce soient des personnages Fellowship différents.'
+              : 'Each player can have <strong>multiple active HM characters</strong> simultaneously, as long as they are different Fellowship characters.'}
+          </div>
+          <div class="rules-item">
+            🚫 ${f
+              ? 'Un même personnage ne peut pas être joué en <strong>HM et Normal simultanément</strong>.'
+              : 'The same character cannot be played in <strong>HM and Normal mode simultaneously</strong>.'}
+          </div>
+          <div class="rules-item">
+            👥 ${f
+              ? 'On peut jouer avec des joueurs <strong>non-HM</strong> dans le groupe — la mort n\'affecte que les joueurs HM.'
+              : 'You can play with <strong>non-HM players</strong> in the group — death only affects HM players.'}
+          </div>
+          <div class="rules-item">
+            📊 ${f
+              ? 'Départ à <strong>ilvl 0</strong>. L\'ilvl progresse via les donjons. Un personnage tué repart à ilvl 0 sur une nouvelle tentative.'
+              : 'Start at <strong>ilvl 0</strong>. ilvl progresses through dungeons. A killed character restarts at ilvl 0 on a new attempt.'}
+          </div>
+          <div class="rules-item">
+            📋 ${f
+              ? 'Les <strong>logs Fellowship actifs</strong> sont obligatoires. Tout donjon sans logs ne sera pas comptabilisé.'
+              : '<strong>Active Fellowship logs</strong> are mandatory. Any dungeon without logs will not be counted.'}
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-section">
+        <div class="rules-section-title">${f ? 'Système de reset' : 'Reset System'}</div>
+        <div class="rules-list">
+          <div class="rules-item">
+            🔄 <strong>${f ? 'Reset automatique' : 'Automatic Reset'}</strong> — ${f
+              ? 'Détecté via les logs Fellowship (sync toutes les 15 min). L\'ancien personnage passe en statut "mort" et une nouvelle tentative est créée automatiquement.'
+              : 'Detected via Fellowship logs (sync every 15 min). The old character moves to "dead" status and a new attempt is created automatically.'}
+          </div>
+          <div class="rules-item">
+            📝 <strong>${f ? 'Reset manuel' : 'Manual Reset'}</strong> — ${f
+              ? 'Pour les cas particuliers (bug, situation imprévue), contacte Pouf sur Discord. Un admin peut déclencher le reset manuellement.'
+              : 'For special cases (bug, unexpected situation), contact Pouf on Discord. An admin can trigger the reset manually.'}
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-section">
+        <div class="rules-section-title">${f ? 'Capstones — Paliers de progression' : 'Capstones — Progression Milestones'}</div>
+        <table class="capstone-table">
+          <thead><tr>
+            <th>${f ? 'Palier' : 'Tier'}</th>
+            <th>ilvl</th>
+            <th>${f ? 'Titre' : 'Title'}</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>1</td><td>5</td><td class="ct-champion">🛡️ Champion</td></tr>
+            <tr><td>2</td><td>10</td><td class="ct-paragon">⚔️ Paragon</td></tr>
+            <tr><td>3</td><td>15</td><td class="ct-eternal">👑 Eternal I</td></tr>
+            <tr><td>4</td><td>20</td><td class="ct-eternal">👑 Eternal II</td></tr>
+            <tr><td>5</td><td>25</td><td class="ct-eternal">👑 Eternal III</td></tr>
+            <tr><td>6</td><td>30</td><td class="ct-eternal">👑 Eternal IV</td></tr>
+            <tr><td>7</td><td>35</td><td class="ct-eternal">👑 Eternal V</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rules-section">
+        <div class="rules-section-title">${f ? 'Power Leveling' : 'Power Leveling'}</div>
+        <div class="rules-list">
+          <div class="rules-item warning">
+            ⚠️ ${f
+              ? 'Si l\'écart d\'ilvl entre un joueur HM et la moyenne de l\'équipe dépasse le seuil autorisé, un <strong>warning PL</strong> est enregistré. Les cas répétés peuvent entraîner un reset.'
+              : 'If the ilvl gap between an HM player and the team average exceeds the allowed threshold, a <strong>PL warning</strong> is logged. Repeated cases may result in a reset.'}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── REGISTER ────────────────────────────────────────────────────────────────
+  function renderRegister() {
+    const f = fr();
+    document.getElementById('register-content').innerHTML = `
+      <div class="register-card">
+        <div class="register-title">${f ? 'Inscription Fellowship Hardcore' : 'Fellowship Hardcore Registration'}</div>
+        <div class="register-desc">${f
+          ? 'Déclare ton personnage HM pour participer à l\'event. Ton personnage sera suivi automatiquement via les logs Fellowship.'
+          : 'Register your HM character to participate in the event. Your character will be tracked automatically via Fellowship logs.'}</div>
+        <div class="register-warning">
+          ☠️ ${f
+            ? 'En t\'inscrivant, tu acceptes les règles Hardcore : la mort est permanente. Réfléchis bien avant de valider.'
+            : 'By registering, you accept the Hardcore rules: death is permanent. Think carefully before confirming.'}
+        </div>
+        <div class="field">
+          <label>${f ? 'Ton nom de joueur (Fellowship)' : 'Your player name (Fellowship)'}</label>
+          <input type="text" id="reg-player-name" placeholder="${f ? 'Ton nom exact sur FellowshipLogs' : 'Your exact name on FellowshipLogs'}">
+          <div class="field-hint">${f ? 'Doit correspondre exactement à ton nom sur fellowshiplogs.com' : 'Must match exactly your name on fellowshiplogs.com'}</div>
+        </div>
+        <div class="field">
+          <label>${f ? 'Nom de ton personnage HM' : 'Your HM character name'}</label>
+          <input type="text" id="reg-char-name" placeholder="${f ? 'Nom du personnage dans les logs' : 'Character name as shown in logs'}">
+          <div class="field-hint">${f ? 'Tel qu\'il apparaît dans les logs de combat' : 'As it appears in combat logs'}</div>
+        </div>
+        <div class="field">
+          <label>${f ? 'Classe du personnage' : 'Character class'}</label>
+          <select id="reg-char-class">
+            <option value="">${f ? '— Sélectionner —' : '— Select —'}</option>
+            <option value="Helena">Helena</option>
+            <option value="Aeona">Aeona</option>
+            <option value="Elarion">Elarion</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>${f ? 'Fellowship Character ID (optionnel)' : 'Fellowship Character ID (optional)'}</label>
+          <input type="number" id="reg-char-id" placeholder="${f ? 'ID numérique (visible dans l\'URL)' : 'Numeric ID (visible in the URL)'}">
+          <div class="field-hint">${f ? 'Visible dans l\'URL de ton perso sur fellowshiplogs.com' : 'Visible in the URL of your character on fellowshiplogs.com'}</div>
+        </div>
+        <button class="btn-register" onclick="submitRegister()" id="btn-register">
+          ${f ? '⚔️ M\'inscrire en Hardcore' : '⚔️ Register for Hardcore'}
+        </button>
+        <div class="register-result" id="register-result"></div>
+      </div>`;
+  }
+
+  async function submitRegister() {
+    const playerName = document.getElementById('reg-player-name').value.trim();
+    const charName   = document.getElementById('reg-char-name').value.trim();
+    const charClass  = document.getElementById('reg-char-class').value;
+    const charIdRaw  = document.getElementById('reg-char-id').value.trim();
+    const result     = document.getElementById('register-result');
+    const btn        = document.getElementById('btn-register');
+    const f          = fr();
+
+    if (!playerName || !charName || !charClass) {
+      result.className = 'register-result show err';
+      result.textContent = f ? 'Remplis tous les champs obligatoires.' : 'Please fill in all required fields.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = f ? 'Envoi en cours…' : 'Submitting…';
+
+    try {
+      // 1. Trouver le player_id via son nom
+      const players = await sbFetch(`/rest/v1/players?name=eq.${encodeURIComponent(playerName)}&select=id,name`);
+      if (!players?.length) {
+        result.className = 'register-result show err';
+        result.textContent = f
+          ? `Joueur "${playerName}" introuvable. Vérifie ton nom exact ou contacte Pouf.`
+          : `Player "${playerName}" not found. Check your exact name or contact Pouf.`;
+        return;
+      }
+      const playerId = players[0].id;
+
+      // 2. Insérer hm_registrations
+      await sbFetch('/rest/v1/hm_registrations', {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body: {
+          player_id:               playerId,
+          character_name:          charName,
+          character_class:         charClass,
+          fellowship_character_id: charIdRaw ? parseInt(charIdRaw) : null,
+          registered_by:           'form',
+          season:                  SEASON,
+          status:                  'pending',
+        }
+      });
+
+      // 3. Insérer hm_log_aliases
+      await sbFetch('/rest/v1/hm_log_aliases', {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body: { player_id: playerId, log_name: charName }
+      }).catch(() => {}); // ignore si doublon
+
+      result.className = 'register-result show ok';
+      result.textContent = f
+        ? `✓ Inscription enregistrée ! Ton personnage "${charName}" sera confirmé au prochain sync (15 min).`
+        : `✓ Registration saved! Your character "${charName}" will be confirmed at the next sync (15 min).`;
+      toast(f ? 'Inscription envoyée !' : 'Registration sent!');
+
+      // Reset form
+      ['reg-player-name','reg-char-name','reg-char-id'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      document.getElementById('reg-char-class').value = '';
+
+    } catch(e) {
+      result.className = 'register-result show err';
+      const msg = e.message || '';
+      if (msg.includes('duplicate') || msg.includes('unique')) {
+        result.textContent = f
+          ? 'Ce personnage est déjà inscrit pour cette saison.'
+          : 'This character is already registered for this season.';
+      } else {
+        result.textContent = f ? `Erreur : ${msg}` : `Error: ${msg}`;
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = f ? '⚔️ M\'inscrire en Hardcore' : '⚔️ Register for Hardcore';
+    }
+  }
+
+  // ── INIT ────────────────────────────────────────────────────────────────────
+  setLang(currentLang);
+  renderRules();
+  renderRegister();
+  loadLeaderboard();
+</script>
+
+</body>
+</html>
