@@ -26,9 +26,9 @@
       --hc-red: #ff4444;
       --hc-red-dim: rgba(255,68,68,0.18);
       --hc-gold: #f0c040;
-      --hc-champion: #44ee44;
-      --hc-paragon: #40d4d4;
-      --hc-eternal: #c4a0ff;
+      --hc-champion: #af4bef;
+      --hc-paragon: #f4dd40;
+      --hc-eternal: #d44448;
       --twitch: #9147ff;
       --discord: #5865f2;
       --youtube: #ff0000;
@@ -209,9 +209,9 @@
       letter-spacing:0.12em; padding:3px 9px; border-radius:20px; border:1px solid;
       white-space:nowrap;
     }
-    .capstone-badge.champion { color:var(--hc-champion); border-color:rgba(68,238,68,0.4); background:rgba(68,238,68,0.08); }
-    .capstone-badge.paragon  { color:var(--hc-paragon);  border-color:rgba(64,212,212,0.4); background:rgba(64,212,212,0.08); }
-    .capstone-badge.eternal  { color:var(--hc-eternal);  border-color:rgba(196,160,255,0.4); background:rgba(196,160,255,0.08); }
+    .capstone-badge.champion { color:var(--hc-champion); border-color:rgba(175,75,239,0.4); background:rgba(175,75,239,0.08); }
+    .capstone-badge.paragon  { color:var(--hc-paragon);  border-color:rgba(244,221,64,0.4); background:rgba(244,221,64,0.08); }
+    .capstone-badge.eternal  { color:var(--hc-eternal);  border-color:rgba(212,68,72,0.4);  background:rgba(212,68,72,0.08); }
 
     /* ── EXPAND PANEL ── */
     .lb-expand {
@@ -407,7 +407,6 @@
 <div class="top-line"></div>
 
 <header>
-  <div class="event-skull">💀</div>
   <div class="event-title">Fellowship Hardcore</div>
   <div class="event-subtitle" data-fr="Mourir, c'est recommencer." data-en="Death is just the beginning.">Mourir, c'est recommencer.</div>
   <div class="event-season">
@@ -488,7 +487,6 @@
       <button class="evt-filter active" onclick="setEvtFilter('all',this)" data-fr="Tous" data-en="All">Tous</button>
       <button class="evt-filter" onclick="setEvtFilter('death',this)" data-fr="💀 Morts" data-en="💀 Deaths">💀 Morts</button>
       <button class="evt-filter" onclick="setEvtFilter('capstone',this)" data-fr="👑 Capstones" data-en="👑 Capstones">👑 Capstones</button>
-      <button class="evt-filter" onclick="setEvtFilter('new_attempt',this)" data-fr="🔄 Revenants" data-en="🔄 Reborn">🔄 Revenants</button>
     </div>
     <div id="events-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
   </div>
@@ -870,7 +868,7 @@
     document.getElementById('events-content').innerHTML = `<div class="loading">${fr() ? 'Chargement…' : 'Loading…'}</div>`;
     try {
       const events = await sbFetch(
-        `/rest/v1/hm_events?season=eq.${SEASON}&order=created_at.desc&limit=200` +
+        `/rest/v1/hm_events?season=eq.${SEASON}&event_type=neq.new_attempt&order=created_at.desc&limit=200` +
         `&select=id,event_type,player_id,character_name,character_class,capstone_id,metadata,attempt_number,created_at`
       );
       // Charger capstones pour le libellé
@@ -992,18 +990,17 @@
         <div class="rules-section-title">${f ? 'Capstones — Paliers de progression' : 'Capstones — Progression Milestones'}</div>
         <table class="capstone-table">
           <thead><tr>
-            <th>${f ? 'Palier' : 'Tier'}</th>
-            <th>ilvl</th>
-            <th>${f ? 'Titre' : 'Title'}</th>
+            <th>${f ? 'Achievement' : 'Achievement'}</th>
           </tr></thead>
           <tbody>
-            <tr><td>1</td><td>5</td><td class="ct-champion">🛡️ Champion</td></tr>
-            <tr><td>2</td><td>10</td><td class="ct-paragon">⚔️ Paragon</td></tr>
-            <tr><td>3</td><td>15</td><td class="ct-eternal">👑 Eternal I</td></tr>
-            <tr><td>4</td><td>20</td><td class="ct-eternal">👑 Eternal II</td></tr>
-            <tr><td>5</td><td>25</td><td class="ct-eternal">👑 Eternal III</td></tr>
-            <tr><td>6</td><td>30</td><td class="ct-eternal">👑 Eternal IV</td></tr>
-            <tr><td>7</td><td>35</td><td class="ct-eternal">👑 Eternal V</td></tr>
+            <tr><td class="ct-champion">🛡️ ${f ? 'Atteindre le Capstone Champion dans les temps' : 'Achieve Capstone Champion in Time'}</td></tr>
+            <tr><td class="ct-paragon" >⚔️ ${f ? 'Atteindre le Capstone Paragon dans les temps' : 'Achieve Capstone Paragon in Time'}</td></tr>
+            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 5 dans les temps'           : 'Achieve Eternal 5 in Time'}</td></tr>
+            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 10 dans les temps'          : 'Achieve Eternal 10 in Time'}</td></tr>
+            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 15 dans les temps'          : 'Achieve Eternal 15 in Time'}</td></tr>
+            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 20 dans les temps'          : 'Achieve Eternal 20 in Time'}</td></tr>
+            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 25 dans les temps'          : 'Achieve Eternal 25 in Time'}</td></tr>
+            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 30 dans les temps'          : 'Achieve Eternal 30 in Time'}</td></tr>
           </tbody>
         </table>
       </div>
