@@ -127,43 +127,10 @@
     .progress-count { font-family: 'Cinzel', serif; font-size: 32px; color: var(--teal-light); font-weight: 700; text-shadow: 0 0 28px rgba(64,212,212,0.65); }
     .progress-count span { font-size: 15px; color: var(--text-dim); font-weight: 300; margin-left: 5px; }
     .progress-track { position: relative; height: 16px; background: var(--bg3); border-radius: 8px; border: 1px solid var(--border); overflow: visible; margin-bottom: 12px; }
-    /* Fond atténué pleine largeur */
-    .progress-track::before {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: 8px;
-      background: linear-gradient(90deg,
-        #1a991a 0%, var(--tier1) 20%,
-        #1f8888 40%, var(--tier2) 55%,
-        #7744cc 78%, var(--tier3) 100%
-      );
-      opacity: 0.18;
-      overflow: hidden;
-      border-radius: 8px;
-    }
-    /* Clip interne pour la fill */
-    .progress-track-inner {
-      position: absolute; inset: 0;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      border-radius: 8px;
-      /* background-size en % de la track via padding trick */
-      background: linear-gradient(90deg,
-        #1a991a 0%, var(--tier1) 20%,
-        #1f8888 40%, var(--tier2) 55%,
-        #7744cc 78%, var(--tier3) 100%
-      );
-      background-size: var(--track-w, 900px) 100%;
-      background-repeat: no-repeat;
-      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-      min-width: 0; position: relative;
-    }
+    .progress-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg,#1a991a,var(--tier1)); transition: width 1.2s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 22px rgba(68,238,68,0.75), 0 0 44px rgba(68,238,68,0.3); min-width: 0; position: relative; }
     .progress-fill::after { content:''; position:absolute; right:-1px; top:2px; bottom:2px; width:5px; background:white; border-radius:3px; opacity:0.85; box-shadow:0 0 10px white; }
-    .progress-fill.tier-2 { box-shadow: 0 0 22px rgba(64,212,212,0.75), 0 0 44px rgba(64,212,212,0.3); }
-    .progress-fill.tier-3 { box-shadow: 0 0 22px rgba(196,160,255,0.75), 0 0 44px rgba(196,160,255,0.3); }
+    .progress-fill.tier-2 { background: linear-gradient(90deg,#1a991a 0%,var(--tier1) 20%,#1f8888 45%,var(--tier2) 100%); box-shadow: 0 0 22px rgba(64,212,212,0.75), 0 0 44px rgba(64,212,212,0.3); }
+    .progress-fill.tier-3 { background: linear-gradient(90deg,#1a991a 0%,var(--tier1) 20%,#1f8888 40%,var(--tier2) 55%,#7744cc 78%,var(--tier3) 100%); box-shadow: 0 0 22px rgba(196,160,255,0.75), 0 0 44px rgba(196,160,255,0.3); }
     .tier-markers { position: absolute; inset: 0; pointer-events: none; }
     .tier-marker { position: absolute; top: -6px; bottom: -6px; width: 2px; border-radius: 2px; transform: translateX(-50%); }
     .tier-marker::after { content: attr(data-label); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.08em; white-space: nowrap; color: inherit; }
@@ -712,9 +679,7 @@
           <span class="progress-count"><span id="total-kills">—</span><span data-fr=" boss" data-en=" bosses"> boss</span></span>
         </div>
         <div class="progress-track">
-          <div class="progress-track-inner">
-            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-          </div>
+          <div class="progress-fill" id="progress-fill" style="width:0%"></div>
           <div class="tier-markers">
             <div class="tier-marker t1" data-label="1 000"></div>
             <div class="tier-marker t2" data-label="2 500"></div>
@@ -881,7 +846,8 @@
       "Abime des marins","Bois de L'aube","Carrière tombe-dieu",
       "Coeur de guivre","Creux Soyeux","Guet Tempete",
       "Marché d'Urrak","Sables Empyréens","Caveau de Lamespectre",
-      "Coeur de Tuzari","La chute Cithrel","Saccage de Drakheim"
+      "Coeur de Tuzari","La chute Cithrel","Saccage de Drakheim",
+      "Ruins of Regath","Scyer's Peak","DUNGEON3_NAME"
     ];
 
     const DUNGEON_IMAGES = {
@@ -896,7 +862,11 @@
       "La chute Cithrel":      "../gloire/images/la-chute-cithrel.jpg",
       "Marché d'Urrak":        "../gloire/images/marche-durrak.jpg",
       "Sables Empyréens":      "../gloire/images/sables-empyreens.jpg",
-      "Saccage de Drakheim":   "../gloire/images/saccage-de-drakheim.jpg"
+      "Saccage de Drakheim":   "../gloire/images/saccage-de-drakheim.jpg",
+      // ── Nouveaux donjons ──
+      "Ruins of Regath":       "../gloire/images/ruins-of-regath.jpg",       // TODO: ajouter l'image
+      "Scyer's Peak":          "../gloire/images/scyers-peak.jpg",            // TODO: ajouter l'image
+      "DUNGEON3_NAME":         "../gloire/images/dungeon3.jpg",               // TODO: renommer + ajouter l'image
     };
 
     // Mapping : tout nom Fellowship (boss, alias donjon, nom FR) → nom FR canonique
@@ -960,26 +930,22 @@
       "Auga Handhafi the Blind":         "Saccage de Drakheim",
       "Ransack of Drakheim":             "Saccage de Drakheim",
       "Saccage de Drakheim":             "Saccage de Drakheim",
+      // ── Ruins of Regath ──
+      "Ruins of Regath":                 "Ruins of Regath",
+      "Xurath, Fist of the Warden":      "Ruins of Regath",
+      // ── Scyer's Peak ──
+      "Scyer's Peak":                    "Scyer's Peak",
+      "Overlord Varux":                  "Scyer's Peak",
+      // ── Donjon 3 (capstone) — à compléter ──
+      "DUNGEON3_NAME":                   "DUNGEON3_NAME",
+      "BOSS3_1":                         "DUNGEON3_NAME",
+      "BOSS3_2":                         "DUNGEON3_NAME",
+      "BOSS3_3":                         "DUNGEON3_NAME",
     };
     // Normalise dungeon_name ou boss_name Fellowship → nom FR canonique du donjon
     function normDungeon(name) { return DUNGEON_NAME_MAP[name] || name; }
 
-    const DUNGEON_BOSSES = {
-      "Abime des marins":      ["Sinthara"],
-      "Bois de L'aube":        ["Malgut the Fetid"],
-      "Carrière tombe-dieu":   ["Godfall Titan"],
-      "Coeur de guivre":       ["Apostate Veras"],
-      "Creux Soyeux":          ["Vexira, Mother of Nightmares"],
-      "Guet Tempete":          ["Warlord Brogg"],
-      "Marché d'Urrak":        ["Drazhul the Fleshbroker","Slavetrader Brull"],
-      "Sables Empyréens":      ["Sin-Magir"],
-      "Caveau de Lamespectre": ["Deathless Katrine","Bael'Aurum","First Mate Marrow"],
-      "Coeur de Tuzari":       ["Moar'gore, Master of Sacrifice","Vun'Kahr, The Thorned Maw","Prophet Ez'rath"],
-      "La chute Cithrel":      ["Noor, The Betrayer","Ancient Koros","Cithrel"],
-      "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"]
-    };
-
-    // Traductions FR → EN des noms de donjons
+    // Traductions FR → EN des noms de donjons (les noms EN restent identiques)
     const DUNGEON_NAMES_EN = {
       "Abime des marins":      "Sailor's Abyss",
       "Bois de L'aube":        "Everdawn Grove",
@@ -993,15 +959,35 @@
       "Coeur de Tuzari":       "Heart of Tuzari",
       "La chute Cithrel":      "Cithrel's Fall",
       "Saccage de Drakheim":   "Ransack of Drakheim",
+      // Nouveaux donjons déjà en anglais — pas de traduction
+      "Ruins of Regath":       "Ruins of Regath",
+      "Scyer's Peak":          "Scyer's Peak",
+      "DUNGEON3_NAME":         "DUNGEON3_NAME",                               // TODO
     };
-    // Les noms de boss sont déjà en anglais — pas de traduction nécessaire
-
-    let currentLang = localStorage.getItem('pouf_lang') || 'fr';
-
-    // Retourne le nom du donjon dans la langue courante
     function tDungeon(nameFR) {
       return currentLang === 'en' ? (DUNGEON_NAMES_EN[nameFR] || nameFR) : nameFR;
     }
+
+    const DUNGEON_BOSSES = {
+      "Abime des marins":      ["Sinthara"],
+      "Bois de L'aube":        ["Malgut the Fetid"],
+      "Carrière tombe-dieu":   ["Godfall Titan"],
+      "Coeur de guivre":       ["Apostate Veras"],
+      "Creux Soyeux":          ["Vexira, Mother of Nightmares"],
+      "Guet Tempete":          ["Warlord Brogg"],
+      "Marché d'Urrak":        ["Drazhul the Fleshbroker","Slavetrader Brull"],
+      "Sables Empyréens":      ["Sin-Magir"],
+      "Caveau de Lamespectre": ["Deathless Katrine","Bael'Aurum","First Mate Marrow"],
+      "Coeur de Tuzari":       ["Moar'gore, Master of Sacrifice","Vun'Kahr, The Thorned Maw","Prophet Ez'rath"],
+      "La chute Cithrel":      ["Noor, The Betrayer","Ancient Koros","Cithrel"],
+      "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"],
+      // ── Nouveaux donjons ──
+      "Ruins of Regath":       ["Xurath, Fist of the Warden"],
+      "Scyer's Peak":          ["Overlord Varux"],
+      "DUNGEON3_NAME":         ["BOSS3_1","BOSS3_2","BOSS3_3"],               // TODO: remplacer les placeholders
+    };
+
+    let currentLang = localStorage.getItem('pouf_lang') || 'fr';
 
     function setLang(lang) {
       currentLang = lang;
@@ -1246,7 +1232,7 @@
             detail += `<div class="dng-block ${hasAny ? 'has-kills' : ''}">`;
             if (img) detail += `<div class="dng-bg" style="background-image:url('${img}')"></div>`;
             detail += `<div class="dng-inner">`;
-            detail += `<div class="dng-header"><span class="dng-name">${tDungeon(d)}</span><span class="dng-col-label">${fr2 ? 'Tués' : 'Killed'}</span></div>`;
+            detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr2 ? 'Tués' : 'Killed'}</span></div>`;
             detail += `<div class="dng-boss-list">`;
             bosses.forEach(boss => {
               const bk   = s.byBoss[boss] || { kills: 0, deaths: 0 };
@@ -1337,15 +1323,7 @@
         const status = card.querySelector('.tier-status');
         const thresh = card.querySelector('.tier-threshold');
         if (thresh) thresh.textContent = threshold.toLocaleString('fr-FR');
-
-        // Un palier atteint est définitivement acquis — on stocke en localStorage
-        const storageKey = `pagaille_tier_${i+1}_unlocked`;
-        const alreadyUnlocked = localStorage.getItem(storageKey) === '1';
-        const nowUnlocked = totalDisplay >= threshold;
-        if (nowUnlocked) localStorage.setItem(storageKey, '1');
-        const isUnlocked = alreadyUnlocked || nowUnlocked;
-
-        if (isUnlocked) {
+        if (totalDisplay >= threshold) {
           card.classList.remove('locked'); card.classList.add('unlocked');
           status.dataset.fr = 'Débloqué ✓'; status.dataset.en = 'Unlocked ✓';
           status.textContent = fr ? 'Débloqué ✓' : 'Unlocked ✓';
@@ -1410,6 +1388,12 @@
       "Fodir Kaldur":                    "fodirkaldur",
       "Chilgar the Drowned":             "chilgarthedrowned",
       "Auga Handhafi the Blind":         "augahandhafitheblind",
+      // ── Nouveaux boss ──
+      "Xurath, Fist of the Warden":      "xurath",                            
+      "Overlord Varux":                  "overlordvarux",                     
+      "BOSS3_1":                         "boss3-1",                           // TODO: renommer quand noms connus
+      "BOSS3_2":                         "boss3-2",
+      "BOSS3_3":                         "boss3-3",
     };
     function bossImgName(boss) { return BOSS_IMG[boss] || boss.replace(/'/g,'').replace(/,/g,'').replace(/\s+/g,'').toLowerCase(); }
 
@@ -1476,7 +1460,7 @@
 
           html += `<div class="shbar-wrap${isExp?' expanded':''}">
             <div class="shbar-row${isTop?' top':''}${val===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
-              <div class="shbar-name">${tDungeon(d.name).toUpperCase()}</div>
+              <div class="shbar-name">${d.name.toUpperCase()}</div>
               <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
               <div class="shbar-track">
                 ${img ? `<div class="shbar-img" style="width:${barPct}%;background-image:url('${img}')"></div><div class="shbar-marker" style="left:${barPct}%"></div>` : ''}
@@ -1493,7 +1477,7 @@
               const bval = bk[mode] || 0;
               html += `<div class="shbar-boss-row">
                 <div class="shbar-boss-name">${boss}</div>
-                <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString(fr ? 'fr-FR' : 'en-US') : '—'}</div>
+                <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString('fr-FR') : '—'}</div>
                 <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bval/maxBoss*100}%"></div></div>
               </div>`;
             });
