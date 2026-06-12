@@ -444,12 +444,15 @@
     border-radius: var(--r); padding: 8px 12px;
     position: relative; overflow: hidden; min-height: 52px;
   }
-  .run-row-bg {
+  .run-row::before {
+    content: '';
     position: absolute; inset: 0;
+    background-image: var(--run-bg, none);
     background-size: cover; background-position: center;
-    opacity: 0.07; transition: opacity 0.2s;
+    opacity: 0.08; transition: opacity 0.2s;
+    pointer-events: none;
   }
-  .run-row:hover .run-row-bg { opacity: 0.13; }
+  .run-row:hover::before { opacity: 0.15; }
   .run-row > * { position: relative; z-index: 1; }
   .run-team-bar { width: 2px; height: 30px; border-radius: 1px; flex-shrink: 0; }
   .run-team-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--text); }
@@ -515,6 +518,10 @@
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
       YouTube
     </a>
+    <a href="https://www.twitch.tv/pouf_hgaming" target="_blank" rel="noopener" class="social-link goober">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+      pouf_hgaming
+    </a>
   </div>
 </header>
 
@@ -557,20 +564,36 @@ async function sb(table, params = '') {
   return r.json();
 }
 
-const DUNGEON_IMAGES = {
-  'abime-des-marins':     '../gloire/images/abime-des-marins.jpg',
-  'bois-de-laube':        '../gloire/images/bois-de-laube.jpg',
-  'carriere-tombe-dieu':  '../gloire/images/carriere-tombe-dieu.jpg',
-  'caveau-de-lamespectre':'../gloire/images/caveau-de-lamespectre.jpg',
-  'coeur-de-guivre':      '../gloire/images/coeur-de-guivre.jpg',
-  'coeur-de-tuzari':      '../gloire/images/coeur-de-tuzari.jpg',
-  'creux-soyeux':         '../gloire/images/creux-soyeux.jpg',
-  'guet-tempete':         '../gloire/images/guet-tempete.jpg',
-  'la-chute-cithrel':     '../gloire/images/la-chute-cithrel.jpg',
-  'marche-durrak':        '../gloire/images/marche-durrak.jpg',
-  'sables-empyreens':     '../gloire/images/sables-empyreens.jpg',
-  'saccage-de-drakheim':  '../gloire/images/saccage-de-drakheim.jpg',
+const DUNGEONS = {
+  'abime-des-marins':     { name: "Mariner's Abyss",      img: 'abime-des-marins.jpg' },
+  'bois-de-laube':        { name: 'Dawnwood',             img: 'bois-de-laube.jpg' },
+  'carriere-tombe-dieu':  { name: "Godtomb Quarry",       img: 'carriere-tombe-dieu.jpg' },
+  'caveau-de-lamespectre':{ name: 'Specterblood Vault',   img: 'caveau-de-lamespectre.jpg' },
+  'coeur-de-guivre':      { name: 'Heart of the Wyvern',  img: 'coeur-de-guivre.jpg' },
+  'coeur-de-tuzari':      { name: 'Heart of Tuzari',      img: 'coeur-de-tuzari.jpg' },
+  'creux-soyeux':         { name: 'Silken Hollow',        img: 'creux-soyeux.jpg' },
+  'guet-tempete':         { name: 'Stormwatch',           img: 'guet-tempete.jpg' },
+  'la-chute-cithrel':     { name: 'Cithrel Falls',        img: 'la-chute-cithrel.jpg' },
+  'marche-durrak':        { name: "Durrak's March",       img: 'marche-durrak.jpg' },
+  'sables-empyreens':     { name: 'Empyrean Sands',       img: 'sables-empyreens.jpg' },
+  'saccage-de-drakheim':  { name: 'Drakheim Sacking',     img: 'saccage-de-drakheim.jpg' },
 };
+
+// Build absolute base URL for images (avoids relative path issues on GitHub Pages)
+const IMG_BASE = (() => {
+  const parts = location.pathname.split('/');
+  parts.pop(); // remove current page
+  parts.pop(); // remove stronghold/
+  return location.origin + parts.join('/') + '/gloire/images/';
+})();
+
+function dungeonImg(slug) {
+  const d = DUNGEONS[slug];
+  return d ? IMG_BASE + d.img : '';
+}
+function dungeonName(slug) {
+  return DUNGEONS[slug]?.name || slug;
+}
 
 function heroImg(slug) { return slug ? `../images/heroes/${slug}.jpg` : ''; }
 
@@ -873,11 +896,11 @@ function openMatch(id) {
     Object.entries(groups).forEach(([slug, gr]) => {
       const img = DUNGEON_IMAGES[slug]||'';
       const vpLabel = gr[0]?.run_type==='capstone' ? 'Capstone · 2 VP' : 'Adventure · 1 VP';
-      html += `<div class="dungeon-block-label">${gr[0]?.dungeon_name||slug} <span style="opacity:.5;font-style:italic;text-transform:none;font-family:'Crimson Pro',serif;font-size:11px">${vpLabel}</span></div>`;
+      html += `<div class="dungeon-block-label">${dungeonName(slug)} <span style="opacity:.5;font-style:italic;text-transform:none;font-family:'Crimson Pro',serif;font-size:11px">${vpLabel}</span></div>`;
       gr.forEach(r => {
         const team = state.teams.find(t=>t.id===r.team_id);
-        html += `<div class="run-row">
-          <div class="run-row-bg" style="background-image:url('${img}')"></div>
+        const bgUrl = dungeonImg(slug);
+        html += `<div class="run-row" style="${bgUrl ? `--run-bg:url('${bgUrl}')` : ''}">
           <div class="run-team-bar" style="background:${team?.color||'var(--border)'}"></div>
           <div>
             <div class="run-team-name">${team?.name||'?'}</div>
