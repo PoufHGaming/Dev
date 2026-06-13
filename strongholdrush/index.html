@@ -449,10 +449,10 @@
     position: absolute; inset: 0;
     background-image: var(--run-bg, none);
     background-size: cover; background-position: center;
-    opacity: 0.08; transition: opacity 0.2s;
+    opacity: var(--run-bg-opacity, 0.08); transition: opacity 0.2s;
     pointer-events: none;
   }
-  .run-row:hover::before { opacity: 0.15; }
+  .run-row:hover::before { opacity: calc(var(--run-bg-opacity, 0.08) + 0.05); }
   .run-row > * { position: relative; z-index: 1; }
   .run-team-bar { width: 2px; height: 30px; border-radius: 1px; flex-shrink: 0; }
   .run-team-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--text); }
@@ -563,18 +563,20 @@ async function sb(table, params = '') {
 }
 
 const DUNGEONS = {
-  'abime-des-marins':     { name: "Mariner's Abyss",      img: 'abime-des-marins.jpg' },
-  'bois-de-laube':        { name: 'Dawnwood',             img: 'bois-de-laube.jpg' },
-  'carriere-tombe-dieu':  { name: "Godtomb Quarry",       img: 'carriere-tombe-dieu.jpg' },
-  'caveau-de-lamespectre':{ name: 'Specterblood Vault',   img: 'caveau-de-lamespectre.jpg' },
-  'coeur-de-guivre':      { name: 'Heart of the Wyvern',  img: 'coeur-de-guivre.jpg' },
-  'coeur-de-tuzari':      { name: 'Heart of Tuzari',      img: 'coeur-de-tuzari.jpg' },
-  'creux-soyeux':         { name: 'Silken Hollow',        img: 'creux-soyeux.jpg' },
-  'guet-tempete':         { name: 'Stormwatch',           img: 'guet-tempete.jpg' },
-  'la-chute-cithrel':     { name: 'Cithrel Falls',        img: 'la-chute-cithrel.jpg' },
-  'marche-durrak':        { name: "Durrak's March",       img: 'marche-durrak.jpg' },
-  'sables-empyreens':     { name: 'Empyrean Sands',       img: 'sables-empyreens.jpg' },
-  'saccage-de-drakheim':  { name: 'Drakheim Sacking',     img: 'saccage-de-drakheim.jpg' },
+  'abime-des-marins':      { name: "Sailor's Abyss",      img: 'abime-des-marins.jpg',      capstone: false },
+  'bois-de-laube':         { name: 'Everdawn Grove',      img: 'bois-de-laube.jpg',          capstone: false },
+  'carriere-tombe-dieu':   { name: 'Godfall Quarry',      img: 'carriere-tombe-dieu.jpg',    capstone: false },
+  'caveau-de-lamespectre': { name: 'Wraithtide Vault',    img: 'caveau-de-lamespectre.jpg',  capstone: true  },
+  'coeur-de-guivre':       { name: 'Wyrmheart',           img: 'coeur-de-guivre.jpg',        capstone: false },
+  'coeur-de-tuzari':       { name: 'The Heart of Tuzari', img: 'coeur-de-tuzari.jpg',        capstone: true  },
+  'creux-soyeux':          { name: 'Silken Hollow',       img: 'creux-soyeux.jpg',           capstone: false },
+  'guet-tempete':          { name: 'Stormwatch',          img: 'guet-tempete.jpg',           capstone: false },
+  'la-chute-cithrel':      { name: "Cithrel's Fall",      img: 'la-chute-cithrel.jpg',       capstone: true  },
+  'marche-durrak':         { name: 'Urrak Markets',       img: 'marche-durrak.jpg',          capstone: false },
+  'sables-empyreens':      { name: 'Empyrean Sands',      img: 'sables-empyreens.jpg',       capstone: false },
+  'saccage-de-drakheim':   { name: 'Ransack of Drakheim', img: 'saccage-de-drakheim.jpg',    capstone: true  },
+  'ruins-of-regath':       { name: 'Ruins of Regath',     img: '',                           capstone: false },
+  'scyers-peak':           { name: "Scyer's Peak",        img: '',                           capstone: false },
 };
 
 // Build absolute base URL for images (avoids relative path issues on GitHub Pages)
@@ -897,7 +899,8 @@ function openMatch(id) {
       gr.forEach(r => {
         const team = state.teams.find(t=>t.id===r.team_id);
         const bgUrl = dungeonImg(slug);
-        html += `<div class="run-row" style="${bgUrl ? `--run-bg:url('${bgUrl}')` : ''}">
+        const bgOpacity = r.score === 1 ? '0.18' : '0.05';
+        html += `<div class="run-row" style="${bgUrl ? `--run-bg:url('${bgUrl}');--run-bg-opacity:${bgOpacity}` : ''}">
           <div class="run-team-bar" style="background:${team?.color||'var(--border)'}"></div>
           <div>
             <div class="run-team-name">${team?.name||'?'}</div>
