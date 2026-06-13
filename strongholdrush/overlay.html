@@ -11,12 +11,21 @@
 
   /* OBS will chromakey the background — keep it transparent */
   html, body {
-    width: 1920px;
-    height: 200px;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     background: transparent;
     font-family: 'Crimson Pro', Georgia, serif;
     font-weight: 300;
+  }
+
+  /* Scale the 1920×180 canvas to fit any viewport width */
+  .scale-root {
+    width: 1920px;
+    height: 180px;
+    transform-origin: bottom left;
+    position: fixed;
+    bottom: 0; left: 0;
   }
 
   /* ── URL PARAMS ──────────────────────────────────────────────
@@ -227,6 +236,7 @@
 </head>
 <body>
 
+<div class="scale-root" id="scale-root">
 <div class="overlay" id="overlay">
 
   <!-- Dungeon background image -->
@@ -272,8 +282,18 @@
   <!-- Refresh indicator dot -->
   <div class="refresh-dot" id="refresh-dot"></div>
 </div>
+</div><!-- /scale-root -->
 
 <script>
+// ── SCALING ───────────────────────────────────────────────────────────────────
+function scaleOverlay() {
+  const root  = document.getElementById('scale-root');
+  const scale = window.innerWidth / 1920;
+  root.style.transform = `scale(${scale})`;
+  document.body.style.height = Math.round(180 * scale) + 'px';
+}
+scaleOverlay();
+window.addEventListener('resize', scaleOverlay);
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SB_URL  = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
 const SB_KEY  = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
