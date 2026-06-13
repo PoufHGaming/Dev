@@ -629,6 +629,16 @@ function fmtTime(interval) {
 
 function vpTarget(round) { return round === 'final' ? 4 : 3; }
 
+const ROLE_ORDER = { tank: 0, healer: 1, dps: 2 };
+function sortRoster(roster) {
+  return [...roster].sort((a, b) => {
+    const ra = ROLE_ORDER[a.hero?.role] ?? 9;
+    const rb = ROLE_ORDER[b.hero?.role] ?? 9;
+    if (ra !== rb) return ra - rb;
+    return (a.hero?.name || '').localeCompare(b.hero?.name || '');
+  });
+}
+
 const state = { seasons:[], current:null, teams:[], matches:[], runs:[], rosters:[] };
 
 async function boot() {
@@ -734,7 +744,7 @@ function qualifierStatus(team) {
 }
 
 function renderQualifierCard(team) {
-  const roster = state.rosters.filter(r=>r.team_id===team.id);
+  const roster = sortRoster(state.rosters.filter(r=>r.team_id===team.id));
   const st = qualifierStatus(team);
   return `
     <div class="qualifier-card ${st.cls}" data-team-id="${team.id}">
@@ -887,8 +897,8 @@ function openMatch(id) {
   document.getElementById('panel-title').textContent =
     m.round==='final' ? 'Grand Final' : `Semifinal · Match ${m.match_number}`;
 
-  const rA = state.rosters.filter(r=>r.team_id===m.team_a_id);
-  const rB = state.rosters.filter(r=>r.team_id===m.team_b_id);
+  const rA = sortRoster(state.rosters.filter(r=>r.team_id===m.team_a_id));
+  const rB = sortRoster(state.rosters.filter(r=>r.team_id===m.team_b_id));
 
   // Group runs by dungeon
   const groups = {};
@@ -959,7 +969,7 @@ function openMatch(id) {
 
 function openTeam(id) {
   const team = state.teams.find(t=>t.id===id); if(!team) return;
-  const roster = state.rosters.filter(r=>r.team_id===id);
+  const roster = sortRoster(state.rosters.filter(r=>r.team_id===id));
 
   const st = qualifierStatus(team);
   let html = `<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap">

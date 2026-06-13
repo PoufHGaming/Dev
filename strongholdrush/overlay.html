@@ -121,22 +121,19 @@
     box-shadow: 0 0 14px rgba(232,201,106,0.5), 0 3px 12px rgba(0,0,0,0.7);
   }
 
-  /* ── TEAM INFO ───────────────────────────────────────────── */
-  .team-info { flex: 1; min-width: 0; }
+  /* ── TEAM BLOCK (name + heroes stacked) ─────────────────── */
+  .team-block { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+  .team-panel.right .team-block { align-items: flex-end; }
+
   .team-name {
     font-family: 'Cinzel', serif;
-    font-size: 28px; font-weight: 700;
+    font-size: 26px; font-weight: 700;
     letter-spacing: 0.04em; color: var(--text);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     transition: color 0.3s;
     text-shadow: 0 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.8);
   }
   .team-panel.winner .team-name { color: var(--teal-light); }
-  .team-label {
-    font-family: 'Cinzel', serif; font-size: 11px;
-    letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--text-muted); margin-top: 4px;
-  }
 
   /* ── VP DISPLAY ──────────────────────────────────────────── */
   .vp-block { flex-shrink: 0; text-align: center; padding: 0 16px; }
@@ -237,10 +234,9 @@
 
   <!-- Team A (left) -->
   <div class="team-panel" id="panel-a">
-    <div class="hero-stack" id="heroes-a"></div>
-    <div class="team-info">
+    <div class="team-block">
       <div class="team-name" id="name-a">—</div>
-      <div class="team-label" id="label-a">Team A</div>
+      <div class="hero-stack" id="heroes-a"></div>
     </div>
     <div class="vp-block">
       <div class="vp-number" id="vp-a">0</div>
@@ -258,10 +254,9 @@
 
   <!-- Team B (right) -->
   <div class="team-panel right" id="panel-b">
-    <div class="hero-stack" id="heroes-b"></div>
-    <div class="team-info">
+    <div class="team-block">
       <div class="team-name" id="name-b">—</div>
-      <div class="team-label" id="label-b">Team B</div>
+      <div class="hero-stack" id="heroes-b"></div>
     </div>
     <div class="vp-block">
       <div class="vp-number" id="vp-b">0</div>
@@ -403,8 +398,6 @@ function renderTeam(side, team, match, rosters, heroes) {
 
   // Team name + color
   document.getElementById(`name-${side}`).textContent = team.name;
-  document.getElementById(`label-${side}`).textContent =
-    isWinner ? '🏆 Winner' : isLoser ? 'Eliminated' : (isA ? 'Team A' : 'Team B');
 
   const panel = document.getElementById(`panel-${side}`);
   panel.style.setProperty('--team-color', team.color);
@@ -423,8 +416,15 @@ function renderTeam(side, team, match, rosters, heroes) {
   document.getElementById(`vp-target-${side}`).textContent = `/ ${target} VP`;
 
   // Heroes
+  const ROLE_ORDER = { tank: 0, healer: 1, dps: 2 };
   const roster = rosters.filter(r => r.team_id === team.id)
-    .map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }));
+    .map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }))
+    .sort((a, b) => {
+      const ra = ROLE_ORDER[a.hero?.role] ?? 9;
+      const rb = ROLE_ORDER[b.hero?.role] ?? 9;
+      if (ra !== rb) return ra - rb;
+      return (a.hero?.name || '').localeCompare(b.hero?.name || '');
+    });
 
   const stackEl = document.getElementById(`heroes-${side}`);
   stackEl.innerHTML = roster.map(r => `
