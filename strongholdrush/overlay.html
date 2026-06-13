@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stronghold Rush · Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* OBS will chromakey the background — keep it transparent */
+  html, body {
+    width: 1920px;
+    height: 200px;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-weight: 300;
+  }
+
+  /* ── URL PARAMS ──────────────────────────────────────────────
+     Add ?match=<match_id> to pin a specific match.
+     Without param, shows the most recent unfinished match.
+  ───────────────────────────────────────────────────────────── */
+
+  :root {
+    --teal:       #40d4d4;
+    --teal-light: #72e8e8;
+    --teal-dim:   #1e6464;
+    --bg:         rgba(7, 11, 11, 0.92);
+    --bg2:        rgba(13, 26, 26, 0.95);
+    --border:     rgba(64, 212, 212, 0.25);
+    --text:       #f0fafa;
+    --text-dim:   #9fd8d8;
+    --text-muted: #4d8080;
+    --goober-a:   #d744b1;
+    --goober-b:   #e8895b;
+    --gold:       #e8c96a;
+    --h:          200px;
+  }
+
+  /* ── WRAPPER ─────────────────────────────────────────────── */
+  .overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: var(--h);
+    display: grid;
+    grid-template-columns: 1fr 320px 1fr;
+    background: var(--bg);
+    border-top: 2px solid transparent;
+    border-image: linear-gradient(90deg, transparent, #d744b1 20%, #e8895b 80%, transparent) 1;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .overlay.visible { opacity: 1; transform: none; }
+
+  /* Subtle inner glow on top edge */
+  .overlay::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(215,68,177,0.6) 30%, rgba(232,137,91,0.6) 70%, transparent);
+    pointer-events: none;
+  }
+
+  /* Dungeon bg bleed — full width behind everything */
+  .dungeon-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease, background-image 0s 1.2s;
+  }
+  .dungeon-bg.loaded { opacity: 0.06; }
+
+  /* ── TEAM PANEL ──────────────────────────────────────────── */
+  .team-panel {
+    position: relative; z-index: 1;
+    display: flex; align-items: center;
+    padding: 0 28px; gap: 16px;
+    border-right: 1px solid var(--border);
+    transition: background 0.5s;
+    overflow: hidden;
+  }
+  .team-panel.right {
+    border-right: none;
+    border-left: 1px solid var(--border);
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  /* team color accent bar */
+  .team-panel::after {
+    content: '';
+    position: absolute; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--team-color, var(--teal-dim));
+    box-shadow: 0 0 12px var(--team-color, var(--teal-dim));
+    transition: background 0.5s, box-shadow 0.5s;
+  }
+  .team-panel:not(.right)::after { left: 0; }
+  .team-panel.right::after { right: 0; }
+
+  /* winner pulse */
+  .team-panel.winner { background: rgba(64,212,212,0.04); }
+  .team-panel.winner::after {
+    animation: winner-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes winner-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  /* ── HERO AVATARS ────────────────────────────────────────── */
+  .hero-stack {
+    display: flex; gap: -6px;
+    flex-shrink: 0;
+  }
+  .team-panel.right .hero-stack { flex-direction: row-reverse; }
+  .hero-wrap {
+    position: relative;
+    margin-left: -10px;
+    transition: margin 0.3s;
+  }
+  .hero-stack .hero-wrap:first-child { margin-left: 0; }
+  .hero-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.12);
+    object-fit: cover;
+    background: var(--teal-dim);
+    display: block;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .hero-avatar.captain { border-color: var(--gold); box-shadow: 0 0 10px rgba(232,201,106,0.4); }
+  .hero-name-tip {
+    display: none;
+    position: absolute; bottom: calc(100% + 6px);
+    left: 50%; transform: translateX(-50%);
+    background: rgba(7,11,11,0.95);
+    border: 1px solid var(--border);
+    border-radius: 3px; padding: 2px 7px;
+    font-family: 'Cinzel', serif; font-size: 10px;
+    color: var(--text-dim); white-space: nowrap; pointer-events: none;
+  }
+
+  /* ── TEAM INFO ───────────────────────────────────────────── */
+  .team-info { flex: 1; min-width: 0; }
+  .team-name {
+    font-family: 'Cinzel', serif;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: color 0.3s;
+    text-shadow: 0 0 20px rgba(0,0,0,0.8);
+  }
+  .team-panel.winner .team-name { color: var(--teal-light); }
+  .team-label {
+    font-family: 'Cinzel', serif; font-size: 10px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--text-muted); margin-top: 3px;
+  }
+
+  /* ── VP DISPLAY ──────────────────────────────────────────── */
+  .vp-block {
+    flex-shrink: 0; text-align: center;
+    padding: 0 20px;
+  }
+  .vp-number {
+    font-family: 'Cinzel', serif; font-size: 58px; font-weight: 700;
+    line-height: 1; letter-spacing: -0.02em;
+    color: var(--teal-light);
+    text-shadow: 0 0 30px rgba(64,212,212,0.5);
+    transition: all 0.4s;
+  }
+  .vp-number.updated {
+    animation: vp-pop 0.4s ease;
+  }
+  @keyframes vp-pop {
+    0%   { transform: scale(1.3); color: #fff; }
+    100% { transform: scale(1); }
+  }
+  .vp-number.dim { color: var(--text-muted); text-shadow: none; opacity: 0.5; }
+  .vp-target {
+    font-family: 'Cinzel', serif; font-size: 11px;
+    letter-spacing: 0.18em; color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ── CENTER ──────────────────────────────────────────────── */
+  .center-panel {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 12px 16px; gap: 6px;
+    text-align: center;
+  }
+
+  .event-eyebrow {
+    font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .dungeon-name {
+    font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--text);
+    text-shadow: 0 0 20px rgba(0,0,0,0.9);
+    line-height: 1.2; max-width: 280px;
+    transition: opacity 0.3s;
+  }
+  .dungeon-type {
+    font-family: 'Cinzel', serif; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 3px 12px; border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.3s;
+  }
+  .dungeon-type.capstone {
+    border-color: rgba(215,68,177,0.5);
+    color: var(--goober-b);
+    background: rgba(215,68,177,0.08);
+  }
+
+  .round-badge {
+    font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: 0.2em; color: var(--text-muted);
+    text-transform: uppercase; margin-top: 2px;
+  }
+
+  /* goober separator dots */
+  .goober-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--goober-a), var(--goober-b));
+    display: inline-block; margin: 0 4px;
+    box-shadow: 0 0 6px rgba(215,68,177,0.6);
+  }
+
+  /* ── WAITING STATE ───────────────────────────────────────── */
+  .waiting {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+  .waiting-text {
+    font-family: 'Cinzel', serif; font-size: 13px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted);
+    animation: waiting-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes waiting-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+  /* ── REFRESH INDICATOR ───────────────────────────────────── */
+  .refresh-dot {
+    position: absolute; bottom: 8px; right: 8px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--teal-dim); z-index: 20; opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .refresh-dot.ping { opacity: 1; animation: ping 0.6s ease; }
+  @keyframes ping { 0%{transform:scale(1);opacity:1} 100%{transform:scale(2.5);opacity:0} }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay">
+
+  <!-- Dungeon background image -->
+  <div class="dungeon-bg" id="dungeon-bg"></div>
+
+  <!-- Team A (left) -->
+  <div class="team-panel" id="panel-a">
+    <div class="hero-stack" id="heroes-a"></div>
+    <div class="team-info">
+      <div class="team-name" id="name-a">—</div>
+      <div class="team-label" id="label-a">Team A</div>
+    </div>
+    <div class="vp-block">
+      <div class="vp-number" id="vp-a">0</div>
+      <div class="vp-target" id="vp-target-a">/ 3 VP</div>
+    </div>
+  </div>
+
+  <!-- Center -->
+  <div class="center-panel">
+    <div class="event-eyebrow">Stronghold <span class="goober-dot"></span> Rush</div>
+    <div class="dungeon-name" id="dungeon-name">Loading…</div>
+    <div class="dungeon-type" id="dungeon-type">Adventure · 1 VP</div>
+    <div class="round-badge" id="round-badge"></div>
+  </div>
+
+  <!-- Team B (right) -->
+  <div class="team-panel right" id="panel-b">
+    <div class="hero-stack" id="heroes-b"></div>
+    <div class="team-info">
+      <div class="team-name" id="name-b">—</div>
+      <div class="team-label" id="label-b">Team B</div>
+    </div>
+    <div class="vp-block">
+      <div class="vp-number" id="vp-b">0</div>
+      <div class="vp-target" id="vp-target-b">/ 3 VP</div>
+    </div>
+  </div>
+
+  <!-- Waiting state -->
+  <div class="waiting" id="waiting">
+    <span class="waiting-text">Awaiting match data…</span>
+  </div>
+
+  <!-- Refresh indicator dot -->
+  <div class="refresh-dot" id="refresh-dot"></div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const SB_URL  = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+const SB_KEY  = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
+const REFRESH = 15_000; // ms
+
+// URL param: ?match=<uuid> to pin a specific match
+// URL param: ?season=<uuid> to pick season (defaults to most recent active)
+const params    = new URLSearchParams(location.search);
+const PIN_MATCH = params.get('match');
+const PIN_SEASON= params.get('season');
+
+// Build absolute image base from current page location
+const IMG_BASE = (() => {
+  const parts = location.pathname.split('/');
+  parts.pop(); // overlay.html
+  parts.pop(); // stronghold/
+  return location.origin + parts.join('/') + '/gloire/images/';
+})();
+const HERO_BASE = (() => {
+  const parts = location.pathname.split('/');
+  parts.pop(); parts.pop();
+  return location.origin + parts.join('/') + '/images/heroes/';
+})();
+
+const DUNGEONS = {
+  'abime-des-marins':      { name: "Sailor's Abyss",      img: 'abime-des-marins.jpg',      capstone: false },
+  'bois-de-laube':         { name: 'Everdawn Grove',       img: 'bois-de-laube.jpg',          capstone: false },
+  'carriere-tombe-dieu':   { name: 'Godfall Quarry',       img: 'carriere-tombe-dieu.jpg',    capstone: false },
+  'caveau-de-lamespectre': { name: 'Wraithtide Vault',     img: 'caveau-de-lamespectre.jpg',  capstone: true  },
+  'coeur-de-guivre':       { name: 'Wyrmheart',            img: 'coeur-de-guivre.jpg',        capstone: false },
+  'coeur-de-tuzari':       { name: 'The Heart of Tuzari',  img: 'coeur-de-tuzari.jpg',        capstone: true  },
+  'creux-soyeux':          { name: 'Silken Hollow',        img: 'creux-soyeux.jpg',           capstone: false },
+  'guet-tempete':          { name: 'Stormwatch',           img: 'guet-tempete.jpg',           capstone: false },
+  'la-chute-cithrel':      { name: "Cithrel's Fall",       img: 'la-chute-cithrel.jpg',       capstone: true  },
+  'marche-durrak':         { name: 'Urrak Markets',        img: 'marche-durrak.jpg',          capstone: false },
+  'sables-empyreens':      { name: 'Empyrean Sands',       img: 'sables-empyreens.jpg',       capstone: false },
+  'saccage-de-drakheim':   { name: 'Ransack of Drakheim',  img: 'saccage-de-drakheim.jpg',    capstone: true  },
+  'ruins-of-regath':       { name: 'Ruins of Regath',      img: '',                           capstone: false },
+  'scyers-peak':           { name: "Scyer's Peak",         img: '',                           capstone: false },
+};
+
+// ── SUPABASE ──────────────────────────────────────────────────────────────────
+async function sbGet(table, query = '') {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}${query}`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Accept': 'application/json' }
+  });
+  if (!r.ok) throw new Error(`${r.status}`);
+  return r.json();
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let prev = {}; // used to detect VP changes for animation
+
+// ── MAIN LOOP ─────────────────────────────────────────────────────────────────
+async function refresh() {
+  ping();
+  try {
+    // 1. Find the match to display
+    let match = null;
+    if (PIN_MATCH) {
+      const [m] = await sbGet('sr_matches', `?id=eq.${PIN_MATCH}`);
+      match = m;
+    } else {
+      // Auto: pick the active season's most recent unfinished match
+      // or last completed match if all done
+      let seasonFilter = '';
+      if (PIN_SEASON) {
+        seasonFilter = `season_id=eq.${PIN_SEASON}&`;
+      } else {
+        const seasons = await sbGet('sr_seasons', `?order=created_at.desc&status=neq.upcoming&limit=1`);
+        if (seasons.length) seasonFilter = `season_id=eq.${seasons[0].id}&`;
+      }
+      const unfinished = await sbGet('sr_matches',
+        `?${seasonFilter}winner_id=is.null&order=round.asc,match_number.asc&limit=1`);
+      if (unfinished.length) {
+        match = unfinished[0];
+      } else {
+        // Fallback: last completed match
+        const finished = await sbGet('sr_matches',
+          `?${seasonFilter}winner_id=not.is.null&order=round.desc,match_number.desc&limit=1`);
+        match = finished[0] || null;
+      }
+    }
+
+    if (!match) { showWaiting('No active match found'); return; }
+
+    // 2. Fetch teams, runs, rosters, heroes in parallel
+    const [teams, runs, rosters, heroes] = await Promise.all([
+      sbGet('sr_teams',   `?id=in.(${[match.team_a_id, match.team_b_id].filter(Boolean).join(',') || 'null'})`),
+      sbGet('sr_match_runs', `?match_id=eq.${match.id}&order=submitted_at.desc`),
+      sbGet('sr_roster',  `?team_id=in.(${[match.team_a_id, match.team_b_id].filter(Boolean).join(',') || 'null'})`),
+      sbGet('sr_heroes',  '?select=*'),
+    ]);
+
+    const teamA = teams.find(t => t.id === match.team_a_id);
+    const teamB = teams.find(t => t.id === match.team_b_id);
+    if (!teamA || !teamB) { showWaiting('Teams not configured yet'); return; }
+
+    // 3. Find the most recent dungeon played (last submitted run)
+    const latestSlug = runs[0]?.dungeon_slug || null;
+    const dun = latestSlug ? DUNGEONS[latestSlug] : null;
+
+    // 4. Render
+    hideWaiting();
+    renderTeam('a', teamA, match, rosters, heroes);
+    renderTeam('b', teamB, match, rosters, heroes);
+    renderCenter(match, dun, latestSlug);
+    renderDungeonBg(dun);
+    document.getElementById('overlay').classList.add('visible');
+
+  } catch(e) {
+    console.error('Refresh error:', e);
+  }
+}
+
+function renderTeam(side, team, match, rosters, heroes) {
+  const isA   = side === 'a';
+  const vp    = isA ? match.vp_a : match.vp_b;
+  const isWinner = match.winner_id === team.id;
+  const isLoser  = match.winner_id && match.winner_id !== team.id;
+  const target   = match.round === 'final' ? 4 : 3;
+
+  // Team name + color
+  document.getElementById(`name-${side}`).textContent = team.name;
+  document.getElementById(`label-${side}`).textContent =
+    isWinner ? '🏆 Winner' : isLoser ? 'Eliminated' : (isA ? 'Team A' : 'Team B');
+
+  const panel = document.getElementById(`panel-${side}`);
+  panel.style.setProperty('--team-color', team.color);
+  panel.classList.toggle('winner', isWinner);
+
+  // VP with animation on change
+  const vpEl = document.getElementById(`vp-${side}`);
+  if (prev[`vp-${side}`] !== undefined && prev[`vp-${side}`] !== vp) {
+    vpEl.classList.remove('updated');
+    void vpEl.offsetWidth; // reflow
+    vpEl.classList.add('updated');
+  }
+  prev[`vp-${side}`] = vp;
+  vpEl.textContent = vp;
+  vpEl.classList.toggle('dim', isLoser);
+  document.getElementById(`vp-target-${side}`).textContent = `/ ${target} VP`;
+
+  // Heroes
+  const roster = rosters.filter(r => r.team_id === team.id)
+    .map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }));
+
+  const stackEl = document.getElementById(`heroes-${side}`);
+  stackEl.innerHTML = roster.map(r => `
+    <div class="hero-wrap">
+      <img class="hero-avatar${r.is_captain ? ' captain' : ''}"
+           src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
+           alt="${r.hero?.name || '?'}"
+           onerror="this.style.opacity=0.2"
+           title="${r.player_name}${r.is_captain ? ' (Captain)' : ''} — ${r.hero?.name || '?'}">
+    </div>`).join('');
+}
+
+function renderCenter(match, dun, slug) {
+  const nameEl  = document.getElementById('dungeon-name');
+  const typeEl  = document.getElementById('dungeon-type');
+  const roundEl = document.getElementById('round-badge');
+
+  if (dun) {
+    nameEl.textContent = dun.name;
+    typeEl.textContent = dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP';
+    typeEl.classList.toggle('capstone', dun.capstone);
+  } else {
+    nameEl.textContent = 'Match starting soon';
+    typeEl.textContent = '';
+  }
+
+  const roundLabel = match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
+  roundEl.textContent = roundLabel;
+}
+
+let currentBgSlug = null;
+function renderDungeonBg(dun) {
+  const bg = document.getElementById('dungeon-bg');
+  if (!dun?.img || dun.slug === currentBgSlug) return;
+  currentBgSlug = dun?.slug;
+
+  // Fade out, swap, fade in
+  bg.classList.remove('loaded');
+  setTimeout(() => {
+    if (dun?.img) {
+      bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
+      bg.classList.add('loaded');
+    }
+  }, 500);
+}
+
+function showWaiting(msg) {
+  const w = document.getElementById('waiting');
+  w.querySelector('.waiting-text').textContent = msg || 'Awaiting match data…';
+  w.style.display = 'flex';
+}
+function hideWaiting() {
+  document.getElementById('waiting').style.display = 'none';
+}
+
+function ping() {
+  const dot = document.getElementById('refresh-dot');
+  dot.classList.remove('ping');
+  void dot.offsetWidth;
+  dot.classList.add('ping');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+refresh();
+setInterval(refresh, REFRESH);
+</script>
+</body>
+</html>
