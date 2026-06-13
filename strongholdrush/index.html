@@ -180,8 +180,31 @@
   }
   .qualifier-card:hover { border-color: rgba(64,212,212,0.4); background: var(--bg3); }
   .qualifier-card:hover::before { background: var(--teal-dim); }
-  .qualifier-card.qualified::before { background: var(--goober-grad); }
-  .qualifier-card.qualified { border-color: rgba(215,68,177,0.25); }
+  .qualifier-card.rejected {
+    opacity: 0.65;
+    border-color: rgba(180,60,60,0.2);
+  }
+  .qualifier-card.rejected::before { background: rgba(180,60,60,0.5); }
+  .qualifier-card.rejected .qualifier-team-name { color: var(--text-dim); }
+  .qualifier-card.rejected .qualifier-time { color: var(--text-muted); text-shadow: none; }
+
+  .vod-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.1em;
+    color: var(--youtube); border: 1px solid rgba(255,0,0,0.3);
+    border-radius: var(--r); padding: 3px 10px;
+    text-decoration: none; transition: all 0.2s; white-space: nowrap;
+  }
+  .vod-link:hover { background: rgba(255,0,0,0.08); border-color: rgba(255,0,0,0.6); }
+
+  .replay-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.1em;
+    color: var(--twitch); border: 1px solid rgba(145,71,255,0.3);
+    border-radius: var(--r); padding: 3px 8px;
+    text-decoration: none; transition: all 0.2s; white-space: nowrap;
+  }
+  .replay-link:hover { background: rgba(145,71,255,0.1); border-color: rgba(145,71,255,0.6); }
 
   .qualifier-rank {
     font-family: 'Cinzel', serif; font-size: 10px;
@@ -703,20 +726,30 @@ function renderQualifiers() {
   return `<div class="qualifiers-grid">${state.teams.map(renderQualifierCard).join('')}</div>`;
 }
 
+function qualifierStatus(team) {
+  const s = team.qualifier_status || 'pending';
+  if (s === 'qualified') return { cls: 'qualified', label: team.qualifier_rank ? `Rank <span class="rank-num">#${team.qualifier_rank}</span>` : 'Qualified', color: 'var(--teal-dim)' };
+  if (s === 'rejected')  return { cls: 'rejected',  label: team.qualifier_rank ? `Eliminated · <span style="opacity:.6">#${team.qualifier_rank}</span>` : 'Not accepted', color: '#804040' };
+  return { cls: '', label: '<span style="color:var(--text-muted)">Pending</span>', color: 'var(--border)' };
+}
+
 function renderQualifierCard(team) {
   const roster = state.rosters.filter(r=>r.team_id===team.id);
-  const qualified = team.qualifier_rank != null;
+  const st = qualifierStatus(team);
   return `
-    <div class="qualifier-card${qualified?' qualified':''}" data-team-id="${team.id}">
-      <div class="qualifier-rank">
-        ${qualified ? `Rank <span class="rank-num">#${team.qualifier_rank}</span>` : '<span style="color:var(--text-muted)">Pending</span>'}
-      </div>
+    <div class="qualifier-card ${st.cls}" data-team-id="${team.id}">
+      <div class="qualifier-rank">${st.label}</div>
       <div class="qualifier-team-header">
         <span class="qualifier-color-dot" style="background:${team.color}"></span>
         <span class="qualifier-team-name">${team.name}</span>
       </div>
-      ${team.qualifier_dungeon ? `<div class="qualifier-dungeon">${team.qualifier_dungeon}</div>` : '<div class="qualifier-dungeon" style="color:var(--text-muted)">Dungeon not submitted</div>'}
-      <div class="qualifier-time${team.qualifier_time?'':' pending'}">${team.qualifier_time ? fmtTime(team.qualifier_time) : 'Time pending'}</div>
+      ${team.qualifier_dungeon
+        ? `<div class="qualifier-dungeon">${team.qualifier_dungeon}</div>`
+        : `<div class="qualifier-dungeon" style="color:var(--text-muted)">Dungeon not submitted</div>`}
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <div class="qualifier-time${team.qualifier_time?'':' pending'}">${team.qualifier_time ? fmtTime(team.qualifier_time) : 'Time pending'}</div>
+        ${team.qualifier_vod_url ? `<a href="${team.qualifier_vod_url}" target="_blank" rel="noopener" class="vod-link" onclick="event.stopPropagation()">▶ VOD</a>` : ''}
+      </div>
       ${roster.length ? `<div class="qualifier-roster">${roster.map(r=>`
         <div class="qualifier-hero-wrap">
           <img class="qualifier-hero-img${r.is_captain?' captain':''}"
@@ -899,14 +932,17 @@ function openMatch(id) {
       gr.forEach(r => {
         const team = state.teams.find(t=>t.id===r.team_id);
         const bgUrl = dungeonImg(slug);
-        const bgOpacity = r.score === 1 ? '0.18' : '0.05';
+        const bgOpacity = r.score === 1 ? '0.7' : '0.3';
         html += `<div class="run-row" style="${bgUrl ? `--run-bg:url('${bgUrl}');--run-bg-opacity:${bgOpacity}` : ''}">
           <div class="run-team-bar" style="background:${team?.color||'var(--border)'}"></div>
           <div>
             <div class="run-team-name">${team?.name||'?'}</div>
             <div class="run-time">${r.run_time ? fmtTime(r.run_time) : 'Time not submitted'}</div>
           </div>
-          <div></div>
+          ${r.replay_url ? `<a href="${r.replay_url}" target="_blank" rel="noopener" class="replay-link" onclick="event.stopPropagation()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+            Replay
+          </a>` : '<div></div>'}
           <div class="run-score ${r.score===1?'win':r.score===0?'loss':'pending'}">
             ${r.score===1?'✓':r.score===0?'✗':'—'}
           </div>
@@ -925,17 +961,20 @@ function openTeam(id) {
   const team = state.teams.find(t=>t.id===id); if(!team) return;
   const roster = state.rosters.filter(r=>r.team_id===id);
 
-  let html = `<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+  const st = qualifierStatus(team);
+  let html = `<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <div style="width:8px;height:8px;border-radius:50%;background:${team.color};flex-shrink:0"></div>
     <span style="font-family:'Cinzel',serif;font-size:18px;letter-spacing:0.05em;color:var(--text)">${team.name}</span>
     ${team.qualifier_rank ? `<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;padding:3px 10px;border:1px solid rgba(215,68,177,0.4);border-radius:999px;background:linear-gradient(90deg,rgba(215,68,177,0.1),rgba(232,137,91,0.1));color:var(--goober-b)">RANK #${team.qualifier_rank}</span>` : ''}
+    ${st.cls === 'rejected' ? `<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;padding:3px 10px;border:1px solid rgba(180,60,60,0.4);border-radius:999px;color:#c06060">NOT ACCEPTED</span>` : ''}
   </div>`;
 
   if (team.qualifier_dungeon || team.qualifier_time) {
     html += `<div class="panel-section">Qualifier run</div>
-    <div style="display:flex;gap:24px;padding:12px 20px 16px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;gap:24px;align-items:flex-end;padding:12px 20px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap">
       ${team.qualifier_dungeon ? `<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;letter-spacing:0.1em">DUNGEON</div><div style="font-family:'Cinzel',serif;font-size:13px">${team.qualifier_dungeon}</div></div>` : ''}
       ${team.qualifier_time ? `<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;letter-spacing:0.1em">BEST TIME</div><div style="font-family:'Cinzel',serif;font-size:22px;color:var(--teal-light);text-shadow:0 0 16px rgba(64,212,212,0.5)">${fmtTime(team.qualifier_time)}</div></div>` : ''}
+      ${team.qualifier_vod_url ? `<a href="${team.qualifier_vod_url}" target="_blank" rel="noopener" class="vod-link" style="font-size:14px;padding:6px 14px">▶ Watch VOD</a>` : ''}
     </div>`;
   }
 
