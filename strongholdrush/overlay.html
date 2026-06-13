@@ -9,36 +9,25 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* OBS will chromakey the background — keep it transparent */
   html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: transparent;
-    font-family: 'Crimson Pro', Georgia, serif;
-    font-weight: 300;
+    width: 100%; height: 100%;
+    overflow: hidden; background: transparent;
+    font-family: 'Crimson Pro', Georgia, serif; font-weight: 300;
   }
 
-  /* Scale the 1920×180 canvas to fit any viewport width */
   .scale-root {
-    width: 1920px;
-    height: 180px;
+    width: 1920px; height: 180px;
     transform-origin: bottom left;
-    position: fixed;
-    bottom: 0; left: 0;
+    position: fixed; bottom: 0; left: 0;
   }
-
-  /* ── URL PARAMS ──────────────────────────────────────────────
-     Add ?match=<match_id> to pin a specific match.
-     Without param, shows the most recent unfinished match.
-  ───────────────────────────────────────────────────────────── */
 
   :root {
     --teal:       #40d4d4;
     --teal-light: #72e8e8;
     --teal-dim:   #1e6464;
-    --bg:         rgba(5, 8, 8, 0.97);
-    --border:     rgba(64, 212, 212, 0.3);
+    --bg:         rgba(5,8,8,0.97);
+    --bg2:        rgba(12,22,22,0.98);
+    --border:     rgba(64,212,212,0.22);
     --text:       #ffffff;
     --text-dim:   #b8f0f0;
     --text-muted: #5a9090;
@@ -48,135 +37,110 @@
     --h:          180px;
   }
 
-  /* ── WRAPPER ─────────────────────────────────────────────── */
+  /* ── BASE OVERLAY ────────────────────────────────────────────── */
   .overlay {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: var(--h);
-    display: grid;
-    grid-template-columns: 1fr 260px 1fr;
-    background: var(--bg);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(10px);
+    position: absolute; bottom: 0; left: 0; right: 0; height: var(--h);
+    background: var(--bg); overflow: hidden;
+    opacity: 0; transform: translateY(10px);
     transition: opacity 0.5s ease, transform 0.5s ease;
   }
   .overlay.visible { opacity: 1; transform: none; }
-
-  /* Top accent line */
   .overlay::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
     background: linear-gradient(90deg, transparent 0%, #d744b1 25%, #e8895b 75%, transparent 100%);
     z-index: 10;
   }
 
-  /* Dungeon bg — subtle but visible */
+  /* Dungeon bg */
   .dungeon-bg {
     position: absolute; inset: 0;
     background-size: cover; background-position: center;
-    opacity: 0;
-    transition: opacity 1s ease;
+    opacity: 0; transition: opacity 1s ease;
   }
-  .dungeon-bg.loaded { opacity: 0.12; }
+  .dungeon-bg.loaded { opacity: 0.10; }
 
-  /* ── TEAM PANEL ──────────────────────────────────────────── */
+  /* ── SCENES ──────────────────────────────────────────────────── */
+  .scene {
+    position: absolute; inset: 0;
+    display: none; opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .scene.active { display: flex; }
+  .scene.visible { opacity: 1; }
+
+  /* ════════════════════════════════════════════════════════════════
+     SCENE: SCORE
+  ════════════════════════════════════════════════════════════════ */
+  #scene-score {
+    display: grid;
+    grid-template-columns: 1fr 380px 1fr;
+  }
+
   .team-panel {
     position: relative; z-index: 1;
     display: flex; align-items: center;
-    padding: 0 20px; gap: 14px;
-    overflow: hidden;
+    padding: 0 20px; gap: 14px; overflow: hidden;
   }
-  .team-panel.right {
-    flex-direction: row-reverse;
-    text-align: right;
-  }
-
-  /* Left/right colored side bars */
-  .team-panel:not(.right) { border-right: 1px solid rgba(64,212,212,0.15); }
-  .team-panel.right       { border-left:  1px solid rgba(64,212,212,0.15); }
+  .team-panel:not(.right) { border-right: 1px solid rgba(64,212,212,0.12); }
+  .team-panel.right { border-left: 1px solid rgba(64,212,212,0.12); flex-direction: row-reverse; text-align: right; }
 
   .team-panel::after {
-    content: '';
-    position: absolute; top: 0; bottom: 0; width: 4px;
+    content: ''; position: absolute; top: 0; bottom: 0; width: 4px;
     background: var(--team-color, #40d4d4);
-    box-shadow: 0 0 16px var(--team-color, #40d4d4),
-                0 0 32px var(--team-color, #40d4d4);
+    box-shadow: 0 0 16px var(--team-color, #40d4d4), 0 0 32px var(--team-color, #40d4d4);
   }
   .team-panel:not(.right)::after { left: 0; }
   .team-panel.right::after { right: 0; }
-
-  .team-panel.winner { background: rgba(64,212,212,0.05); }
+  .team-panel.winner { background: rgba(64,212,212,0.04); }
   .team-panel.winner::after { animation: winner-pulse 1.6s ease-in-out infinite; }
   @keyframes winner-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* ── HERO AVATARS ────────────────────────────────────────── */
-  .hero-stack { display: flex; flex-shrink: 0; }
-  .team-panel.right .hero-stack { flex-direction: row-reverse; }
-  .hero-wrap { margin-left: -14px; }
-  .hero-stack .hero-wrap:first-child { margin-left: 0; }
-
-  .hero-avatar {
-    width: 68px; height: 68px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.15);
-    object-fit: cover;
-    background: #1a2a2a;
-    display: block;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.7);
-  }
-  .hero-avatar.captain {
-    border-color: var(--gold);
-    box-shadow: 0 0 14px rgba(232,201,106,0.5), 0 3px 12px rgba(0,0,0,0.7);
-  }
-
-  /* ── TEAM BLOCK (name + heroes stacked) ─────────────────── */
   .team-block { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
   .team-panel.right .team-block { align-items: flex-end; }
 
   .team-name {
-    font-family: 'Cinzel', serif;
-    font-size: 26px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700;
     letter-spacing: 0.04em; color: var(--text);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     transition: color 0.3s;
-    text-shadow: 0 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.8);
+    text-shadow: 0 2px 12px rgba(0,0,0,1);
   }
   .team-panel.winner .team-name { color: var(--teal-light); }
 
-  /* ── VP DISPLAY ──────────────────────────────────────────── */
+  .hero-stack { display: flex; flex-shrink: 0; }
+  .team-panel.right .hero-stack { flex-direction: row-reverse; }
+  .hero-wrap { margin-left: -18px; }
+  .hero-stack .hero-wrap:first-child { margin-left: 0; }
+  .hero-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    object-fit: cover; background: #1a2a2a; display: block;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.7);
+  }
+  .hero-avatar.captain { border-color: var(--gold); box-shadow: 0 0 14px rgba(232,201,106,0.5); }
+
   .vp-block { flex-shrink: 0; text-align: center; padding: 0 8px; }
   .vp-number {
     font-family: 'Cinzel', serif; font-size: 72px; font-weight: 700;
-    line-height: 1; letter-spacing: -0.02em;
-    color: var(--teal-light);
+    line-height: 1; color: var(--teal-light);
     text-shadow: 0 0 20px rgba(64,212,212,0.7), 0 0 40px rgba(64,212,212,0.3);
     transition: all 0.4s;
   }
   .vp-number.updated { animation: vp-pop 0.4s ease; }
-  @keyframes vp-pop {
-    0%   { transform: scale(1.4); color: #fff; text-shadow: 0 0 30px #fff; }
-    100% { transform: scale(1); }
-  }
+  @keyframes vp-pop { 0%{transform:scale(1.4);color:#fff;text-shadow:0 0 30px #fff} 100%{transform:scale(1)} }
   .vp-number.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
-  .vp-target {
-    font-family: 'Cinzel', serif; font-size: 12px;
-    letter-spacing: 0.2em; color: var(--text-muted); margin-top: 2px;
-  }
+  .vp-target { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.2em; color: var(--text-muted); margin-top: 2px; }
 
-  /* ── CENTER ──────────────────────────────────────────────── */
   .center-panel {
     position: relative; z-index: 1;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 10px 16px; gap: 7px; text-align: center;
-    background: rgba(0,0,0,0.25);
+    background: rgba(0,0,0,0.2);
   }
-
   .event-eyebrow {
     font-family: 'Cinzel', serif; font-size: 10px;
-    letter-spacing: 0.3em; text-transform: uppercase;
-    color: var(--text-muted);
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
     display: flex; align-items: center; gap: 7px;
   }
   .goober-dot {
@@ -184,51 +148,174 @@
     background: linear-gradient(135deg, var(--goober-a), var(--goober-b));
     box-shadow: 0 0 8px rgba(215,68,177,0.7);
   }
-
   .dungeon-name {
     font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
     letter-spacing: 0.05em; color: var(--text);
-    text-shadow: 0 2px 10px rgba(0,0,0,1);
-    line-height: 1.2; max-width: 270px;
+    text-shadow: 0 2px 10px rgba(0,0,0,1); line-height: 1.2; max-width: 240px;
   }
   .dungeon-type {
-    font-family: 'Cinzel', serif; font-size: 11px;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    padding: 4px 14px; border-radius: 999px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 14px; border-radius: 999px;
     border: 1px solid rgba(64,212,212,0.35);
-    color: var(--text-dim); background: rgba(64,212,212,0.07);
-    transition: all 0.3s;
+    color: var(--text-dim); background: rgba(64,212,212,0.07); transition: all 0.3s;
   }
   .dungeon-type.capstone {
-    border-color: rgba(215,68,177,0.6);
-    color: var(--goober-b);
-    background: rgba(215,68,177,0.12);
-    box-shadow: 0 0 10px rgba(215,68,177,0.2);
+    border-color: rgba(215,68,177,0.6); color: var(--goober-b);
+    background: rgba(215,68,177,0.12); box-shadow: 0 0 10px rgba(215,68,177,0.2);
   }
-  .round-badge {
-    font-family: 'Cinzel', serif; font-size: 10px;
-    letter-spacing: 0.22em; color: var(--text-muted); text-transform: uppercase;
+  .round-badge { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.22em; color: var(--text-muted); text-transform: uppercase; }
+
+  /* ════════════════════════════════════════════════════════════════
+     SCENE: ROSTER (stats)
+  ════════════════════════════════════════════════════════════════ */
+  #scene-roster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
   }
 
-  /* ── WAITING STATE ───────────────────────────────────────── */
+  .roster-panel {
+    display: flex; flex-direction: column;
+    padding: 10px 16px; position: relative; z-index: 1; overflow: hidden;
+  }
+  .roster-panel:first-child { border-right: 1px solid var(--border); }
+
+  .roster-panel::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 3px;
+    background: var(--team-color, #40d4d4);
+    box-shadow: 0 0 12px var(--team-color, #40d4d4);
+  }
+  .roster-panel:first-child::after { left: 0; }
+  .roster-panel:last-child::after  { right: 0; }
+
+  .roster-team-name {
+    font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.1em; color: var(--text); margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .roster-players { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+
+  .player-row {
+    display: grid;
+    grid-template-columns: 36px 1fr repeat(7, 56px);
+    align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(64,212,212,0.08);
+    border-radius: 3px; padding: 3px 8px 3px 4px;
+  }
+  .player-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    object-fit: cover; background: #1a2a2a;
+  }
+  .player-avatar.captain { border-color: var(--gold); }
+  .player-info { min-width: 0; }
+  .player-name-sm {
+    font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.03em; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .player-hero-sm { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+  .stat-cell { text-align: center; }
+  .stat-val {
+    font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+    color: var(--teal-light); display: block; line-height: 1;
+  }
+  .stat-val.rank { color: var(--gold); }
+  .stat-val.empty { color: var(--text-muted); font-size: 10px; }
+  .stat-label {
+    font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted); display: block; margin-top: 1px;
+  }
+
+  /* Stats header */
+  .stats-header {
+    display: grid;
+    grid-template-columns: 36px 1fr repeat(7, 56px);
+    gap: 6px; padding: 0 8px 4px 4px; margin-bottom: 2px;
+  }
+  .stats-header-cell {
+    text-align: center; font-family: 'Cinzel', serif;
+    font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     SCENE: RUNS (donjons complétés)
+  ════════════════════════════════════════════════════════════════ */
+  #scene-runs {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: stretch;
+  }
+
+  .runs-left {
+    display: flex; flex-direction: column;
+    justify-content: center; padding: 12px 20px;
+    border-right: 1px solid var(--border);
+    background: rgba(0,0,0,0.15); position: relative; z-index: 1;
+  }
+  .runs-match-label {
+    font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .runs-score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .runs-team-name {
+    font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700;
+    color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .runs-vp {
+    font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700;
+    color: var(--teal-light); text-shadow: 0 0 16px rgba(64,212,212,0.6);
+    flex-shrink: 0;
+  }
+  .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
+  .runs-divider { height: 1px; background: var(--border); margin: 6px 0; }
+  .runs-target { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.16em; color: var(--text-muted); }
+
+  .runs-table-wrap { padding: 10px 16px; position: relative; z-index: 1; overflow: hidden; }
+  .runs-table { width: 100%; border-collapse: collapse; }
+  .runs-table th {
+    font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-muted);
+    padding: 2px 8px 6px; text-align: left; border-bottom: 1px solid var(--border);
+  }
+  .runs-table th.center { text-align: center; }
+  .runs-table td { padding: 5px 8px; border-bottom: 1px solid rgba(64,212,212,0.05); vertical-align: middle; }
+  .runs-table tr:last-child td { border-bottom: none; }
+
+  .run-dungeon-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text); }
+  .run-dungeon-type { font-size: 10px; color: var(--text-muted); font-style: italic; }
+  .run-time-cell { text-align: center; }
+  .run-time-val { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text-dim); }
+  .run-time-val.winner-time { color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.5); }
+  .run-score-icon { text-align: center; font-size: 14px; }
+  .run-score-icon.win  { color: var(--teal-light); }
+  .run-score-icon.loss { color: var(--text-muted); opacity: 0.4; }
+  .run-color-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+  /* ════════════════════════════════════════════════════════════════
+     WAITING / REFRESH
+  ════════════════════════════════════════════════════════════════ */
   .waiting {
-    position: absolute; inset: 0; z-index: 10;
+    position: absolute; inset: 0; z-index: 20;
     display: flex; align-items: center; justify-content: center;
     background: var(--bg);
   }
   .waiting-text {
     font-family: 'Cinzel', serif; font-size: 14px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--text-muted);
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-muted);
     animation: waiting-pulse 2.5s ease-in-out infinite;
   }
-  @keyframes waiting-pulse { 0%,100%{opacity:.3} 50%{opacity:0.9} }
+  @keyframes waiting-pulse { 0%,100%{opacity:.3} 50%{opacity:.9} }
 
-  /* ── REFRESH DOT ─────────────────────────────────────────── */
   .refresh-dot {
     position: absolute; bottom: 8px; right: 10px;
     width: 5px; height: 5px; border-radius: 50%;
-    background: var(--teal-dim); z-index: 20; opacity: 0;
+    background: var(--teal-dim); z-index: 30; opacity: 0;
   }
   .refresh-dot.ping { animation: ping 0.7s ease forwards; }
   @keyframes ping { 0%{transform:scale(1);opacity:1} 100%{transform:scale(3);opacity:0} }
@@ -239,83 +326,135 @@
 <div class="scale-root" id="scale-root">
 <div class="overlay" id="overlay">
 
-  <!-- Dungeon background image -->
   <div class="dungeon-bg" id="dungeon-bg"></div>
 
-  <!-- Team A (left) -->
-  <div class="team-panel" id="panel-a">
-    <div class="team-block">
-      <div class="team-name" id="name-a">—</div>
-      <div class="hero-stack" id="heroes-a"></div>
+  <!-- ── SCENE: SCORE ─────────────────────────────────────── -->
+  <div class="scene active" id="scene-score">
+    <div class="team-panel" id="panel-a">
+      <div class="team-block">
+        <div class="team-name" id="name-a">—</div>
+        <div class="hero-stack" id="heroes-a"></div>
+      </div>
+      <div class="vp-block">
+        <div class="vp-number" id="vp-a">0</div>
+        <div class="vp-target" id="vp-target-a">/ 3 VP</div>
+      </div>
     </div>
-    <div class="vp-block">
-      <div class="vp-number" id="vp-a">0</div>
-      <div class="vp-target" id="vp-target-a">/ 3 VP</div>
+    <div class="center-panel">
+      <div class="event-eyebrow">Stronghold <span class="goober-dot"></span> Rush</div>
+      <div class="dungeon-name" id="dungeon-name">Loading…</div>
+      <div class="dungeon-type" id="dungeon-type"></div>
+      <div class="round-badge" id="round-badge"></div>
     </div>
-  </div>
-
-  <!-- Center -->
-  <div class="center-panel">
-    <div class="event-eyebrow">Stronghold <span class="goober-dot"></span> Rush</div>
-    <div class="dungeon-name" id="dungeon-name">Loading…</div>
-    <div class="dungeon-type" id="dungeon-type">Adventure · 1 VP</div>
-    <div class="round-badge" id="round-badge"></div>
-  </div>
-
-  <!-- Team B (right) -->
-  <div class="team-panel right" id="panel-b">
-    <div class="team-block">
-      <div class="team-name" id="name-b">—</div>
-      <div class="hero-stack" id="heroes-b"></div>
-    </div>
-    <div class="vp-block">
-      <div class="vp-number" id="vp-b">0</div>
-      <div class="vp-target" id="vp-target-b">/ 3 VP</div>
+    <div class="team-panel right" id="panel-b">
+      <div class="team-block">
+        <div class="team-name" id="name-b">—</div>
+        <div class="hero-stack" id="heroes-b"></div>
+      </div>
+      <div class="vp-block">
+        <div class="vp-number" id="vp-b">0</div>
+        <div class="vp-target" id="vp-target-b">/ 3 VP</div>
+      </div>
     </div>
   </div>
 
-  <!-- Waiting state -->
+  <!-- ── SCENE: ROSTER ────────────────────────────────────── -->
+  <div class="scene" id="scene-roster">
+    <div class="roster-panel" id="roster-panel-a">
+      <div class="roster-team-name" id="roster-name-a">—</div>
+      <div class="stats-header">
+        <div></div><div></div>
+        <div class="stats-header-cell">Endu</div>
+        <div class="stats-header-cell">Esprit</div>
+        <div class="stats-header-cell">Crit</div>
+        <div class="stats-header-cell">Main</div>
+        <div class="stats-header-cell">Hate</div>
+        <div class="stats-header-cell">Xpert</div>
+        <div class="stats-header-cell">Rank</div>
+      </div>
+      <div class="roster-players" id="roster-players-a"></div>
+    </div>
+    <div class="roster-panel" id="roster-panel-b">
+      <div class="roster-team-name" id="roster-name-b">—</div>
+      <div class="stats-header">
+        <div></div><div></div>
+        <div class="stats-header-cell">Endu</div>
+        <div class="stats-header-cell">Esprit</div>
+        <div class="stats-header-cell">Crit</div>
+        <div class="stats-header-cell">Main</div>
+        <div class="stats-header-cell">Hate</div>
+        <div class="stats-header-cell">Xpert</div>
+        <div class="stats-header-cell">Rank</div>
+      </div>
+      <div class="roster-players" id="roster-players-b"></div>
+    </div>
+  </div>
+
+  <!-- ── SCENE: RUNS ──────────────────────────────────────── -->
+  <div class="scene" id="scene-runs">
+    <div class="runs-left">
+      <div class="runs-match-label" id="runs-match-label">Semifinal</div>
+      <div class="runs-score-row">
+        <span class="runs-team-name" id="runs-name-a">—</span>
+        <span class="runs-vp" id="runs-vp-a">0</span>
+      </div>
+      <div class="runs-divider"></div>
+      <div class="runs-score-row">
+        <span class="runs-team-name" id="runs-name-b">—</span>
+        <span class="runs-vp" id="runs-vp-b">0</span>
+      </div>
+      <div class="runs-target" id="runs-target">First to 3 VP</div>
+    </div>
+    <div class="runs-table-wrap">
+      <table class="runs-table" id="runs-table">
+        <thead>
+          <tr>
+            <th>Dungeon</th>
+            <th class="center" id="runs-th-a">Team A</th>
+            <th class="center"></th>
+            <th class="center" id="runs-th-b">Team B</th>
+            <th class="center"></th>
+          </tr>
+        </thead>
+        <tbody id="runs-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="waiting" id="waiting">
     <span class="waiting-text">Awaiting match data…</span>
   </div>
-
-  <!-- Refresh indicator dot -->
   <div class="refresh-dot" id="refresh-dot"></div>
 </div>
-</div><!-- /scale-root -->
+</div>
 
 <script>
 // ── SCALING ───────────────────────────────────────────────────────────────────
 function scaleOverlay() {
-  const root  = document.getElementById('scale-root');
+  const root = document.getElementById('scale-root');
   const scale = window.innerWidth / 1920;
   root.style.transform = `scale(${scale})`;
   document.body.style.height = Math.round(180 * scale) + 'px';
 }
 scaleOverlay();
 window.addEventListener('resize', scaleOverlay);
+
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const SB_URL  = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
 const SB_KEY  = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
-const REFRESH = 15_000; // ms
+const REFRESH = 5_000; // 5s — pour réactivité scène
 
-// URL param: ?match=<uuid> to pin a specific match
-// URL param: ?season=<uuid> to pick season (defaults to most recent active)
-const params    = new URLSearchParams(location.search);
-const PIN_MATCH = params.get('match');
-const PIN_SEASON= params.get('season');
+const params     = new URLSearchParams(location.search);
+const PIN_MATCH  = params.get('match');
+const PIN_SEASON = params.get('season');
 
-// Build absolute image base from current page location
 const IMG_BASE = (() => {
-  const parts = location.pathname.split('/');
-  parts.pop(); // overlay.html
-  parts.pop(); // stronghold/
-  return location.origin + parts.join('/') + '/gloire/images/';
+  const p = location.pathname.split('/'); p.pop(); p.pop();
+  return location.origin + p.join('/') + '/gloire/images/';
 })();
 const HERO_BASE = (() => {
-  const parts = location.pathname.split('/');
-  parts.pop(); parts.pop();
-  return location.origin + parts.join('/') + '/images/heroes/';
+  const p = location.pathname.split('/'); p.pop(); p.pop();
+  return location.origin + p.join('/') + '/images/heroes/';
 })();
 
 const DUNGEONS = {
@@ -335,160 +474,276 @@ const DUNGEONS = {
   'scyers-peak':           { name: "Scyer's Peak",         img: '',                           capstone: false },
 };
 
-// ── SUPABASE ──────────────────────────────────────────────────────────────────
-async function sbGet(table, query = '') {
-  const r = await fetch(`${SB_URL}/rest/v1/${table}${query}`, {
+const ROLE_ORDER = { tank: 0, healer: 1, dps: 2 };
+function sortRoster(r) {
+  return [...r].sort((a,b) => {
+    const ra = ROLE_ORDER[a.hero?.role] ?? 9, rb = ROLE_ORDER[b.hero?.role] ?? 9;
+    if (ra !== rb) return ra - rb;
+    return (a.hero?.name||'').localeCompare(b.hero?.name||'');
+  });
+}
+
+async function sbGet(table, q='') {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}${q}`, {
     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Accept': 'application/json' }
   });
-  if (!r.ok) throw new Error(`${r.status}`);
+  if (!r.ok) throw new Error(r.status);
   return r.json();
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let prev = {}; // used to detect VP changes for animation
+let prev = {};
+let currentScene = 'score';
+let currentBgSlug = null;
 
-// ── MAIN LOOP ─────────────────────────────────────────────────────────────────
+// ── SCENE SWITCHER ────────────────────────────────────────────────────────────
+function switchScene(name) {
+  if (name === currentScene) return;
+  currentScene = name;
+  document.querySelectorAll('.scene').forEach(el => {
+    el.classList.remove('active','visible');
+  });
+  const next = document.getElementById(`scene-${name}`);
+  if (!next) return;
+  next.classList.add('active');
+  requestAnimationFrame(() => next.classList.add('visible'));
+}
+
+// ── MAIN REFRESH ──────────────────────────────────────────────────────────────
 async function refresh() {
   ping();
   try {
-    // 1. Find the match to display
-    let match = null;
-    if (PIN_MATCH) {
-      const [m] = await sbGet('sr_matches', `?id=eq.${PIN_MATCH}`);
-      match = m;
-    } else {
-      // Auto: pick the active season's most recent unfinished match
-      // or last completed match if all done
-      let seasonFilter = '';
-      if (PIN_SEASON) {
-        seasonFilter = `season_id=eq.${PIN_SEASON}&`;
-      } else {
-        const seasons = await sbGet('sr_seasons', `?order=created_at.desc&status=neq.upcoming&limit=1`);
-        if (seasons.length) seasonFilter = `season_id=eq.${seasons[0].id}&`;
-      }
-      const unfinished = await sbGet('sr_matches',
-        `?${seasonFilter}winner_id=is.null&order=round.asc,match_number.asc&limit=1`);
-      if (unfinished.length) {
-        match = unfinished[0];
-      } else {
-        // Fallback: last completed match
-        const finished = await sbGet('sr_matches',
-          `?${seasonFilter}winner_id=not.is.null&order=round.desc,match_number.desc&limit=1`);
-        match = finished[0] || null;
-      }
+    // 1. Resolve season
+    let seasonId = PIN_SEASON;
+    if (!seasonId) {
+      const seasons = await sbGet('sr_seasons', '?status=neq.upcoming&order=created_at.desc&limit=1');
+      seasonId = seasons[0]?.id || null;
     }
+    if (!seasonId) { showWaiting('No active season'); return; }
 
+    // 2. Overlay state (scene + pinned match)
+    const stateRows = await sbGet('sr_overlay_state', `?season_id=eq.${seasonId}&limit=1`);
+    const ovState = stateRows[0] || null;
+    const scene = ovState?.scene || 'score';
+    const pinnedMatchId = PIN_MATCH || ovState?.match_id || null;
+
+    // 3. Resolve match
+    let match = null;
+    if (pinnedMatchId) {
+      const [m] = await sbGet('sr_matches', `?id=eq.${pinnedMatchId}`);
+      match = m;
+    }
+    if (!match) {
+      const unfinished = await sbGet('sr_matches',
+        `?season_id=eq.${seasonId}&winner_id=is.null&order=round.asc,match_number.asc&limit=1`);
+      match = unfinished[0] || null;
+    }
+    if (!match) {
+      const finished = await sbGet('sr_matches',
+        `?season_id=eq.${seasonId}&winner_id=not.is.null&order=round.desc,match_number.desc&limit=1`);
+      match = finished[0] || null;
+    }
     if (!match) { showWaiting('No active match found'); return; }
 
-    // 2. Fetch teams, runs, rosters, heroes in parallel
+    // 4. Fetch all data
+    const teamIds = [match.team_a_id, match.team_b_id].filter(Boolean);
     const [teams, runs, rosters, heroes] = await Promise.all([
-      sbGet('sr_teams',   `?id=in.(${[match.team_a_id, match.team_b_id].filter(Boolean).join(',') || 'null'})`),
-      sbGet('sr_match_runs', `?match_id=eq.${match.id}&order=submitted_at.desc`),
-      sbGet('sr_roster',  `?team_id=in.(${[match.team_a_id, match.team_b_id].filter(Boolean).join(',') || 'null'})`),
-      sbGet('sr_heroes',  '?select=*'),
+      sbGet('sr_teams',      `?id=in.(${teamIds.join(',') || 'null'})`),
+      sbGet('sr_match_runs', `?match_id=eq.${match.id}&order=submitted_at.asc`),
+      sbGet('sr_roster',     `?team_id=in.(${teamIds.join(',') || 'null'})`),
+      sbGet('sr_heroes',     '?select=*'),
     ]);
 
     const teamA = teams.find(t => t.id === match.team_a_id);
     const teamB = teams.find(t => t.id === match.team_b_id);
-    if (!teamA || !teamB) { showWaiting('Teams not configured yet'); return; }
+    if (!teamA || !teamB) { showWaiting('Teams not configured'); return; }
 
-    // 3. Find the most recent dungeon played (last submitted run)
-    const latestSlug = runs[0]?.dungeon_slug || null;
-    const dun = latestSlug ? DUNGEONS[latestSlug] : null;
+    // Hydrate rosters with hero data
+    const hydrated = rosters.map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }));
 
-    // 4. Render
+    // 5. Switch scene & render
+    switchScene(scene);
     hideWaiting();
-    renderTeam('a', teamA, match, rosters, heroes);
-    renderTeam('b', teamB, match, rosters, heroes);
-    renderCenter(match, dun, latestSlug);
-    renderDungeonBg(dun);
     document.getElementById('overlay').classList.add('visible');
+
+    // Always update bg and score data (used across scenes)
+    const latestSlug = [...runs].reverse().find(r => r.dungeon_slug)?.dungeon_slug || null;
+    renderDungeonBg(DUNGEONS[latestSlug] || null);
+
+    if (scene === 'score')  renderScore(match, teamA, teamB, hydrated, latestSlug);
+    if (scene === 'roster') renderRoster(match, teamA, teamB, hydrated);
+    if (scene === 'runs')   renderRuns(match, teamA, teamB, runs);
 
   } catch(e) {
     console.error('Refresh error:', e);
   }
 }
 
-function renderTeam(side, team, match, rosters, heroes) {
-  const isA   = side === 'a';
-  const vp    = isA ? match.vp_a : match.vp_b;
+// ── SCENE: SCORE ──────────────────────────────────────────────────────────────
+function renderScore(match, teamA, teamB, rosters, latestSlug) {
+  renderScoreTeam('a', teamA, match, rosters);
+  renderScoreTeam('b', teamB, match, rosters);
+
+  const dun = DUNGEONS[latestSlug] || null;
+  const nameEl = document.getElementById('dungeon-name');
+  const typeEl = document.getElementById('dungeon-type');
+  const roundEl = document.getElementById('round-badge');
+
+  nameEl.textContent = dun ? dun.name : 'Match starting soon';
+  typeEl.textContent = dun ? (dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP') : '';
+  typeEl.classList.toggle('capstone', !!dun?.capstone);
+  roundEl.textContent = match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
+}
+
+function renderScoreTeam(side, team, match, rosters) {
+  const isA = side === 'a';
+  const vp = isA ? match.vp_a : match.vp_b;
   const isWinner = match.winner_id === team.id;
   const isLoser  = match.winner_id && match.winner_id !== team.id;
   const target   = match.round === 'final' ? 4 : 3;
 
-  // Team name + color
   document.getElementById(`name-${side}`).textContent = team.name;
-
   const panel = document.getElementById(`panel-${side}`);
   panel.style.setProperty('--team-color', team.color);
   panel.classList.toggle('winner', isWinner);
 
-  // VP with animation on change
   const vpEl = document.getElementById(`vp-${side}`);
   if (prev[`vp-${side}`] !== undefined && prev[`vp-${side}`] !== vp) {
-    vpEl.classList.remove('updated');
-    void vpEl.offsetWidth; // reflow
-    vpEl.classList.add('updated');
+    vpEl.classList.remove('updated'); void vpEl.offsetWidth; vpEl.classList.add('updated');
   }
   prev[`vp-${side}`] = vp;
   vpEl.textContent = vp;
-  vpEl.classList.toggle('dim', isLoser);
+  vpEl.classList.toggle('dim', !!isLoser);
   document.getElementById(`vp-target-${side}`).textContent = `/ ${target} VP`;
 
-  // Heroes
-  const ROLE_ORDER = { tank: 0, healer: 1, dps: 2 };
-  const roster = rosters.filter(r => r.team_id === team.id)
-    .map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }))
-    .sort((a, b) => {
-      const ra = ROLE_ORDER[a.hero?.role] ?? 9;
-      const rb = ROLE_ORDER[b.hero?.role] ?? 9;
-      if (ra !== rb) return ra - rb;
-      return (a.hero?.name || '').localeCompare(b.hero?.name || '');
-    });
-
-  const stackEl = document.getElementById(`heroes-${side}`);
-  stackEl.innerHTML = roster.map(r => `
+  const roster = sortRoster(rosters.filter(r => r.team_id === team.id));
+  document.getElementById(`heroes-${side}`).innerHTML = roster.map(r => `
     <div class="hero-wrap">
-      <img class="hero-avatar${r.is_captain ? ' captain' : ''}"
+      <img class="hero-avatar${r.is_captain?' captain':''}"
            src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
-           alt="${r.hero?.name || '?'}"
-           onerror="this.style.opacity=0.2"
-           title="${r.player_name}${r.is_captain ? ' (Captain)' : ''} — ${r.hero?.name || '?'}">
+           alt="${r.hero?.name||'?'}" onerror="this.style.opacity=0.2">
     </div>`).join('');
 }
 
-function renderCenter(match, dun, slug) {
-  const nameEl  = document.getElementById('dungeon-name');
-  const typeEl  = document.getElementById('dungeon-type');
-  const roundEl = document.getElementById('round-badge');
-
-  if (dun) {
-    nameEl.textContent = dun.name;
-    typeEl.textContent = dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP';
-    typeEl.classList.toggle('capstone', dun.capstone);
-  } else {
-    nameEl.textContent = 'Match starting soon';
-    typeEl.textContent = '';
-  }
-
-  const roundLabel = match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
-  roundEl.textContent = roundLabel;
+// ── SCENE: ROSTER ─────────────────────────────────────────────────────────────
+function renderRoster(match, teamA, teamB, rosters) {
+  renderRosterPanel('a', teamA, rosters);
+  renderRosterPanel('b', teamB, rosters);
 }
 
-let currentBgSlug = null;
+function renderRosterPanel(side, team, rosters) {
+  document.getElementById(`roster-name-${side}`).textContent = team.name;
+  const panel = document.getElementById(`roster-panel-${side}`);
+  panel.style.setProperty('--team-color', team.color);
+
+  const roster = sortRoster(rosters.filter(r => r.team_id === team.id));
+
+  function stat(val) {
+    if (val == null) return `<span class="stat-val empty">—</span>`;
+    return `<span class="stat-val">${val.toLocaleString()}</span>`;
+  }
+
+  document.getElementById(`roster-players-${side}`).innerHTML = roster.map(r => `
+    <div class="player-row">
+      <img class="player-avatar${r.is_captain?' captain':''}"
+           src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
+           alt="${r.hero?.name||'?'}" onerror="this.style.opacity=0.2">
+      <div class="player-info">
+        <div class="player-name-sm">${r.player_name}${r.is_captain?' 👑':''}</div>
+        <div class="player-hero-sm">${r.hero?.name||'—'}</div>
+      </div>
+      <div class="stat-cell">${stat(r.endurance)}<span class="stat-label">Endu</span></div>
+      <div class="stat-cell">${stat(r.esprit)}<span class="stat-label">Esprit</span></div>
+      <div class="stat-cell">${stat(r.critique)}<span class="stat-label">Crit</span></div>
+      <div class="stat-cell">${stat(r.main_stat)}<span class="stat-label">Main</span></div>
+      <div class="stat-cell">${stat(r.hate)}<span class="stat-label">Hate</span></div>
+      <div class="stat-cell">${stat(r.expertise)}<span class="stat-label">Xpert</span></div>
+      <div class="stat-cell">
+        ${r.world_rank != null
+          ? `<span class="stat-val rank">#${r.world_rank}</span>`
+          : `<span class="stat-val empty">—</span>`}
+        <span class="stat-label">Rank</span>
+      </div>
+    </div>`).join('');
+}
+
+// ── SCENE: RUNS ───────────────────────────────────────────────────────────────
+function renderRuns(match, teamA, teamB, runs) {
+  const target = match.round === 'final' ? 4 : 3;
+  const isWinner = (t) => match.winner_id === t.id;
+  const isLoser  = (t) => match.winner_id && match.winner_id !== t.id;
+
+  document.getElementById('runs-match-label').textContent =
+    match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
+
+  document.getElementById('runs-name-a').textContent = teamA.name;
+  document.getElementById('runs-name-b').textContent = teamB.name;
+  const vpA = document.getElementById('runs-vp-a');
+  const vpB = document.getElementById('runs-vp-b');
+  vpA.textContent = match.vp_a;
+  vpB.textContent = match.vp_b;
+  vpA.classList.toggle('dim', !!isLoser(teamA));
+  vpB.classList.toggle('dim', !!isLoser(teamB));
+  document.getElementById('runs-target').textContent = `First to ${target} VP`;
+  document.getElementById('runs-th-a').textContent = teamA.name;
+  document.getElementById('runs-th-b').textContent = teamB.name;
+
+  // Group by dungeon slug
+  const slugs = [...new Set(runs.map(r => r.dungeon_slug))];
+  const tbody = document.getElementById('runs-tbody');
+
+  if (!slugs.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);font-style:italic;padding:12px">No dungeons played yet</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = slugs.map(slug => {
+    const dun  = DUNGEONS[slug] || { name: slug, capstone: false };
+    const runA = runs.find(r => r.dungeon_slug === slug && r.team_id === teamA.id);
+    const runB = runs.find(r => r.dungeon_slug === slug && r.team_id === teamB.id);
+
+    const timeCell = (run) => {
+      if (!run) return '<td class="run-time-cell"><span class="run-time-val">—</span></td>';
+      const isWin = run.score === 1;
+      return `<td class="run-time-cell">
+        <span class="run-time-val${isWin?' winner-time':''}">${fmtTime(run.run_time)}</span>
+      </td>`;
+    };
+    const scoreCell = (run) => {
+      if (!run || run.score == null) return '<td class="run-score-icon">—</td>';
+      return `<td class="run-score-icon ${run.score===1?'win':'loss'}">${run.score===1?'✓':'✗'}</td>`;
+    };
+
+    return `<tr>
+      <td>
+        <div class="run-dungeon-name">${dun.name}</div>
+        <div class="run-dungeon-type">${dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP'}</div>
+      </td>
+      ${timeCell(runA)}
+      ${scoreCell(runA)}
+      ${timeCell(runB)}
+      ${scoreCell(runB)}
+    </tr>`;
+  }).join('');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function fmtTime(interval) {
+  if (!interval) return '—';
+  const m = String(interval).match(/(\d+):(\d+):(\d+)/);
+  if (m) { const [,h,min,s]=m; return +h>0 ? `${h}:${min}:${s}` : `${min}:${s}`; }
+  return interval;
+}
+
 function renderDungeonBg(dun) {
   const bg = document.getElementById('dungeon-bg');
-  if (!dun?.img || dun.slug === currentBgSlug) return;
-  currentBgSlug = dun?.slug;
-
-  // Fade out, swap, fade in
+  if (!dun?.img || dun.img === currentBgSlug) return;
+  currentBgSlug = dun?.img;
   bg.classList.remove('loaded');
   setTimeout(() => {
-    if (dun?.img) {
-      bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
-      bg.classList.add('loaded');
-    }
-  }, 500);
+    bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
+    bg.classList.add('loaded');
+  }, 400);
 }
 
 function showWaiting(msg) {
@@ -499,12 +754,9 @@ function showWaiting(msg) {
 function hideWaiting() {
   document.getElementById('waiting').style.display = 'none';
 }
-
 function ping() {
   const dot = document.getElementById('refresh-dot');
-  dot.classList.remove('ping');
-  void dot.offsetWidth;
-  dot.classList.add('ping');
+  dot.classList.remove('ping'); void dot.offsetWidth; dot.classList.add('ping');
 }
 
 // ── BOOT ──────────────────────────────────────────────────────────────────────
