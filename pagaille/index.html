@@ -931,6 +931,7 @@
       // Marché d'Urrak
       "Drazhul the Fleshbroker":         "Marché d'Urrak",
       "Slavetrader Brull":               "Marché d'Urrak",
+      "Drazhul & Brull":                 "Marché d'Urrak",
       "Urrak Markets":                   "Marché d'Urrak",
       "Marché d'Urrak":                  "Marché d'Urrak",
       // Sables Empyréens
@@ -954,7 +955,7 @@
       "Coeur de guivre":       ["Apostate Veras"],
       "Creux Soyeux":          ["Vexira, Mother of Nightmares"],
       "Guet Tempete":          ["Warlord Brogg"],
-      "Marché d'Urrak":        ["Drazhul the Fleshbroker","Slavetrader Brull"],
+      "Marché d'Urrak":        ["Drazhul & Brull"],
       "Sables Empyréens":      ["Sin-Magir"],
       "Caveau de Lamespectre": ["Deathless Katrine","Bael'Aurum","First Mate Marrow"],
       "Coeur de Tuzari":       ["Moar'gore, Master of Sacrifice","Vun'Kahr, The Thorned Maw","Prophet Ez'rath"],
@@ -962,7 +963,7 @@
       "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"]
     };
 
-    let currentLang = localStorage.getItem('pouf_lang') || 'fr';
+    let currentLang = localStorage.getItem('pouf_lang') || 'en';
 
     function setLang(lang) {
       currentLang = lang;
@@ -1357,8 +1358,7 @@
       "Noor, The Betrayer":              "noor",
       "Ancient Koros":                   "koros",
       "Cithrel":                         "cithrel",
-      "Drazhul the Fleshbroker":         "drazhulthefleshbroker",
-      "Slavetrader Brull":               "slavetraderbrull",
+      "Drazhul & Brull":                 "drazhulthefleshbroker",
       "Sin-Magir":                       "sinmagir",
       "Fodir Kaldur":                    "fodirkaldur",
       "Chilgar the Drowned":             "chilgarthedrowned",
@@ -1429,7 +1429,7 @@
 
           html += `<div class="shbar-wrap${isExp?' expanded':''}">
             <div class="shbar-row${isTop?' top':''}${val===0?' empty':''}" ${clickable?`onclick="toggleStatsDungeon('${d.name.replace(/'/g,"\\'")}')"`:''}  style="${clickable?'cursor:pointer':''}">
-              <div class="shbar-name">${d.name.toUpperCase()}</div>
+              <div class="shbar-name">${tDungeon(d.name).toUpperCase()}</div>
               <div class="shbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
               <div class="shbar-track">
                 ${img ? `<div class="shbar-img" style="width:${barPct}%;background-image:url('${img}')"></div><div class="shbar-marker" style="left:${barPct}%"></div>` : ''}
