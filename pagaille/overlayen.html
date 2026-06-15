@@ -738,6 +738,13 @@
   <div class="hud-bottom" id="hud-bottom">
     <div class="progress-fill" id="progress-fill" style="width:0%"></div>
     <div class="progress-markers" id="progress-markers"></div>
+    <!-- Timer de panel : fine ligne blanche qui se vide -->
+    <div id="panel-timer" style="
+      position:absolute; top:0; left:0; right:0; height:2px;
+      background:rgba(255,255,255,0.45);
+      transition:none;
+      z-index:3;
+    "></div>
   </div>
 
 </div>
@@ -931,7 +938,6 @@
 
   let _currentPanel  = null;
   let _rotationTimer = null;
-  let _timerAnim     = null;
   let _milestoneQueue = [];
 
   function buildRotation() {
@@ -954,16 +960,22 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('active');
-
-    // Dots
     updateDots(id);
-
-    // Timer bar
     animateTimerBar(duration);
-
-    // Prochain panel dans `duration` ms
     clearTimeout(_rotationTimer);
     _rotationTimer = setTimeout(nextPanel, duration);
+  }
+
+  function animateTimerBar(duration) {
+    const bar = document.getElementById('panel-timer');
+    if (!bar) return;
+    // Reset instantané
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+    void bar.offsetWidth; // force reflow
+    // Vidage progressif sur toute la durée
+    bar.style.transition = `width ${duration}ms linear`;
+    bar.style.width = '0%';
   }
 
   function nextPanel() {
@@ -992,16 +1004,6 @@
   function randomDuration() {
     // Entre 60s et 120s
     return (60 + Math.random() * 60) * 1000;
-  }
-
-  function animateTimerBar(duration) {
-    const bar = document.getElementById('panel-timer');
-    if (_timerAnim) clearInterval(_timerAnim);
-    bar.style.transition = 'none';
-    bar.style.width = '100%';
-    void bar.offsetWidth;
-    bar.style.transition = `width ${duration}ms linear`;
-    bar.style.width = '0%';
   }
 
   function updateDots(activeId) {
