@@ -520,13 +520,28 @@ function switchScene(name) {
 async function refresh() {
   ping();
   try {
-    // 1. Resolve season
+    // 1. Resolve season — priority: URL param → overlay_state → most advanced with matches
     let seasonId = PIN_SEASON;
     if (!seasonId) {
-      const seasons = await sbGet('sr_seasons', '?status=neq.upcoming&order=created_at.desc&limit=1');
-      seasonId = seasons[0]?.id || null;
+      // Check overlay_state for an explicitly pinned season (set from admin)
+      const allStates = await sbGet('sr_overlay_state', '?order=updated_at.desc&limit=1');
+      seasonId = allStates[0]?.season_id || null;
     }
-    if (!seasonId) { showWaiting('No active season'); return; }
+    if (!seasonId) {
+      // Fallback: most advanced active season that has matches
+      const STATUS_ORDER = { finals: 0, semifinals: 1, qualifiers: 2, upcoming: 3, completed: 4 };
+      const allSeasons = await sbGet('sr_seasons', '?order=created_at.desc');
+      const active = allSeasons
+        .filter(s => s.status !== 'completed')
+        .sort((a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9));
+      for (const s of active) {
+        const matches = await sbGet('sr_matches', `?season_id=eq.${s.id}&limit=1`);
+        if (matches.length) { seasonId = s.id; break; }
+      }
+      if (!seasonId && active.length) seasonId = active[0].id;
+      if (!seasonId && allSeasons.length) seasonId = allSeasons[0].id;
+    }
+    if (!seasonId) { showWaiting('No season found'); return; }
 
     // 2. Overlay state (scene + pinned match)
     const stateRows = await sbGet('sr_overlay_state', `?season_id=eq.${seasonId}&limit=1`);
