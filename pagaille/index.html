@@ -948,6 +948,27 @@
     // Normalise dungeon_name ou boss_name Fellowship → nom FR canonique du donjon
     function normDungeon(name) { return DUNGEON_NAME_MAP[name] || name; }
 
+    const DUNGEON_NAMES_EN = {
+      "Abime des marins":      "Sailor's Abyss",
+      "Bois de L'aube":        "Everdawn Grove",
+      "Carrière tombe-dieu":   "Godfall Quarry",
+      "Coeur de guivre":       "Wyrmheart",
+      "Creux Soyeux":          "Silken Hollow",
+      "Guet Tempete":          "Stormwatch",
+      "Marché d'Urrak":        "Urrak Markets",
+      "Sables Empyréens":      "Empyrean Sands",
+      "Caveau de Lamespectre": "Wraithtide Vault",
+      "Coeur de Tuzari":       "Heart of Tuzari",
+      "La chute Cithrel":      "Cithrel's Fall",
+      "Saccage de Drakheim":   "Ransack of Drakheim",
+      "Ruins of Regath":       "Ruins of Regath",
+      "Scyer's Peak":          "Scyer's Peak",
+      "DUNGEON3_NAME":         "DUNGEON3_NAME",
+    };
+    function tDungeon(nameFR) {
+      return currentLang === 'en' ? (DUNGEON_NAMES_EN[nameFR] || nameFR) : nameFR;
+    }
+
     const DUNGEON_BOSSES = {
       "Abime des marins":      ["Sinthara"],
       "Bois de L'aube":        ["Malgut the Fetid"],
