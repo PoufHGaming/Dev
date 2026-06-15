@@ -729,8 +729,16 @@
         </div>
       </div>
 
-      <div class="panel-dots" id="panel-dots"></div>
-    </div>
+    <!-- Timer de panel : fine ligne en bas de la zone droite -->
+    <div id="panel-timer" style="
+      position:absolute; bottom:0; left:0; right:0; height:2px;
+      background:rgba(64,212,212,0.3);
+      transition:none;
+      z-index:3;
+    "></div>
+
+    <div class="panel-dots" id="panel-dots"></div>
+  </div>
 
   </div>
 
@@ -738,13 +746,6 @@
   <div class="hud-bottom" id="hud-bottom">
     <div class="progress-fill" id="progress-fill" style="width:0%"></div>
     <div class="progress-markers" id="progress-markers"></div>
-    <!-- Timer de panel : fine ligne blanche qui se vide -->
-    <div id="panel-timer" style="
-      position:absolute; top:0; left:0; right:0; height:2px;
-      background:rgba(255,255,255,0.45);
-      transition:none;
-      z-index:3;
-    "></div>
   </div>
 
 </div>
