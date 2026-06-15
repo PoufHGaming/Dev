@@ -19,8 +19,267 @@
       --text:      #f0fafa;
       --text-dim:  #9fd8d8;
       --text-muted:#4d8080;
-      --h: 80px;  /* hauteur totale HUD */
+      --h: 80px;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 1920px;
+      height: var(--h);
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Cinzel', serif;
+    }
+
+    /* ── HUD CONTAINER ── */
+    .hud {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--h);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Trait lumineux en haut */
+    .hud::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%, var(--teal-dim) 15%,
+        var(--teal) 50%, var(--teal-dim) 85%, transparent 100%
+      );
+      z-index: 2;
+    }
+
+    /* ── LIGNE PRINCIPALE ── */
+    .hud-main {
+      display: flex;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── SECTION GAUCHE — fixe ── */
+    .hud-left {
+      flex-shrink: 0;
+      width: 380px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 20px;
+      border-right: 1px solid var(--border);
+    }
+
+    .event-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .event-name {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .event-season {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      font-weight: 700;
+    }
+
+    .divider-v { width: 1px; background: var(--border); align-self: stretch; margin: 10px 0; flex-shrink:0; }
+
+    /* Compteur kills */
+    .kills-block {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex-shrink: 0;
+    }
+    .kills-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .kills-count {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--teal-light);
+      letter-spacing: 0.05em;
+      line-height: 1;
+      text-shadow: 0 0 24px rgba(64,212,212,0.85), 0 0 2px rgba(64,212,212,0.5);
+      transition: color 0.3s;
+    }
+    .kills-count.bump {
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,255,255,0.9), 0 0 60px rgba(64,212,212,0.5);
+    }
+
+    /* Next tier compact */
+    .next-tier-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .next-tier-label {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .next-tier-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+    .next-tier-remain {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--teal-dim);
+      font-weight: 600;
+    }
+
+    /* ── SÉPARATEUR CENTRAL ── */
+    .hud-sep {
+      flex-shrink: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    /* ── SECTION DROITE — rotation ── */
+    .hud-right {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Chaque panneau */
+    .panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 20px;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+    .panel.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .panel.exit {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    .panel-icon { font-size: 22px; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(64,212,212,0.5)); }
+
+    .panel-title {
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    /* ── PANNEAU : Leaderboard ── */
+    .panel-lb-rows { display: flex; gap: 10px; align-items: center; }
+    .lb-entry {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 12px 4px 8px;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 3px;
+    }
+    .lb-rank { font-size: 11px; color: var(--text-dim); letter-spacing: 0.1em; font-weight: 700; min-width: 18px; }
+    .lb-entry.r1 { border-color: rgba(64,212,212,0.6); }
+    .lb-entry.r1 .lb-rank { color: var(--teal-light); }
+    .lb-entry.r2 { border-color: rgba(64,212,212,0.35); }
+    .lb-name { font-size: 15px; color: var(--text); letter-spacing: 0.04em; font-weight: 600; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-score { font-size: 15px; color: var(--teal-light); font-weight: 700; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(64,212,212,0.6); }
+
+    /* ── PANNEAU : Boss meurtriers ── */
+    .panel-boss-rows { display: flex; gap: 8px; align-items: center; }
+    .boss-entry { display: flex; align-items: center; gap: 7px; padding: 4px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 3px; }
+    .boss-avatar { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(64,212,212,0.3); object-fit: cover; flex-shrink: 0; background: rgba(64,212,212,0.05); }
+    .boss-name { font-size: 14px; color: var(--text); font-weight: 600; letter-spacing: 0.04em; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .boss-deaths { font-size: 14px; color: #f07070; font-weight: 700; letter-spacing: 0.06em; text-shadow: 0 0 8px rgba(240,112,112,0.5); }
+
+    /* ── PANNEAU : !event ── */
+    .panel-event { display: flex; flex-direction: column; gap: 3px; }
+    .panel-event-main { font-size: 20px; letter-spacing: 0.06em; color: var(--text); font-weight: 600; }
+    .panel-event-main strong { color: var(--teal-light); font-weight: 700; text-shadow: 0 0 16px rgba(64,212,212,0.7); }
+    .panel-event-sub { font-size: 11px; letter-spacing: 0.16em; color: var(--text-dim); font-weight: 600; text-transform: uppercase; }
+
+    /* ── PANNEAU : Milestone ── */
+    .panel-milestone { display: flex; flex-direction: column; gap: 3px; }
+    .panel-milestone-main { font-size: 20px; font-weight: 700; letter-spacing: 0.06em; color: var(--tier1); text-shadow: 0 0 24px rgba(68,238,68,0.6); }
+    .panel-milestone-sub { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--text-dim); text-transform: uppercase; }
+
+    /* ── BARRE DE PROGRESSION EN BAS ── */
+    .hud-bottom {
+      height: 12px;
+      position: relative;
+      background: rgba(64,212,212,0.04);
+      border-top: 1px solid rgba(64,212,212,0.12);
+      flex-shrink: 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg,
+        #1a991a 0%, var(--tier1) 20%,
+        #1f8888 40%, var(--tier2) 55%,
+        #7744cc 78%, var(--tier3) 100%
+      );
+      background-size: var(--track-w, 1920px) 100%;
+      background-repeat: no-repeat;
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 0 10px rgba(64,212,212,0.35);
+    }
+    .progress-markers { position: absolute; inset: 0; pointer-events: none; }
+    .tier-marker {
+      position: absolute; top: 0; bottom: 0; width: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+    .tier-marker::after {
+      content: attr(data-label);
+      position: absolute; bottom: calc(100% + 2px);
+      left: 50%; transform: translateX(-50%);
+      font-size: 8px; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4);
+      white-space: nowrap;
+    }
+
+    /* ── DOTS + TIMER PANEL ── */
+    .panel-dots { position: absolute; bottom: 6px; right: 16px; display: flex; gap: 5px; align-items: center; }
+    .panel-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted); transition: background 0.3s, transform 0.3s; }
+    .panel-dot.active { background: var(--teal-light); transform: scale(1.4); }
+
+    @keyframes killbump {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.15); }
+      60%  { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+    .kills-count.bump { animation: killbump 0.5s ease; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -408,86 +667,77 @@
 
 <div class="hud">
 
-  <!-- ── GAUCHE : fixe ── -->
-  <div class="hud-left">
-    <div class="event-label">
-      <div class="event-name">Donjon en Pagaille</div>
-      <div class="event-season">Season 1</div>
-    </div>
+  <div class="hud-main">
 
-    <div class="divider-v"></div>
-
-    <div class="kills-block">
-      <div class="kills-label">Bosses killed</div>
-      <div class="kills-count" id="kills-count">—</div>
-    </div>
-
-    <div class="divider-v"></div>
-
-    <div class="progress-block">
-      <div class="progress-meta">
-        <div class="progress-next" id="progress-next">Next tier</div>
-        <div class="progress-remain" id="progress-remain">—</div>
+    <!-- ── GAUCHE : fixe ── -->
+    <div class="hud-left">
+      <div class="event-label">
+        <div class="event-name">Dungeon Mayhem</div>
+        <div class="event-season">Season 1</div>
       </div>
-      <div class="progress-track" id="progress-track">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-        <div class="progress-markers" id="progress-markers"></div>
+
+      <div class="divider-v"></div>
+
+      <div class="kills-block">
+        <div class="kills-label">Bosses killed</div>
+        <div class="kills-count" id="kills-count">—</div>
+      </div>
+
+      <div class="divider-v"></div>
+
+      <div class="next-tier-block">
+        <div class="next-tier-label" id="next-tier-label">Next tier</div>
+        <div class="next-tier-value" id="next-tier-value">—</div>
+        <div class="next-tier-remain" id="next-tier-remain"></div>
       </div>
     </div>
+
+    <div class="hud-sep"></div>
+
+    <!-- ── DROITE : rotation ── -->
+    <div class="hud-right" id="hud-right">
+
+      <div class="panel" id="panel-lb">
+        <div class="panel-icon">🏆</div>
+        <div>
+          <div class="panel-title">Leaderboard</div>
+          <div class="panel-lb-rows" id="panel-lb-rows"><div class="lb-entry">—</div></div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-boss">
+        <div class="panel-icon">💀</div>
+        <div>
+          <div class="panel-title">Most deadly bosses</div>
+          <div class="panel-boss-rows" id="panel-boss-rows"><div class="boss-entry">—</div></div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-event">
+        <div class="panel-icon">🎮</div>
+        <div class="panel-event">
+          <div class="panel-event-main">Want to join? Type <strong>!event</strong> in chat or visit <strong>poufhgaming.github.io</strong></div>
+          <div class="panel-event-sub">Kill bosses · Earn rewards · Free to join</div>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-milestone" style="display:none">
+        <div class="panel-icon">✨</div>
+        <div class="panel-milestone">
+          <div class="panel-milestone-main" id="milestone-text">Tier 1 unlocked!</div>
+          <div class="panel-milestone-sub">Community reward available</div>
+        </div>
+      </div>
+
+      <div class="panel-dots" id="panel-dots"></div>
+    </div>
+
   </div>
 
-  <div class="hud-sep"></div>
-
-  <!-- ── DROITE : rotation ── -->
-  <div class="hud-right" id="hud-right">
-
-    <!-- Panel 0 : Leaderboard top 5 -->
-    <div class="panel" id="panel-lb">
-      <div class="panel-icon">🏆</div>
-      <div>
-        <div class="panel-title">Leaderboard</div>
-        <div class="panel-lb-rows" id="panel-lb-rows">
-          <div class="lb-entry">—</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 1 : Boss les plus meurtriers -->
-    <div class="panel" id="panel-boss">
-      <div class="panel-icon">💀</div>
-      <div>
-        <div class="panel-title">Most deadly bosses</div>
-        <div class="panel-boss-rows" id="panel-boss-rows">
-          <div class="boss-entry">—</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 2 : !event -->
-    <div class="panel" id="panel-event">
-      <div class="panel-icon">🎮</div>
-      <div class="panel-event">
-        <div class="panel-event-main">
-          Want to join? Type <strong>!event</strong> in chat or visit <strong>poufhgaming.github.io</strong>
-        </div>
-        <div class="panel-event-sub">Kill bosses · Earn rewards · Free to join</div>
-      </div>
-    </div>
-
-    <!-- Panel 3 : Milestone atteint -->
-    <div class="panel" id="panel-milestone" style="display:none">
-      <div class="panel-icon">✨</div>
-      <div class="panel-milestone">
-        <div class="panel-milestone-main" id="milestone-text">Tier 1 unlocked!</div>
-        <div class="panel-milestone-sub">Community reward available</div>
-      </div>
-    </div>
-
-    <!-- Dots indicateurs -->
-    <div class="panel-dots" id="panel-dots"></div>
-
-    <!-- Timer bar -->
-    <div class="panel-timer" id="panel-timer" style="width:100%"></div>
+  <!-- ── BARRE DE PROGRESSION EN BAS ── -->
+  <div class="hud-bottom" id="hud-bottom">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    <div class="progress-markers" id="progress-markers"></div>
   </div>
 
 </div>
@@ -565,7 +815,8 @@
 
   function updateHUD() {
     if (!_data) return;
-    const TIERS = computeTiers(N_PLAYERS);
+    const TIERS    = computeTiers(N_PLAYERS);
+    const maxTier  = TIERS[TIERS.length - 1];
 
     // Total kills
     const total = _data.reduce((s, r) => s + (Number(r.total_kills) || 0), 0);
@@ -581,32 +832,29 @@
     _prevTotal = total;
     countEl.textContent = total.toLocaleString();
 
-    // Barre de progression
-    const maxTier  = TIERS[TIERS.length - 1];
-    const pct      = Math.min(100, total / maxTier * 100);
+    // Barre de progression (en bas)
+    const bottom   = document.getElementById('hud-bottom');
     const fill     = document.getElementById('progress-fill');
+    const pct      = Math.min(100, total / maxTier * 100);
     fill.style.width = pct + '%';
+    fill.style.setProperty('--track-w', bottom.offsetWidth + 'px');
 
-    // Sync background-size
-    const track = document.getElementById('progress-track');
-    fill.style.setProperty('--track-w', track.offsetWidth + 'px');
-
-    // Marqueurs
+    // Marqueurs de paliers
     const markersEl = document.getElementById('progress-markers');
     markersEl.innerHTML = TIERS.map(t =>
-      `<div class="tier-marker" style="left:${(t/maxTier*100).toFixed(2)}%"></div>`
+      `<div class="tier-marker" data-label="${t.toLocaleString()}" style="left:${(t/maxTier*100).toFixed(2)}%"></div>`
     ).join('');
 
-    // Prochain palier
+    // Prochain palier (compact dans la zone gauche)
     const nextTier = TIERS.find(t => total < t);
-    const nextEl   = document.getElementById('progress-next');
-    const remEl    = document.getElementById('progress-remain');
     if (nextTier) {
-      nextEl.textContent = `NEXT TIER · ${nextTier.toLocaleString()}`;
-      remEl.textContent  = `${(nextTier - total).toLocaleString()} to go`;
+      document.getElementById('next-tier-label').textContent = 'NEXT TIER';
+      document.getElementById('next-tier-value').textContent = nextTier.toLocaleString();
+      document.getElementById('next-tier-remain').textContent = `${(nextTier - total).toLocaleString()} to go`;
     } else {
-      nextEl.textContent = 'ALL TIERS UNLOCKED';
-      remEl.textContent  = '';
+      document.getElementById('next-tier-label').textContent = 'STATUS';
+      document.getElementById('next-tier-value').textContent = 'ALL TIERS';
+      document.getElementById('next-tier-remain').textContent = 'UNLOCKED ✓';
     }
 
     // Vérifier milestones
@@ -770,10 +1018,10 @@
 
     // Sync background-size au resize
     new ResizeObserver(() => {
-      const track = document.getElementById('progress-track');
-      const fill  = document.getElementById('progress-fill');
-      if (track && fill) fill.style.setProperty('--track-w', track.offsetWidth + 'px');
-    }).observe(document.getElementById('progress-track'));
+      const bottom = document.getElementById('hud-bottom');
+      const fill   = document.getElementById('progress-fill');
+      if (bottom && fill) fill.style.setProperty('--track-w', bottom.offsetWidth + 'px');
+    }).observe(document.getElementById('hud-bottom'));
 
     // Démarrer la rotation sur le leaderboard
     showPanel('panel-lb', randomDuration());
