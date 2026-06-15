@@ -139,14 +139,20 @@
     background: rgba(0,0,0,0.2);
   }
   .event-eyebrow {
-    font-family: 'Cinzel', serif; font-size: 16px;
-    letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-muted);
-    display: flex; align-items: center; gap: 10px;
+    font-family: 'Cinzel', serif; font-size: 13px;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-muted);
   }
-  .goober-dot {
-    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--goober-a), var(--goober-b));
-    box-shadow: 0 0 12px rgba(215,68,177,0.8);
+  .event-title {
+    font-family: 'Cinzel', serif; font-size: 42px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text); line-height: 1;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.9);
+  }
+  .event-title-rush {
+    background: linear-gradient(90deg, var(--goober-a), var(--goober-b));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(215,68,177,0.5));
   }
   .dungeon-name {
     font-family: 'Cinzel', serif; font-size: 36px; font-weight: 700;
@@ -323,8 +329,8 @@
     margin-bottom: 10px;
   }
   .qual-title {
-    font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted);
+    font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700;
+    letter-spacing: 0.1em; color: var(--text);
     display: flex; align-items: center; gap: 10px;
   }
   .qual-cutoff-label {
@@ -398,6 +404,87 @@
   }
 
   /* ════════════════════════════════════════════════════════════════
+     SCENE: IDLE
+  ════════════════════════════════════════════════════════════════ */
+  #scene-idle { display: block; }
+
+  .idle-content {
+    position: absolute; inset: 0; z-index: 1;
+    display: flex; align-items: center;
+    padding: 0 56px; gap: 48px;
+  }
+
+  .idle-left { flex: 0 0 auto; }
+
+  .idle-eyebrow {
+    font-family: 'Cinzel', serif; font-size: 13px;
+    letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .idle-title {
+    font-family: 'Cinzel', serif; font-size: 72px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text); line-height: 1;
+    text-shadow: 0 2px 30px rgba(0,0,0,0.9);
+    white-space: nowrap;
+  }
+  .idle-rush {
+    background: linear-gradient(90deg, var(--goober-a), var(--goober-b));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 28px rgba(215,68,177,0.6));
+  }
+  .idle-created {
+    font-family: 'Cinzel', serif; font-size: 13px;
+    letter-spacing: 0.12em; color: var(--text-muted);
+    margin-top: 10px;
+  }
+  .idle-goober {
+    background: linear-gradient(90deg, var(--goober-a), var(--goober-b));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; font-weight: 700;
+  }
+
+  .idle-divider {
+    width: 1px; align-self: stretch;
+    background: linear-gradient(180deg, transparent, rgba(64,212,212,0.3) 30%, rgba(215,68,177,0.3) 70%, transparent);
+    flex-shrink: 0;
+  }
+
+  .idle-right {
+    flex: 1; display: flex; flex-direction: column;
+    gap: 18px; justify-content: center;
+  }
+
+  .idle-stat-row {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .idle-stat-label {
+    font-family: 'Cinzel', serif; font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); white-space: nowrap;
+  }
+  .idle-stat-value {
+    font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+    color: var(--text); white-space: nowrap;
+  }
+  .idle-stat-value.teal { color: var(--teal-light); text-shadow: 0 0 16px rgba(64,212,212,0.4); }
+  .idle-stat-value.gold { color: var(--gold); }
+
+  .idle-teams-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .idle-team-pill {
+    font-family: 'Cinzel', serif; font-size: 11px;
+    letter-spacing: 0.08em; padding: 4px 12px;
+    border-radius: 999px; border: 1px solid var(--border);
+    color: var(--text-dim); white-space: nowrap;
+  }
+
+  /* Idle particle canvas */
+  #idle-canvas { opacity: 0.6; }
+
+  /* ════════════════════════════════════════════════════════════════
      WAITING / REFRESH
   ════════════════════════════════════════════════════════════════ */
   .waiting {
@@ -441,8 +528,9 @@
       </div>
     </div>
     <div class="center-panel">
-      <div class="event-eyebrow">Stronghold <span class="goober-dot"></span> Rush</div>
-      <div class="dungeon-name" id="dungeon-name">Loading…</div>
+      <div class="event-eyebrow">Fellowship · Speed Run Tournament</div>
+      <div class="event-title">Stronghold <span class="event-title-rush">Rush</span></div>
+      <div class="dungeon-name" id="dungeon-name" style="margin-top:4px"></div>
       <div class="dungeon-type" id="dungeon-type"></div>
       <div class="round-badge" id="round-badge"></div>
     </div>
@@ -524,6 +612,24 @@
     <div class="qual-scene" id="qual-scene"></div>
   </div>
 
+  <!-- ── SCENE: IDLE ──────────────────────────────────────── -->
+  <div class="scene" id="scene-idle">
+    <!-- Animated particles -->
+    <canvas id="idle-canvas" style="position:absolute;inset:0;pointer-events:none;z-index:0"></canvas>
+
+    <div class="idle-content">
+      <div class="idle-left">
+        <div class="idle-eyebrow">Fellowship · Speed Run Tournament</div>
+        <div class="idle-title">Stronghold <span class="idle-rush">Rush</span></div>
+        <div class="idle-created">Created by <span class="idle-goober">GooberTroy</span> · Hosted by <span style="color:var(--teal-dim)">Pouf</span></div>
+      </div>
+      <div class="idle-divider"></div>
+      <div class="idle-right" id="idle-info">
+        <!-- filled by renderIdle() -->
+      </div>
+    </div>
+  </div>
+
   <div class="waiting" id="waiting">
     <span class="waiting-text">Awaiting match data…</span>
   </div>
@@ -602,6 +708,7 @@ let currentBgSlug = null;
 // ── SCENE SWITCHER ────────────────────────────────────────────────────────────
 function switchScene(name) {
   if (name === currentScene) return;
+  if (currentScene === 'idle') stopIdleParticles();
   currentScene = name;
   document.querySelectorAll('.scene').forEach(el => {
     el.classList.remove('active','visible');
@@ -645,6 +752,23 @@ async function refresh() {
     const scene = ovState?.scene || 'score';
     const pinnedMatchId = PIN_MATCH || ovState?.match_id || null;
 
+    // Qualifiers and Idle scenes don't need a match — render immediately
+    if (scene === 'qualifiers') {
+      switchScene('qualifiers');
+      stopIdleParticles();
+      hideWaiting();
+      document.getElementById('overlay').classList.add('visible');
+      await renderQualifiers(seasonId);
+      return;
+    }
+    if (scene === 'idle') {
+      switchScene('idle');
+      hideWaiting();
+      document.getElementById('overlay').classList.add('visible');
+      await renderIdle(seasonId);
+      return;
+    }
+
     // 3. Resolve match
     let match = null;
     if (pinnedMatchId) {
@@ -676,7 +800,6 @@ async function refresh() {
     const teamB = teams.find(t => t.id === match.team_b_id);
     if (!teamA || !teamB) { showWaiting('Teams not configured'); return; }
 
-    // Hydrate rosters with hero data
     const hydrated = rosters.map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }));
 
     // 5. Switch scene & render
@@ -684,14 +807,12 @@ async function refresh() {
     hideWaiting();
     document.getElementById('overlay').classList.add('visible');
 
-    // Always update bg and score data (used across scenes)
     const latestSlug = [...runs].reverse().find(r => r.dungeon_slug)?.dungeon_slug || null;
     renderDungeonBg(DUNGEONS[latestSlug] || null);
 
-    if (scene === 'score')      renderScore(match, teamA, teamB, hydrated, latestSlug);
-    if (scene === 'roster')     renderRoster(match, teamA, teamB, hydrated);
-    if (scene === 'runs')       renderRuns(match, teamA, teamB, runs);
-    if (scene === 'qualifiers') await renderQualifiers(seasonId);
+    if (scene === 'score')  renderScore(match, teamA, teamB, hydrated, latestSlug);
+    if (scene === 'roster') renderRoster(match, teamA, teamB, hydrated);
+    if (scene === 'runs')   renderRuns(match, teamA, teamB, runs);
 
   } catch(e) {
     console.error('Refresh error:', e);
@@ -852,7 +973,142 @@ function renderRuns(match, teamA, teamB, runs) {
   }).join('');
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+// ── SCENE: QUALIFIERS ────────────────────────────────────────────────────────
+async function renderQualifiers(seasonId) {
+  const [teams, season] = await Promise.all([
+    sbGet('sr_teams', `?season_id=eq.${seasonId}&order=qualifier_rank.asc.nullslast`),
+    sbGet('sr_seasons', `?id=eq.${seasonId}&limit=1`),
+  ]);
+  const cutoff = season[0]?.qualifier_cutoff || 4;
+
+  const qualified = teams.filter(t => t.qualifier_rank != null && t.qualifier_rank <= cutoff);
+  const rejected  = teams.filter(t => t.qualifier_rank == null || t.qualifier_rank > cutoff);
+
+  function rankClass(rank) {
+    if (rank === 1) return 'r1';
+    if (rank === 2) return 'r2';
+    if (rank === 3) return 'r3';
+    if (rank != null && rank <= cutoff) return 'top';
+    return '';
+  }
+
+  function teamCard(t) {
+    const status = t.qualifier_rank != null && t.qualifier_rank <= cutoff ? 'qualified'
+                 : t.qualifier_rank != null ? 'rejected' : 'pending';
+    return `
+      <div class="qual-card ${status}">
+        <div class="qual-color-bar" style="background:${t.color}"></div>
+        <div class="qual-rank ${rankClass(t.qualifier_rank)}">${t.qualifier_rank != null ? `#${t.qualifier_rank}` : '—'}</div>
+        <div class="qual-team-info">
+          <div class="qual-team-name">${t.name}</div>
+          <div class="qual-team-time${t.qualifier_time ? '' : ' pending'}">${t.qualifier_time ? fmtTime(t.qualifier_time) : 'No time'}</div>
+        </div>
+      </div>`;
+  }
+
+  const el = document.getElementById('qual-scene');
+  el.innerHTML = `
+    <div class="qual-header">
+      <div class="qual-title">
+        Stronghold <span style="background:linear-gradient(90deg,var(--goober-a),var(--goober-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 10px rgba(215,68,177,0.5))">Rush</span>
+        <span style="color:var(--text-muted);font-size:13px;font-weight:400;letter-spacing:0.18em"> · QUALIFIERS</span>
+      </div>
+      <div class="qual-cutoff-label">Top ${cutoff} advance</div>
+    </div>
+    <div class="qual-grid">
+      ${qualified.map(t => teamCard(t)).join('')}
+      ${rejected.length ? `
+        <div class="qual-divider-row">
+          <div class="qual-divider-line"></div>
+          <div class="qual-divider-label">Eliminated</div>
+          <div class="qual-divider-line" style="background:linear-gradient(270deg,rgba(215,68,177,0.3),transparent)"></div>
+        </div>
+        ${rejected.map(t => teamCard(t)).join('')}
+      ` : ''}
+    </div>`;
+}
+
+// ── SCENE: IDLE ───────────────────────────────────────────────────────────────
+let idleParticlesRunning = false;
+
+async function renderIdle(seasonId) {
+  const [season, teams] = await Promise.all([
+    sbGet('sr_seasons', `?id=eq.${seasonId}&limit=1`),
+    sbGet('sr_teams',   `?season_id=eq.${seasonId}&order=qualifier_rank.asc.nullslast`),
+  ]);
+  const s = season[0];
+  const qualified = teams.filter(t => t.qualifier_status === 'qualified');
+  const statusLabel = {
+    upcoming: 'Coming Soon', qualifiers: 'Qualifiers Open',
+    semifinals: 'Semifinals', finals: 'Grand Finals', completed: 'Season Complete'
+  }[s?.status] || s?.status || '—';
+
+  document.getElementById('idle-info').innerHTML = `
+    <div class="idle-stat-row">
+      <span class="idle-stat-label">Season</span>
+      <span class="idle-stat-value">${s?.name || '—'}</span>
+    </div>
+    <div class="idle-stat-row">
+      <span class="idle-stat-label">Status</span>
+      <span class="idle-stat-value teal">${statusLabel}</span>
+    </div>
+    ${teams.length ? `
+    <div>
+      <div class="idle-stat-label" style="margin-bottom:8px">${qualified.length ? `${qualified.length} Qualified Teams` : `${teams.length} Teams Registered`}</div>
+      <div class="idle-teams-row">
+        ${(qualified.length ? qualified : teams).slice(0,8).map(t =>
+          `<span class="idle-team-pill" style="border-color:${t.color}40;color:${t.color}">${t.name}</span>`
+        ).join('')}
+      </div>
+    </div>` : ''}`;
+
+  startIdleParticles();
+}
+
+function startIdleParticles() {
+  if (idleParticlesRunning) return;
+  idleParticlesRunning = true;
+  const canvas = document.getElementById('idle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+
+  // Floating particles — teal and goober-pink dots drifting upward
+  const COLORS = ['rgba(64,212,212,', 'rgba(215,68,177,', 'rgba(232,137,91,'];
+  const particles = Array.from({ length: 28 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2.5 + 0.5,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -(Math.random() * 0.4 + 0.1),
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    alpha: Math.random() * 0.5 + 0.2,
+  }));
+
+  function frame() {
+    if (!idleParticlesRunning) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -4) { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function stopIdleParticles() {
+  idleParticlesRunning = false;
+}
 function fmtTime(interval) {
   if (!interval) return '—';
   const t = String(interval).trim();
