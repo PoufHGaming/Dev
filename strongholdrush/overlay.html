@@ -177,7 +177,7 @@
 
   .roster-panel {
     display: flex; flex-direction: column;
-    padding: 20px 28px; position: relative; z-index: 1; overflow: hidden;
+    padding: 14px 20px 10px 24px; position: relative; z-index: 1; overflow: hidden;
   }
   .roster-panel:first-child { border-right: 1px solid var(--border); }
 
@@ -190,24 +190,24 @@
   .roster-panel:last-child::after  { right: 0; }
 
   .roster-team-name {
-    font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
-    letter-spacing: 0.1em; color: var(--text); margin-bottom: 14px;
+    font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
+    letter-spacing: 0.1em; color: var(--text); margin-bottom: 8px;
     text-transform: uppercase;
   }
 
-  .roster-players { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .roster-players { display: flex; flex-direction: column; gap: 5px; flex: 1; }
 
   /* avatar | info(name+hero+rank) | 6 stats */
   .player-row {
     display: grid;
-    grid-template-columns: 60px 1fr repeat(6, 1fr);
-    align-items: center; gap: 8px;
+    grid-template-columns: 48px 1fr repeat(6, 1fr);
+    align-items: center; gap: 6px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(64,212,212,0.1);
-    border-radius: 4px; padding: 6px 12px 6px 6px;
+    border-radius: 4px; padding: 4px 10px 4px 4px;
   }
   .player-avatar {
-    width: 56px; height: 56px; border-radius: 50%;
+    width: 44px; height: 44px; border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.15);
     object-fit: cover; background: #1a2a2a; flex-shrink: 0;
   }
@@ -244,8 +244,8 @@
   /* Stats header */
   .stats-header {
     display: grid;
-    grid-template-columns: 60px 1fr repeat(6, 1fr);
-    gap: 8px; padding: 0 12px 6px 6px; margin-bottom: 2px;
+    grid-template-columns: 48px 1fr repeat(6, 1fr);
+    gap: 6px; padding: 0 10px 4px 4px; margin-bottom: 2px;
   }
   .stats-header-cell {
     text-align: center; font-family: 'Cinzel', serif;
@@ -653,6 +653,15 @@ function renderRoster(match, teamA, teamB, rosters) {
   renderRosterPanel('b', teamB, rosters);
 }
 
+function rankColor(rank) {
+  if (rank == null)  return 'var(--text-muted)';
+  if (rank <= 10)    return '#e8c96a'; // gold
+  if (rank <= 25)    return '#c084fc'; // violet
+  if (rank <= 50)    return '#60a5fa'; // blue
+  if (rank <= 100)   return '#4ade80'; // green
+  return '#9ca3af';                    // grey
+}
+
 function renderRosterPanel(side, team, rosters) {
   document.getElementById(`roster-name-${side}`).textContent = team.name;
   const panel = document.getElementById(`roster-panel-${side}`);
@@ -660,9 +669,9 @@ function renderRosterPanel(side, team, rosters) {
 
   const roster = sortRoster(rosters.filter(r => r.team_id === team.id));
 
-  function stat(val) {
+  function stat(val, pct = false) {
     if (val == null) return `<span class="stat-val empty">—</span>`;
-    return `<span class="stat-val">${val.toLocaleString()}</span>`;
+    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:12px;opacity:0.7">%</span>' : ''}</span>`;
   }
 
   document.getElementById(`roster-players-${side}`).innerHTML = roster.map(r => `
@@ -674,15 +683,15 @@ function renderRosterPanel(side, team, rosters) {
         <div class="player-name-sm">${r.player_name}${r.is_captain?' 👑':''}</div>
         <div class="player-hero-rank">
           <span class="player-hero-sm">${r.hero?.name||'—'}</span>
-          ${r.world_rank != null ? `<span class="player-rank-badge">#${r.world_rank}</span>` : ''}
+          ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}40;background:${rankColor(r.world_rank)}18">#${r.world_rank}</span>` : ''}
         </div>
       </div>
-      <div class="stat-cell">${stat(r.stamina)}<span class="stat-label">Stamina</span></div>
-      <div class="stat-cell">${stat(r.main_stat)}<span class="stat-label">Main</span></div>
-      <div class="stat-cell">${stat(r.crit)}<span class="stat-label">Crit</span></div>
-      <div class="stat-cell">${stat(r.expertise)}<span class="stat-label">Expertise</span></div>
-      <div class="stat-cell">${stat(r.haste)}<span class="stat-label">Haste</span></div>
-      <div class="stat-cell">${stat(r.spirit)}<span class="stat-label">Spirit</span></div>
+      <div class="stat-cell">${stat(r.stamina)}</div>
+      <div class="stat-cell">${stat(r.main_stat)}</div>
+      <div class="stat-cell">${stat(r.crit, true)}</div>
+      <div class="stat-cell">${stat(r.expertise, true)}</div>
+      <div class="stat-cell">${stat(r.haste, true)}</div>
+      <div class="stat-cell">${stat(r.spirit, true)}</div>
     </div>`).join('');
 }
 
