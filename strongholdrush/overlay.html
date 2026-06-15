@@ -307,6 +307,97 @@
   .run-score-icon.loss { color: var(--text-muted); opacity: 0.4; }
 
   /* ════════════════════════════════════════════════════════════════
+     SCENE: QUALIFIERS
+  ════════════════════════════════════════════════════════════════ */
+  #scene-qualifiers { display: block; }
+
+  .qual-scene {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    padding: 14px 48px 10px;
+    z-index: 1;
+  }
+
+  .qual-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .qual-title {
+    font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .qual-cutoff-label {
+    font-family: 'Cinzel', serif; font-size: 12px;
+    letter-spacing: 0.16em; color: var(--text-muted);
+  }
+  .qual-cutoff-line {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(215,68,177,0.6), rgba(232,137,91,0.6), transparent);
+    margin: 4px 0 6px;
+  }
+
+  .qual-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    flex: 1;
+  }
+
+  .qual-card {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(64,212,212,0.1);
+    border-radius: 4px; padding: 8px 12px;
+    position: relative; overflow: hidden;
+    transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1),
+                opacity 0.4s ease;
+  }
+  .qual-card.qualified { border-color: rgba(64,212,212,0.3); background: rgba(64,212,212,0.04); }
+  .qual-card.rejected  { opacity: 0.45; }
+  .qual-card.pending   { border-color: var(--border); }
+
+  .qual-rank {
+    font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+    color: var(--text-muted); min-width: 32px; text-align: center; flex-shrink: 0;
+  }
+  .qual-rank.r1  { color: var(--gold); text-shadow: 0 0 12px rgba(232,201,106,0.5); }
+  .qual-rank.r2  { color: #c0c8d4; }
+  .qual-rank.r3  { color: #c8956a; }
+  .qual-rank.top { color: var(--teal-light); }
+
+  .qual-team-info { flex: 1; min-width: 0; }
+  .qual-team-name {
+    font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .qual-team-time {
+    font-family: 'Cinzel', serif; font-size: 13px;
+    color: var(--teal-light); margin-top: 2px;
+    text-shadow: 0 0 10px rgba(64,212,212,0.4);
+  }
+  .qual-team-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 12px; }
+  .qual-color-bar {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  }
+
+  /* Divider between qualified and rejected */
+  .qual-divider-row {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 12px;
+    margin: 2px 0;
+  }
+  .qual-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(215,68,177,0.5), rgba(232,137,91,0.4), transparent);
+  }
+  .qual-divider-label {
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em;
+    color: var(--goober-a); text-transform: uppercase; white-space: nowrap;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
      WAITING / REFRESH
   ════════════════════════════════════════════════════════════════ */
   .waiting {
@@ -426,6 +517,11 @@
         <tbody id="runs-tbody"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- ── SCENE: QUALIFIERS ───────────────────────────────── -->
+  <div class="scene" id="scene-qualifiers">
+    <div class="qual-scene" id="qual-scene"></div>
   </div>
 
   <div class="waiting" id="waiting">
@@ -592,9 +688,10 @@ async function refresh() {
     const latestSlug = [...runs].reverse().find(r => r.dungeon_slug)?.dungeon_slug || null;
     renderDungeonBg(DUNGEONS[latestSlug] || null);
 
-    if (scene === 'score')  renderScore(match, teamA, teamB, hydrated, latestSlug);
-    if (scene === 'roster') renderRoster(match, teamA, teamB, hydrated);
-    if (scene === 'runs')   renderRuns(match, teamA, teamB, runs);
+    if (scene === 'score')      renderScore(match, teamA, teamB, hydrated, latestSlug);
+    if (scene === 'roster')     renderRoster(match, teamA, teamB, hydrated);
+    if (scene === 'runs')       renderRuns(match, teamA, teamB, runs);
+    if (scene === 'qualifiers') await renderQualifiers(seasonId);
 
   } catch(e) {
     console.error('Refresh error:', e);
@@ -758,9 +855,13 @@ function renderRuns(match, teamA, teamB, runs) {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function fmtTime(interval) {
   if (!interval) return '—';
-  const m = String(interval).match(/(\d+):(\d+):(\d+)/);
-  if (m) { const [,h,min,s]=m; return +h>0 ? `${h}:${min}:${s}` : `${min}:${s}`; }
-  return interval;
+  const t = String(interval).trim();
+  // HH:MM:SS or H:MM:SS → extract MM:SS
+  const h = t.match(/^\d+:(\d{2}):(\d{2})$/);
+  if (h) return `${h[1]}:${h[2]}`;
+  // Already MM:SS
+  if (/^\d{1,2}:\d{2}$/.test(t)) return t;
+  return t;
 }
 
 function renderDungeonBg(dun) {
