@@ -171,12 +171,12 @@
   .round-badge { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: ROSTER — 2 visible at a time, fade every 20s
+     SCENE: ROSTER — 1 player at a time, cycles Tank→Heal→DPS
   ════════════════════════════════════════════════════════════════ */
   #scene-roster { display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
   .roster-panel {
     display: flex; flex-direction: column;
-    padding: 5px 10px 5px 14px; position: relative; z-index: 1; overflow: hidden;
+    padding: 8px 16px 8px 18px; position: relative; z-index: 1; overflow: hidden;
   }
   .roster-panel:first-child { border-right: 1px solid var(--border); }
   .roster-panel::after {
@@ -185,46 +185,69 @@
   }
   .roster-panel:first-child::after { left: 0; }
   .roster-panel:last-child::after  { right: 0; }
-  .roster-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--text); margin-bottom: 3px; text-transform: uppercase; }
 
-  /* Stats header — must match player-row grid exactly */
+  .roster-team-name {
+    font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.1em; color: var(--text); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* Stats header — 8 cols matching player-row */
   .stats-header {
     display: grid;
-    grid-template-columns: 36px 1fr 54px 54px 54px 54px 54px 54px;
-    gap: 4px; padding: 0 0 3px 0; margin-bottom: 1px;
+    grid-template-columns: 52px 1fr 72px 72px 72px 72px 72px 72px;
+    gap: 4px; padding-bottom: 4px;
+    border-bottom: 1px solid rgba(64,212,212,0.15);
+    margin-bottom: 6px;
   }
-  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .stats-header-cell {
+    text-align: center; font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
 
-  .roster-scroll { flex: 1; overflow: hidden; position: relative; }
+  /* Slide container */
+  .roster-scroll { flex: 1; position: relative; min-height: 0; }
 
-  /* Each pair is a slide — fixed height layout, not flex-1 */
   .roster-slide {
-    position: absolute; top: 0; left: 0; right: 0;
-    display: flex; flex-direction: column; gap: 4px;
-    opacity: 0; transition: opacity 0.8s ease;
+    position: absolute; inset: 0;
+    opacity: 0; transition: opacity 0.7s ease;
     pointer-events: none;
+    display: flex; align-items: center;
   }
   .roster-slide.active { opacity: 1; pointer-events: auto; }
 
-  /* Player row — grid aligned with stats header */
+  /* Single player row — tall, easy to read */
   .player-row {
     display: grid;
-    grid-template-columns: 36px 1fr 54px 54px 54px 54px 54px 54px;
-    align-items: center; gap: 4px;
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(64,212,212,0.1);
-    border-radius: 3px; padding: 5px 6px 5px 4px;
-    height: 44px;
+    grid-template-columns: 52px 1fr 72px 72px 72px 72px 72px 72px;
+    align-items: center; gap: 4px; width: 100%;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(64,212,212,0.12);
+    border-radius: 4px; padding: 6px 8px 6px 6px;
   }
-  .player-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; }
-  .player-avatar.captain { border-color: var(--gold); box-shadow: 0 0 8px rgba(232,201,106,0.4); }
+  .player-avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    object-fit: cover; background: #1a2a2a;
+  }
+  .player-avatar.captain { border-color: var(--gold); box-shadow: 0 0 10px rgba(232,201,106,0.5); }
   .player-info { min-width: 0; }
-  .player-name-sm { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player-hero-rank { display: flex; align-items: center; gap: 4px; margin-top: 1px; }
-  .player-hero-sm { font-size: 11px; color: var(--text-muted); font-style: italic; }
-  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 4px; line-height: 1.4; opacity: 0.85; }
-  .stat-cell { text-align: center; width: 54px; }
-  .stat-val { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--teal-light); display: block; line-height: 1; }
-  .stat-val.empty { color: var(--text-muted); font-size: 9px; }
+  .player-name-sm {
+    font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+    color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .player-hero-rank { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .player-hero-sm { font-size: 14px; color: var(--text-muted); font-style: italic; }
+  .player-rank-badge {
+    font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
+    border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; line-height: 1.4; opacity: 0.9;
+  }
+  .stat-cell { text-align: center; }
+  .stat-val {
+    font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+    color: var(--teal-light); display: block; line-height: 1;
+  }
+  .stat-val.empty { color: var(--text-muted); font-size: 14px; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: RUNS — clearer win/loss
@@ -758,63 +781,78 @@ function rankColor(rank) {
 let rosterFadeTimers = {};
 
 function renderRosterPanel(side, team, rosters) {
+  console.log(`[Roster ${side}] rendering for team: ${team.name}`);
+
   document.getElementById(`roster-name-${side}`).textContent = team.name;
   const panel = document.getElementById(`roster-panel-${side}`);
   panel.style.setProperty('--team-color', team.color);
 
+  // Sort: tank → healer → dps, then alphabetical within role
   const roster = sortRoster(rosters.filter(r => r.team_id === team.id));
+  console.log(`[Roster ${side}] ${roster.length} players:`, roster.map(r => r.player_name));
+
+  if (!roster.length) {
+    document.getElementById(`roster-players-${side}`).innerHTML =
+      '<div style="color:var(--text-muted);font-style:italic;padding:8px">No players</div>';
+    return;
+  }
 
   function stat(val, pct = false) {
     if (val == null) return `<span class="stat-val empty">—</span>`;
-    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:8px;opacity:0.6">%</span>' : ''}</span>`;
+    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:10px;opacity:0.6">%</span>' : ''}</span>`;
   }
-
-  function playerRow(r) {
-    return `<div class="player-row">
-      <img class="player-avatar${r.is_captain?' captain':''}"
-           src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
-           alt="${r.hero?.name||'?'}" onerror="this.style.opacity=0.2">
-      <div class="player-info">
-        <div class="player-name-sm">${r.player_name}${r.is_captain?' 👑':''}</div>
-        <div class="player-hero-rank">
-          <span class="player-hero-sm">${r.hero?.name||'—'}</span>
-          ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}50">#${r.world_rank}</span>` : ''}
-        </div>
-      </div>
-      <div class="stat-cell">${stat(r.stamina)}</div>
-      <div class="stat-cell">${stat(r.main_stat)}</div>
-      <div class="stat-cell">${stat(r.crit, true)}</div>
-      <div class="stat-cell">${stat(r.expertise, true)}</div>
-      <div class="stat-cell">${stat(r.haste, true)}</div>
-      <div class="stat-cell">${stat(r.spirit, true)}</div>
-    </div>`;
-  }
-
-  // Build slides of 2 players each
-  const slides = [];
-  for (let i = 0; i < roster.length; i += 2) {
-    slides.push(roster.slice(i, i + 2));
-  }
-  if (!slides.length) return;
 
   const container = document.getElementById(`roster-players-${side}`);
-  container.innerHTML = slides.map((pair, i) => `
-    <div class="roster-slide${i === 0 ? ' active' : ''}" data-slide="${i}">
-      ${pair.map(r => playerRow(r)).join('')}
+
+  // 1 player per slide
+  container.innerHTML = roster.map((r, i) => `
+    <div class="roster-slide${i === 0 ? ' active' : ''}" data-index="${i}">
+      <div class="player-row">
+        <img class="player-avatar${r.is_captain?' captain':''}"
+             src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
+             alt="${r.hero?.name||'?'}" onerror="this.style.opacity=0.25">
+        <div class="player-info">
+          <div class="player-name-sm">${r.player_name}${r.is_captain?' 👑':''}</div>
+          <div class="player-hero-rank">
+            <span class="player-hero-sm">${r.hero?.name||'—'}</span>
+            ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}60">#${r.world_rank}</span>` : ''}
+          </div>
+        </div>
+        <div class="stat-cell">${stat(r.stamina)}</div>
+        <div class="stat-cell">${stat(r.main_stat)}</div>
+        <div class="stat-cell">${stat(r.crit, true)}</div>
+        <div class="stat-cell">${stat(r.expertise, true)}</div>
+        <div class="stat-cell">${stat(r.haste, true)}</div>
+        <div class="stat-cell">${stat(r.spirit, true)}</div>
+      </div>
     </div>`).join('');
 
-  // Clear old timer if any
+  // Clear old timer
   const timerKey = `rosterTimer_${side}`;
-  if (window[timerKey]) clearInterval(window[timerKey]);
-  if (slides.length <= 1) return;
+  if (window[timerKey]) {
+    clearInterval(window[timerKey]);
+    console.log(`[Roster ${side}] cleared old timer`);
+  }
+
+  if (roster.length <= 1) {
+    console.log(`[Roster ${side}] only 1 player, no cycling needed`);
+    return;
+  }
 
   let current = 0;
+  console.log(`[Roster ${side}] starting 20s cycle for ${roster.length} slides`);
+
   window[timerKey] = setInterval(() => {
-    const allSlides = container.querySelectorAll('.roster-slide');
-    if (!allSlides.length) return;
-    allSlides[current].classList.remove('active');
+    const slides = container.querySelectorAll('.roster-slide');
+    if (!slides.length) {
+      console.warn(`[Roster ${side}] no slides found, clearing timer`);
+      clearInterval(window[timerKey]);
+      return;
+    }
+    slides[current].classList.remove('active');
     current = (current + 1) % slides.length;
-    allSlides[current].classList.add('active');
+    slides[current].classList.add('active');
+    console.log(`[Roster ${side}] → slide ${current} (${roster[current]?.player_name})`);
   }, 20_000);
 }
 
