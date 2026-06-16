@@ -778,7 +778,8 @@ function rankColor(rank) {
   return '#9ca3af';                    // grey
 }
 
-let rosterFadeTimers = {};
+// Track current slide index per side — survives re-renders
+const rosterCurrentSlide = { a: 0, b: 0 };
 
 function renderRosterPanel(side, team, rosters) {
   console.log(`[Roster ${side}] rendering for team: ${team.name}`);
@@ -787,7 +788,6 @@ function renderRosterPanel(side, team, rosters) {
   const panel = document.getElementById(`roster-panel-${side}`);
   panel.style.setProperty('--team-color', team.color);
 
-  // Sort: tank → healer → dps, then alphabetical within role
   const roster = sortRoster(rosters.filter(r => r.team_id === team.id));
   console.log(`[Roster ${side}] ${roster.length} players:`, roster.map(r => r.player_name));
 
@@ -804,9 +804,13 @@ function renderRosterPanel(side, team, rosters) {
 
   const container = document.getElementById(`roster-players-${side}`);
 
-  // 1 player per slide
+  // Clamp current index in case roster size changed
+  const current = rosterCurrentSlide[side] % roster.length;
+  rosterCurrentSlide[side] = current;
+
+  // Rebuild slides, activating the remembered index
   container.innerHTML = roster.map((r, i) => `
-    <div class="roster-slide${i === 0 ? ' active' : ''}" data-index="${i}">
+    <div class="roster-slide${i === current ? ' active' : ''}" data-index="${i}">
       <div class="player-row">
         <img class="player-avatar${r.is_captain?' captain':''}"
              src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
@@ -827,32 +831,21 @@ function renderRosterPanel(side, team, rosters) {
       </div>
     </div>`).join('');
 
-  // Clear old timer
+  // Only create the timer once — if it already exists, don't recreate it
   const timerKey = `rosterTimer_${side}`;
   if (window[timerKey]) {
-    clearInterval(window[timerKey]);
-    console.log(`[Roster ${side}] cleared old timer`);
-  }
-
-  if (roster.length <= 1) {
-    console.log(`[Roster ${side}] only 1 player, no cycling needed`);
+    console.log(`[Roster ${side}] timer already running, skipping`);
     return;
   }
+  if (roster.length <= 1) return;
 
-  let current = 0;
   console.log(`[Roster ${side}] starting 20s cycle for ${roster.length} slides`);
 
   window[timerKey] = setInterval(() => {
+    rosterCurrentSlide[side] = (rosterCurrentSlide[side] + 1) % roster.length;
     const slides = container.querySelectorAll('.roster-slide');
-    if (!slides.length) {
-      console.warn(`[Roster ${side}] no slides found, clearing timer`);
-      clearInterval(window[timerKey]);
-      return;
-    }
-    slides[current].classList.remove('active');
-    current = (current + 1) % slides.length;
-    slides[current].classList.add('active');
-    console.log(`[Roster ${side}] → slide ${current} (${roster[current]?.player_name})`);
+    slides.forEach((s, i) => s.classList.toggle('active', i === rosterCurrentSlide[side]));
+    console.log(`[Roster ${side}] → slide ${rosterCurrentSlide[side]} (${roster[rosterCurrentSlide[side]]?.player_name})`);
   }, 20_000);
 }
 
