@@ -70,17 +70,17 @@
   .scene.visible { opacity: 1; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: SCORE
+     SCENE: SCORE — VP inside center column, teams fill the rest
   ════════════════════════════════════════════════════════════════ */
-  #scene-score { display: grid; grid-template-columns: 1fr 280px 1fr; }
+  #scene-score { display: grid; grid-template-columns: 1fr 420px 1fr; }
 
   .team-panel {
     position: relative; z-index: 1;
     display: flex; align-items: center;
     padding: 0 18px; gap: 10px; overflow: hidden;
   }
-  .team-panel:not(.right) { border-right: 1px solid rgba(64,212,212,0.12); }
-  .team-panel.right { border-left: 1px solid rgba(64,212,212,0.12); flex-direction: row-reverse; text-align: right; }
+  .team-panel:not(.right) { border-right: none; }
+  .team-panel.right { border-left: none; flex-direction: row-reverse; text-align: right; }
   .team-panel::after {
     content: ''; position: absolute; top: 0; bottom: 0; width: 3px;
     background: var(--team-color, #40d4d4);
@@ -114,7 +114,18 @@
   }
   .hero-avatar.captain { border-color: var(--gold); box-shadow: 0 0 10px rgba(232,201,106,0.5); }
 
-  .vp-block { flex-shrink: 0; text-align: center; padding: 0 6px; }
+  /* VP now inside center column, close to the info */
+  .center-panel {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: 56px 1fr 56px;
+    align-items: center;
+    padding: 0; gap: 0;
+    background: rgba(0,0,0,0.2);
+    border-left: 1px solid rgba(64,212,212,0.12);
+    border-right: 1px solid rgba(64,212,212,0.12);
+  }
+  .vp-block { text-align: center; padding: 0 4px; }
   .vp-number {
     font-family: 'Cinzel', serif; font-size: 54px; font-weight: 700;
     line-height: 1; color: var(--teal-light);
@@ -124,14 +135,12 @@
   .vp-number.updated { animation: vp-pop 0.4s ease; }
   @keyframes vp-pop { 0%{transform:scale(1.3);color:#fff;text-shadow:0 0 20px #fff} 100%{transform:scale(1)} }
   .vp-number.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
-  .vp-target { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.18em; color: var(--text-muted); margin-top: 1px; }
+  .vp-target { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.14em; color: var(--text-muted); margin-top: 1px; }
 
-  .center-panel {
-    position: relative; z-index: 1;
+  .center-info {
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 6px 12px; gap: 4px; text-align: center;
-    background: rgba(0,0,0,0.2);
+    padding: 6px 8px; gap: 3px; text-align: center;
   }
   .event-eyebrow { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--text-muted); }
   .event-title {
@@ -145,9 +154,9 @@
     background-clip: text; filter: drop-shadow(0 0 10px rgba(215,68,177,0.5));
   }
   .dungeon-name {
-    font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700;
-    letter-spacing: 0.05em; color: var(--text);
-    text-shadow: 0 2px 8px rgba(0,0,0,1); line-height: 1.2; max-width: 240px;
+    font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--text);
+    text-shadow: 0 2px 8px rgba(0,0,0,1); line-height: 1.2; max-width: 280px;
   }
   .dungeon-type {
     font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.16em;
@@ -162,12 +171,12 @@
   .round-badge { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: ROSTER
+     SCENE: ROSTER — 2-player groups with auto-scroll
   ════════════════════════════════════════════════════════════════ */
   #scene-roster { display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
   .roster-panel {
     display: flex; flex-direction: column;
-    padding: 6px 12px 6px 16px; position: relative; z-index: 1; overflow: hidden;
+    padding: 5px 10px 5px 14px; position: relative; z-index: 1; overflow: hidden;
   }
   .roster-panel:first-child { border-right: 1px solid var(--border); }
   .roster-panel::after {
@@ -176,53 +185,70 @@
   }
   .roster-panel:first-child::after { left: 0; }
   .roster-panel:last-child::after  { right: 0; }
-  .roster-team-name { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--text); margin-bottom: 4px; text-transform: uppercase; }
-  .roster-players { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  .roster-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--text); margin-bottom: 3px; text-transform: uppercase; }
+  .roster-scroll { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 0; }
+
+  /* 2-player groups: one row per pair */
+  .player-group { display: flex; gap: 4px; padding: 2px 0; border-bottom: 1px solid rgba(64,212,212,0.06); flex-shrink: 0; }
+  .player-group:last-child { border-bottom: none; }
   .player-row {
-    display: grid; grid-template-columns: 24px 1fr repeat(6, 1fr);
-    align-items: center; gap: 4px;
+    display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0;
     background: rgba(255,255,255,0.02); border: 1px solid rgba(64,212,212,0.08);
-    border-radius: 2px; padding: 2px 6px 2px 2px;
+    border-radius: 2px; padding: 3px 6px 3px 3px;
   }
-  .player-avatar { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; flex-shrink: 0; }
+  .player-avatar { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; flex-shrink: 0; }
   .player-avatar.captain { border-color: var(--gold); }
-  .player-info { min-width: 0; }
-  .player-name-sm { font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; letter-spacing: 0.02em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-info { min-width: 0; flex: 1; }
+  .player-name-sm { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .player-hero-rank { display: flex; align-items: center; gap: 4px; }
-  .player-hero-sm { font-size: 8px; color: var(--text-muted); font-style: italic; }
-  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 8px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 4px; line-height: 1.4; opacity: 0.85; }
-  .stat-cell { text-align: center; }
-  .stat-val { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; color: var(--teal-light); display: block; line-height: 1; }
-  .stat-val.empty { color: var(--text-muted); font-size: 8px; }
-  .stats-header { display: grid; grid-template-columns: 24px 1fr repeat(6, 1fr); gap: 4px; padding: 0 6px 2px 2px; }
-  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .player-hero-sm { font-size: 10px; color: var(--text-muted); font-style: italic; }
+  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 4px; line-height: 1.4; opacity: 0.85; }
+  .player-stats { display: flex; gap: 3px; flex-shrink: 0; }
+  .stat-cell { text-align: center; min-width: 28px; }
+  .stat-val { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--teal-light); display: block; line-height: 1; }
+  .stat-val.empty { color: var(--text-muted); font-size: 9px; }
+  .stats-header { display: flex; gap: 3px; padding: 0 6px 2px 36px; }
+  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); min-width: 28px; flex: 1; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: RUNS
+     SCENE: RUNS — clearer win/loss
   ════════════════════════════════════════════════════════════════ */
-  #scene-runs { display: grid; grid-template-columns: 180px 1fr; align-items: stretch; }
-  .runs-left { display: flex; flex-direction: column; justify-content: center; padding: 8px 16px; border-right: 1px solid var(--border); background: rgba(0,0,0,0.15); position: relative; z-index: 1; }
-  .runs-match-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
-  .runs-score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
-  .runs-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .runs-vp { font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.6); flex-shrink: 0; }
+  #scene-runs { display: grid; grid-template-columns: 160px 1fr; align-items: stretch; }
+  .runs-left { display: flex; flex-direction: column; justify-content: center; padding: 8px 14px; border-right: 1px solid var(--border); background: rgba(0,0,0,0.15); position: relative; z-index: 1; }
+  .runs-match-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .runs-score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .runs-team-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .runs-vp { font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.6); flex-shrink: 0; }
   .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
   .runs-divider { height: 1px; background: var(--border); margin: 3px 0; }
   .runs-target { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.14em; color: var(--text-muted); }
-  .runs-table-wrap { padding: 6px 12px; position: relative; z-index: 1; overflow: hidden; }
+
+  .runs-table-wrap { padding: 4px 16px; position: relative; z-index: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .runs-table { width: 100%; border-collapse: collapse; }
-  .runs-table th { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); padding: 2px 6px 4px; text-align: left; border-bottom: 1px solid var(--border); }
+  .runs-table th { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); padding: 2px 8px 4px; text-align: left; border-bottom: 1px solid var(--border); }
   .runs-table th.center { text-align: center; }
-  .runs-table td { padding: 3px 6px; border-bottom: 1px solid rgba(64,212,212,0.05); vertical-align: middle; }
+  .runs-table td { padding: 4px 8px; border-bottom: 1px solid rgba(64,212,212,0.05); vertical-align: middle; }
   .runs-table tr:last-child td { border-bottom: none; }
-  .run-dungeon-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--text); }
+  .run-dungeon-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text); }
   .run-dungeon-type { font-size: 9px; color: var(--text-muted); font-style: italic; }
-  .run-time-cell { text-align: center; }
-  .run-time-val { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-dim); }
-  .run-time-val.winner-time { color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.5); }
-  .run-score-icon { text-align: center; font-size: 12px; }
+
+  /* Time+result combined cell — winner is highlighted row */
+  .run-result-cell { text-align: center; }
+  .run-result-win {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(64,212,212,0.12); border: 1px solid rgba(64,212,212,0.4);
+    border-radius: 4px; padding: 2px 10px;
+  }
+  .run-result-loss {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px; padding: 2px 10px; opacity: 0.55;
+  }
+  .run-time-val { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text-dim); }
+  .run-time-val.win  { color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.5); }
+  .run-score-icon { font-size: 13px; font-weight: 700; }
   .run-score-icon.win  { color: var(--teal-light); }
-  .run-score-icon.loss { color: var(--text-muted); opacity: 0.4; }
+  .run-score-icon.loss { color: var(--text-muted); }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: QUALIFIERS
@@ -338,26 +364,28 @@
         <div class="team-name" id="name-a">—</div>
         <div class="hero-stack" id="heroes-a"></div>
       </div>
-      <div class="vp-block">
+    </div>
+    <div class="center-panel">
+      <div class="vp-block" id="vp-block-a">
         <div class="vp-number" id="vp-a">0</div>
         <div class="vp-target" id="vp-target-a">/ 3 VP</div>
       </div>
-    </div>
-    <div class="center-panel">
-      <div class="event-eyebrow">Fellowship · Speed Run Tournament</div>
-      <div class="event-title">Stronghold <span class="event-title-rush">Rush</span></div>
-      <div class="dungeon-name" id="dungeon-name" style="margin-top:4px"></div>
-      <div class="dungeon-type" id="dungeon-type"></div>
-      <div class="round-badge" id="round-badge"></div>
+      <div class="center-info">
+        <div class="event-eyebrow">Fellowship · Speed Run Tournament</div>
+        <div class="event-title">Stronghold <span class="event-title-rush">Rush</span></div>
+        <div class="dungeon-name" id="dungeon-name" style="margin-top:2px"></div>
+        <div class="dungeon-type" id="dungeon-type"></div>
+        <div class="round-badge" id="round-badge"></div>
+      </div>
+      <div class="vp-block" id="vp-block-b">
+        <div class="vp-number" id="vp-b">0</div>
+        <div class="vp-target" id="vp-target-b">/ 3 VP</div>
+      </div>
     </div>
     <div class="team-panel right" id="panel-b">
       <div class="team-block">
         <div class="team-name" id="name-b">—</div>
         <div class="hero-stack" id="heroes-b"></div>
-      </div>
-      <div class="vp-block">
-        <div class="vp-number" id="vp-b">0</div>
-        <div class="vp-target" id="vp-target-b">/ 3 VP</div>
       </div>
     </div>
   </div>
@@ -367,7 +395,7 @@
     <div class="roster-panel" id="roster-panel-a">
       <div class="roster-team-name" id="roster-name-a">—</div>
       <div class="stats-header">
-        <div></div><div></div>
+        <div style="width:26px;flex-shrink:0"></div><div style="flex:1"></div>
         <div class="stats-header-cell">Stamina</div>
         <div class="stats-header-cell">Main</div>
         <div class="stats-header-cell">Crit</div>
@@ -375,12 +403,12 @@
         <div class="stats-header-cell">Haste</div>
         <div class="stats-header-cell">Spirit</div>
       </div>
-      <div class="roster-players" id="roster-players-a"></div>
+      <div class="roster-scroll" id="roster-players-a"></div>
     </div>
     <div class="roster-panel" id="roster-panel-b">
       <div class="roster-team-name" id="roster-name-b">—</div>
       <div class="stats-header">
-        <div></div><div></div>
+        <div style="width:26px;flex-shrink:0"></div><div style="flex:1"></div>
         <div class="stats-header-cell">Stamina</div>
         <div class="stats-header-cell">Main</div>
         <div class="stats-header-cell">Crit</div>
@@ -388,7 +416,7 @@
         <div class="stats-header-cell">Haste</div>
         <div class="stats-header-cell">Spirit</div>
       </div>
-      <div class="roster-players" id="roster-players-b"></div>
+      <div class="roster-scroll" id="roster-players-b"></div>
     </div>
   </div>
 
@@ -413,9 +441,7 @@
           <tr>
             <th>Dungeon</th>
             <th class="center" id="runs-th-a">Team A</th>
-            <th class="center"></th>
             <th class="center" id="runs-th-b">Team B</th>
-            <th class="center"></th>
           </tr>
         </thead>
         <tbody id="runs-tbody"></tbody>
@@ -704,11 +730,11 @@ function renderRosterPanel(side, team, rosters) {
 
   function stat(val, pct = false) {
     if (val == null) return `<span class="stat-val empty">—</span>`;
-    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:12px;opacity:0.7">%</span>' : ''}</span>`;
+    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:8px;opacity:0.7">%</span>' : ''}</span>`;
   }
 
-  document.getElementById(`roster-players-${side}`).innerHTML = roster.map(r => `
-    <div class="player-row">
+  function playerRow(r) {
+    return `<div class="player-row">
       <img class="player-avatar${r.is_captain?' captain':''}"
            src="${r.hero ? HERO_BASE + r.hero.slug + '.jpg' : ''}"
            alt="${r.hero?.name||'?'}" onerror="this.style.opacity=0.2">
@@ -716,27 +742,54 @@ function renderRosterPanel(side, team, rosters) {
         <div class="player-name-sm">${r.player_name}${r.is_captain?' 👑':''}</div>
         <div class="player-hero-rank">
           <span class="player-hero-sm">${r.hero?.name||'—'}</span>
-          ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}40;background:${rankColor(r.world_rank)}18">#${r.world_rank}</span>` : ''}
+          ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}40">#${r.world_rank}</span>` : ''}
         </div>
       </div>
-      <div class="stat-cell">${stat(r.stamina)}</div>
-      <div class="stat-cell">${stat(r.main_stat)}</div>
-      <div class="stat-cell">${stat(r.crit, true)}</div>
-      <div class="stat-cell">${stat(r.expertise, true)}</div>
-      <div class="stat-cell">${stat(r.haste, true)}</div>
-      <div class="stat-cell">${stat(r.spirit, true)}</div>
-    </div>`).join('');
+      <div class="player-stats">
+        <div class="stat-cell">${stat(r.stamina)}</div>
+        <div class="stat-cell">${stat(r.main_stat)}</div>
+        <div class="stat-cell">${stat(r.crit, true)}</div>
+        <div class="stat-cell">${stat(r.expertise, true)}</div>
+        <div class="stat-cell">${stat(r.haste, true)}</div>
+        <div class="stat-cell">${stat(r.spirit, true)}</div>
+      </div>
+    </div>`;
+  }
+
+  // Group into pairs (tank+heal, then dps pairs)
+  const groups = [];
+  for (let i = 0; i < roster.length; i += 2) groups.push(roster.slice(i, i + 2));
+
+  const container = document.getElementById(`roster-players-${side}`);
+  container.innerHTML = groups.map(pair =>
+    `<div class="player-group">${pair.map(r => playerRow(r)).join('')}</div>`
+  ).join('');
+
+  startRosterScroll(container);
+}
+
+let rosterScrollTimers = {};
+function startRosterScroll(el) {
+  const id = el.id;
+  if (rosterScrollTimers[id]) clearInterval(rosterScrollTimers[id]);
+  let dir = 1; let paused = false;
+  rosterScrollTimers[id] = setInterval(() => {
+    if (paused) return;
+    const max = el.scrollHeight - el.clientHeight;
+    if (max <= 0) return;
+    el.scrollTop += dir * 0.5;
+    if (el.scrollTop >= max)  { dir = -1; paused = true; setTimeout(() => { paused = false; }, 1800); }
+    if (el.scrollTop <= 0)    { dir =  1; paused = true; setTimeout(() => { paused = false; }, 1200); }
+  }, 30);
 }
 
 // ── SCENE: RUNS ───────────────────────────────────────────────────────────────
 function renderRuns(match, teamA, teamB, runs) {
-  const target = match.round === 'final' ? 4 : 3;
-  const isWinner = (t) => match.winner_id === t.id;
+  const target   = match.round === 'final' ? 4 : 3;
   const isLoser  = (t) => match.winner_id && match.winner_id !== t.id;
 
   document.getElementById('runs-match-label').textContent =
     match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
-
   document.getElementById('runs-name-a').textContent = teamA.name;
   document.getElementById('runs-name-b').textContent = teamB.name;
   const vpA = document.getElementById('runs-vp-a');
@@ -749,12 +802,11 @@ function renderRuns(match, teamA, teamB, runs) {
   document.getElementById('runs-th-a').textContent = teamA.name;
   document.getElementById('runs-th-b').textContent = teamB.name;
 
-  // Group by dungeon slug
   const slugs = [...new Set(runs.map(r => r.dungeon_slug))];
   const tbody = document.getElementById('runs-tbody');
 
   if (!slugs.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);font-style:italic;padding:12px">No dungeons played yet</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);font-style:italic;padding:10px">No dungeons played yet</td></tr>`;
     return;
   }
 
@@ -763,27 +815,24 @@ function renderRuns(match, teamA, teamB, runs) {
     const runA = runs.find(r => r.dungeon_slug === slug && r.team_id === teamA.id);
     const runB = runs.find(r => r.dungeon_slug === slug && r.team_id === teamB.id);
 
-    const timeCell = (run) => {
-      if (!run) return '<td class="run-time-cell"><span class="run-time-val">—</span></td>';
-      const isWin = run.score === 1;
-      return `<td class="run-time-cell">
-        <span class="run-time-val${isWin?' winner-time':''}">${fmtTime(run.run_time)}</span>
+    function resultCell(run) {
+      if (!run) return `<td class="run-result-cell"><div class="run-result-loss"><span class="run-time-val">—</span></div></td>`;
+      const win = run.score === 1;
+      return `<td class="run-result-cell">
+        <div class="${win ? 'run-result-win' : 'run-result-loss'}">
+          <span class="run-score-icon ${win?'win':'loss'}">${win?'✓':'✗'}</span>
+          <span class="run-time-val ${win?'win':''}">${fmtTime(run.run_time)}</span>
+        </div>
       </td>`;
-    };
-    const scoreCell = (run) => {
-      if (!run || run.score == null) return '<td class="run-score-icon">—</td>';
-      return `<td class="run-score-icon ${run.score===1?'win':'loss'}">${run.score===1?'✓':'✗'}</td>`;
-    };
+    }
 
     return `<tr>
       <td>
         <div class="run-dungeon-name">${dun.name}</div>
         <div class="run-dungeon-type">${dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP'}</div>
       </td>
-      ${timeCell(runA)}
-      ${scoreCell(runA)}
-      ${timeCell(runB)}
-      ${scoreCell(runB)}
+      ${resultCell(runA)}
+      ${resultCell(runB)}
     </tr>`;
   }).join('');
 }
