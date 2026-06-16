@@ -228,14 +228,26 @@
      SCENE: QUALIFIERS
   ════════════════════════════════════════════════════════════════ */
   #scene-qualifiers { display: block; }
-  .qual-scene { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 6px 32px; z-index: 1; }
+  .qual-scene { position: absolute; inset: 0; z-index: 1; display: flex; }
+
+  /* 2/3 left + 1/3 right */
+  .qual-layout { display: flex; width: 100%; height: 100%; }
+  .qual-left  { flex: 2; display: flex; flex-direction: column; padding: 6px 16px 6px 28px; overflow: hidden; }
+  .qual-right { flex: 1; display: flex; flex-direction: column; padding: 6px 16px 6px 12px; border-left: 1px solid rgba(64,212,212,0.12); }
+
+  /* Header */
   .qual-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-  .qual-title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--text); display: flex; align-items: center; gap: 6px; }
-  .qual-cutoff-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.14em; color: var(--text-muted); }
-  .qual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; flex: 1; }
-  .qual-card { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(64,212,212,0.1); border-radius: 3px; padding: 5px 8px; position: relative; overflow: hidden; }
-  .qual-card.qualified { border-color: rgba(64,212,212,0.3); background: rgba(64,212,212,0.04); }
-  .qual-card.rejected  { opacity: 0.45; }
+  .qual-title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .qual-title-sub { font-size: 10px; font-weight: 400; letter-spacing: 0.18em; color: var(--text-muted); }
+  .qual-cutoff-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.12em; color: var(--teal-light); font-weight: 700; white-space: nowrap; }
+
+  /* Qualified grid — 4 cols auto */
+  .qual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; flex: 1; align-content: start; }
+  .qual-empty { font-family: 'Cinzel', serif; font-size: 10px; color: var(--text-muted); font-style: italic; grid-column: 1/-1; }
+
+  .qual-card { display: flex; align-items: center; gap: 6px; border: 1px solid rgba(64,212,212,0.1); border-radius: 3px; padding: 5px 8px; position: relative; overflow: hidden; }
+  .qual-card.qualified      { border-color: rgba(64,212,212,0.35); background: rgba(64,212,212,0.05); }
+  .qual-card.temp_qualified { border-color: rgba(64,212,212,0.2);  background: rgba(64,212,212,0.02); }
   .qual-rank { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text-muted); min-width: 22px; text-align: center; flex-shrink: 0; }
   .qual-rank.r1  { color: var(--gold); text-shadow: 0 0 8px rgba(232,201,106,0.5); }
   .qual-rank.r2  { color: #c0c8d4; }
@@ -244,25 +256,42 @@
   .qual-team-info { flex: 1; min-width: 0; }
   .qual-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .qual-team-time { font-family: 'Cinzel', serif; font-size: 10px; color: var(--teal-light); margin-top: 1px; }
-  .qual-team-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 9px; }
   .qual-color-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
-  .qual-divider-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 1px 0; }
-  .qual-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(215,68,177,0.5), rgba(232,137,91,0.4), transparent); }
-  .qual-divider-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.18em; color: var(--goober-a); text-transform: uppercase; white-space: nowrap; }
+
+  /* Right panel — pending/others */
+  .qual-right-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+  .qual-pending-list { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 3px; }
+  .qual-pending-card { display: flex; align-items: center; gap: 7px; padding: 4px 8px; border-radius: 3px; border: 1px solid rgba(64,212,212,0.07); background: rgba(255,255,255,0.02); position: relative; overflow: hidden; flex-shrink: 0; }
+  .qual-pending-card.rejected { opacity: 0.5; border-color: rgba(180,60,60,0.2); }
+  .qual-pending-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
+  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 10px; color: var(--teal-light); white-space: nowrap; }
+  .qual-pending-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 9px; }
+  .qual-pending-rank { color: var(--text-muted); font-size: 9px; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: IDLE
   ════════════════════════════════════════════════════════════════ */
   #scene-idle { display: block; }
   .idle-content { position: absolute; inset: 0; z-index: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; padding: 0 40px; }
-  .idle-side { display: flex; flex-direction: column; gap: 8px; }
+  .idle-side { display: flex; flex-direction: column; gap: 6px; }
   #idle-left-info { align-items: flex-end; text-align: right; padding-right: 32px; }
   #idle-right-info { align-items: flex-start; text-align: left; padding-left: 32px; }
-  .idle-info-value { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); white-space: nowrap; }
+
+  /* 2-col info grid on left */
+  .idle-info-grid { display: grid; grid-template-columns: auto auto; gap: 2px 10px; align-items: baseline; justify-content: end; }
+  .idle-info-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; text-align: right; }
+  .idle-info-value { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; color: var(--text); white-space: nowrap; text-align: left; }
   .idle-info-value.teal { color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.4); }
-  .idle-teams-wrap { display: flex; flex-direction: column; gap: 4px; }
-  .idle-team-pill { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; align-self: flex-start; }
-  #idle-left-info .idle-team-pill { align-self: flex-end; }
+
+  /* 2-column team grid on right */
+  .idle-teams-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+  }
+  .idle-team-pill { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+
   .idle-center { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; justify-self: center; }
   .idle-eyebrow { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--text-muted); }
   .idle-title { font-family: 'Cinzel', serif; font-size: 36px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); line-height: 1; text-shadow: 0 2px 16px rgba(0,0,0,0.9); white-space: nowrap; }
@@ -760,15 +789,28 @@ function renderRuns(match, teamA, teamB, runs) {
 }
 
 // ── SCENE: QUALIFIERS ────────────────────────────────────────────────────────
+let qualScrollTimer = null;
+
 async function renderQualifiers(seasonId) {
   const [teams, season] = await Promise.all([
     sbGet('sr_teams', `?season_id=eq.${seasonId}&order=qualifier_rank.asc.nullslast`),
     sbGet('sr_seasons', `?id=eq.${seasonId}&limit=1`),
   ]);
-  const cutoff = season[0]?.qualifier_cutoff || 4;
+  const s       = season[0];
+  const cutoff  = s?.qualifier_cutoff || 4;
+  const status  = s?.status || 'qualifiers';
+  const isLocked = ['semifinals','finals','completed'].includes(status);
 
-  const qualified = teams.filter(t => t.qualifier_rank != null && t.qualifier_rank <= cutoff);
-  const rejected  = teams.filter(t => t.qualifier_rank == null || t.qualifier_rank > cutoff);
+  // Label changes based on season status
+  const cutoffLabel = isLocked
+    ? `Top ${cutoff} Qualified`
+    : `Top ${cutoff} Temporarily Qualified`;
+
+  // Right panel label changes based on status
+  const pendingLabel = isLocked ? 'Not Qualified' : 'Pending / Not yet qualified';
+
+  const inTop  = teams.filter(t => t.qualifier_rank != null && t.qualifier_rank <= cutoff);
+  const others = teams.filter(t => t.qualifier_rank == null || t.qualifier_rank > cutoff);
 
   function rankClass(rank) {
     if (rank === 1) return 'r1';
@@ -778,40 +820,73 @@ async function renderQualifiers(seasonId) {
     return '';
   }
 
-  function teamCard(t) {
-    const status = t.qualifier_rank != null && t.qualifier_rank <= cutoff ? 'qualified'
-                 : t.qualifier_rank != null ? 'rejected' : 'pending';
+  function qualCard(t) {
+    const locked = isLocked || t.qualifier_status === 'qualified';
+    const cls    = locked ? 'qualified' : 'temp_qualified';
     return `
-      <div class="qual-card ${status}">
+      <div class="qual-card ${cls}">
         <div class="qual-color-bar" style="background:${t.color}"></div>
-        <div class="qual-rank ${rankClass(t.qualifier_rank)}">${t.qualifier_rank != null ? `#${t.qualifier_rank}` : '—'}</div>
+        <div class="qual-rank ${rankClass(t.qualifier_rank)}">#${t.qualifier_rank}</div>
         <div class="qual-team-info">
           <div class="qual-team-name">${t.name}</div>
-          <div class="qual-team-time${t.qualifier_time ? '' : ' pending'}">${t.qualifier_time ? fmtTime(t.qualifier_time) : 'No time'}</div>
+          <div class="qual-team-time">${t.qualifier_time ? fmtTime(t.qualifier_time) : '—'}${!locked ? '<span style="opacity:.5;font-size:7px;margin-left:3px">~</span>' : ''}</div>
         </div>
+      </div>`;
+  }
+
+  function pendingCard(t) {
+    const hasTime = !!t.qualifier_time;
+    const cls     = isLocked ? 'rejected' : 'pending';
+    return `
+      <div class="qual-pending-card ${cls}">
+        <div class="qual-pending-bar" style="background:${t.color}"></div>
+        <div class="qual-pending-name">${t.name}</div>
+        ${hasTime ? `<div class="qual-pending-time">${fmtTime(t.qualifier_time)}<span class="qual-pending-rank"> #${t.qualifier_rank || '?'}</span></div>` : '<div class="qual-pending-time pending">No time</div>'}
       </div>`;
   }
 
   const el = document.getElementById('qual-scene');
   el.innerHTML = `
-    <div class="qual-header">
-      <div class="qual-title">
-        Stronghold <span style="background:linear-gradient(90deg,var(--goober-a),var(--goober-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 10px rgba(215,68,177,0.5))">Rush</span>
-        <span style="color:var(--text-muted);font-size:13px;font-weight:400;letter-spacing:0.18em"> · QUALIFIERS</span>
-      </div>
-      <div class="qual-cutoff-label">Top ${cutoff} advance</div>
-    </div>
-    <div class="qual-grid">
-      ${qualified.map(t => teamCard(t)).join('')}
-      ${rejected.length ? `
-        <div class="qual-divider-row">
-          <div class="qual-divider-line"></div>
-          <div class="qual-divider-label">Eliminated</div>
-          <div class="qual-divider-line" style="background:linear-gradient(270deg,rgba(215,68,177,0.3),transparent)"></div>
+    <div class="qual-layout">
+      <!-- LEFT 2/3: qualified teams -->
+      <div class="qual-left">
+        <div class="qual-header">
+          <div class="qual-title">
+            Stronghold <span style="background:linear-gradient(90deg,var(--goober-a),var(--goober-b));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Rush</span>
+            <span class="qual-title-sub">· Qualifiers</span>
+          </div>
+          <div class="qual-cutoff-label">${cutoffLabel}</div>
         </div>
-        ${rejected.map(t => teamCard(t)).join('')}
-      ` : ''}
+        <div class="qual-grid" id="qual-grid">
+          ${inTop.length ? inTop.map(t => qualCard(t)).join('') : '<div class="qual-empty">No teams qualified yet</div>'}
+        </div>
+      </div>
+      <!-- RIGHT 1/3: pending/others with scroll -->
+      <div class="qual-right">
+        <div class="qual-right-label">${pendingLabel}</div>
+        <div class="qual-pending-list" id="qual-pending-list">
+          ${others.map(t => pendingCard(t)).join('')}
+        </div>
+      </div>
     </div>`;
+
+  // Auto-scroll pending list if overflow
+  startPendingScroll();
+}
+
+function startPendingScroll() {
+  if (qualScrollTimer) clearInterval(qualScrollTimer);
+  const list = document.getElementById('qual-pending-list');
+  if (!list) return;
+  let dir = 1;
+  qualScrollTimer = setInterval(() => {
+    if (!list) return;
+    const maxScroll = list.scrollHeight - list.clientHeight;
+    if (maxScroll <= 0) return;
+    list.scrollTop += dir;
+    if (list.scrollTop >= maxScroll) { dir = -1; setTimeout(() => { dir = 1; }, 1200); }
+    if (list.scrollTop <= 0)         { dir =  1; setTimeout(() => { dir = -1; dir = 1; }, 1200); }
+  }, 30);
 }
 
 // ── SCENE: IDLE ───────────────────────────────────────────────────────────────
@@ -823,36 +898,35 @@ async function renderIdle(seasonId) {
     sbGet('sr_teams',   `?season_id=eq.${seasonId}&order=qualifier_rank.asc.nullslast`),
   ]);
   const s = season[0];
-  const qualified = teams.filter(t => t.qualifier_status === 'qualified');
-  const displayTeams = qualified.length ? qualified : teams;
+  const qualified    = teams.filter(t => ['qualified','temp_qualified'].includes(t.qualifier_status));
+  const displayTeams = qualified.length ? qualified : teams.filter(t => t.qualifier_time).slice(0, 8);
 
   const statusLabel = {
     upcoming: 'Coming Soon', qualifiers: 'Qualifiers Open',
     semifinals: 'Semifinals', finals: 'Grand Finals', completed: 'Season Complete'
   }[s?.status] || s?.status || '—';
 
-  // Split teams: left half on left panel, right half on right panel
-  const half = Math.ceil(displayTeams.length / 2);
-  const leftTeams  = displayTeams.slice(0, half);
-  const rightTeams = displayTeams.slice(half);
+  const cutoff = s?.qualifier_cutoff || 4;
 
-  function teamPills(tms) {
-    return tms.map(t =>
-      `<span class="idle-team-pill" style="border-color:${t.color}55;color:${t.color}">${t.name}</span>`
-    ).join('');
+  // Left: 2-column grid for season info
+  document.getElementById('idle-left-info').innerHTML = `
+    <div class="idle-info-grid">
+      <div class="idle-info-label">Season</div>
+      <div class="idle-info-value">${s?.name || '—'}</div>
+      <div class="idle-info-label">Status</div>
+      <div class="idle-info-value teal">${statusLabel}</div>
+      <div class="idle-info-label">Qualifier</div>
+      <div class="idle-info-value">Top ${cutoff}</div>
+    </div>`;
+
+  // Right: teams in 2-column grid
+  function teamPill(t) {
+    return `<span class="idle-team-pill" style="border-color:${t.color}55;color:${t.color}">${t.name}</span>`;
   }
 
-  // Left: season name + status
-  document.getElementById('idle-left-info').innerHTML = `
-    <div class="idle-info-value">${s?.name || '—'}</div>
-    <div class="idle-info-value teal">${statusLabel}</div>`;
-
-  // Right: qualified teams split
-  document.getElementById('idle-right-info').innerHTML = `
-    <div class="idle-teams-wrap">
-      ${teamPills(leftTeams)}
-    </div>
-    ${rightTeams.length ? `<div style="width:1px;height:20px"></div><div class="idle-teams-wrap">${teamPills(rightTeams)}</div>` : ''}`;
+  document.getElementById('idle-right-info').innerHTML = displayTeams.length
+    ? `<div class="idle-teams-grid">${displayTeams.map(t => teamPill(t)).join('')}</div>`
+    : `<div class="idle-info-label">No teams yet</div>`;
 
   startIdleParticles();
 }

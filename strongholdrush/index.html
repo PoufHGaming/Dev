@@ -187,6 +187,8 @@
   .qualifier-card.rejected::before { background: rgba(180,60,60,0.5); }
   .qualifier-card.rejected .qualifier-team-name { color: var(--text-dim); }
   .qualifier-card.rejected .qualifier-time { color: var(--text-muted); text-shadow: none; }
+  .qualifier-card.temp_qualified { border-color: rgba(64,212,212,0.2); }
+  .qualifier-card.temp_qualified::before { background: var(--teal-dim); }
 
   .vod-link {
     display: inline-flex; align-items: center; gap: 5px;
@@ -740,9 +742,10 @@ function renderQualifiers() {
 
 function qualifierStatus(team) {
   const s = team.qualifier_status || 'pending';
-  if (s === 'qualified') return { cls: 'qualified', label: team.qualifier_rank ? `Rank <span class="rank-num">#${team.qualifier_rank}</span>` : 'Qualified', color: 'var(--teal-dim)' };
-  if (s === 'rejected')  return { cls: 'rejected',  label: team.qualifier_rank ? `Eliminated · <span style="opacity:.6">#${team.qualifier_rank}</span>` : 'Not accepted', color: '#804040' };
-  return { cls: '', label: '<span style="color:var(--text-muted)">Pending</span>', color: 'var(--border)' };
+  if (s === 'qualified')      return { cls: 'qualified',      label: team.qualifier_rank ? `Rank <span class="rank-num">#${team.qualifier_rank}</span>` : 'Qualified',             color: 'var(--teal-dim)' };
+  if (s === 'temp_qualified') return { cls: 'temp_qualified', label: team.qualifier_rank ? `Rank <span class="rank-num">#${team.qualifier_rank}</span> <span style="color:var(--text-muted);font-size:0.85em">· Provisional</span>` : 'Provisional', color: 'var(--teal-dim)' };
+  if (s === 'rejected')       return { cls: 'rejected',       label: team.qualifier_rank ? `Eliminated · <span style="opacity:.6">#${team.qualifier_rank}</span>` : 'Not accepted', color: '#804040' };
+  return { cls: '', label: team.qualifier_rank ? `Rank <span class="rank-num">#${team.qualifier_rank}</span>` : '<span style="color:var(--text-muted)">Pending</span>', color: 'var(--border)' };
 }
 
 function renderQualifierCard(team) {
