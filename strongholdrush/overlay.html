@@ -118,7 +118,7 @@
   .center-panel {
     position: relative; z-index: 1;
     display: grid;
-    grid-template-columns: 80px 1fr 80px;
+    grid-template-columns: 100px 1fr 100px;
     align-items: center;
     padding: 0; gap: 0;
     background: rgba(0,0,0,0.25);
@@ -171,7 +171,7 @@
   .round-badge { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: ROSTER — 2 visible at a time, fade every 30s
+     SCENE: ROSTER — 2 visible at a time, fade every 20s
   ════════════════════════════════════════════════════════════════ */
   #scene-roster { display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
   .roster-panel {
@@ -186,34 +186,43 @@
   .roster-panel:first-child::after { left: 0; }
   .roster-panel:last-child::after  { right: 0; }
   .roster-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--text); margin-bottom: 3px; text-transform: uppercase; }
+
+  /* Stats header — must match player-row grid exactly */
+  .stats-header {
+    display: grid;
+    grid-template-columns: 36px 1fr 54px 54px 54px 54px 54px 54px;
+    gap: 4px; padding: 0 0 3px 0; margin-bottom: 1px;
+  }
+  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+
   .roster-scroll { flex: 1; overflow: hidden; position: relative; }
 
-  /* Each pair is a slide */
+  /* Each pair is a slide — fixed height layout, not flex-1 */
   .roster-slide {
-    position: absolute; inset: 0;
+    position: absolute; top: 0; left: 0; right: 0;
     display: flex; flex-direction: column; gap: 4px;
     opacity: 0; transition: opacity 0.8s ease;
     pointer-events: none;
   }
   .roster-slide.active { opacity: 1; pointer-events: auto; }
 
-  .stats-header { display: flex; gap: 3px; padding: 0 6px 3px 36px; }
-  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); flex: 1; }
-
+  /* Player row — grid aligned with stats header */
   .player-row {
-    display: flex; align-items: center; gap: 8px;
+    display: grid;
+    grid-template-columns: 36px 1fr 54px 54px 54px 54px 54px 54px;
+    align-items: center; gap: 4px;
     background: rgba(255,255,255,0.03); border: 1px solid rgba(64,212,212,0.1);
-    border-radius: 3px; padding: 5px 8px 5px 5px; flex: 1;
+    border-radius: 3px; padding: 5px 6px 5px 4px;
+    height: 44px;
   }
-  .player-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; flex-shrink: 0; }
+  .player-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; }
   .player-avatar.captain { border-color: var(--gold); box-shadow: 0 0 8px rgba(232,201,106,0.4); }
-  .player-info { min-width: 0; flex: 1; }
+  .player-info { min-width: 0; }
   .player-name-sm { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player-hero-rank { display: flex; align-items: center; gap: 5px; margin-top: 1px; }
+  .player-hero-rank { display: flex; align-items: center; gap: 4px; margin-top: 1px; }
   .player-hero-sm { font-size: 11px; color: var(--text-muted); font-style: italic; }
-  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 5px; line-height: 1.4; opacity: 0.85; }
-  .player-stats { display: flex; gap: 3px; flex-shrink: 0; }
-  .stat-cell { text-align: center; min-width: 34px; }
+  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 4px; line-height: 1.4; opacity: 0.85; }
+  .stat-cell { text-align: center; width: 54px; }
   .stat-val { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--teal-light); display: block; line-height: 1; }
   .stat-val.empty { color: var(--text-muted); font-size: 9px; }
 
@@ -418,7 +427,8 @@
     <div class="roster-panel" id="roster-panel-a">
       <div class="roster-team-name" id="roster-name-a">—</div>
       <div class="stats-header">
-        <div style="width:26px;flex-shrink:0"></div><div style="flex:1"></div>
+        <div></div>
+        <div></div>
         <div class="stats-header-cell">Stamina</div>
         <div class="stats-header-cell">Main</div>
         <div class="stats-header-cell">Crit</div>
@@ -431,7 +441,8 @@
     <div class="roster-panel" id="roster-panel-b">
       <div class="roster-team-name" id="roster-name-b">—</div>
       <div class="stats-header">
-        <div style="width:26px;flex-shrink:0"></div><div style="flex:1"></div>
+        <div></div>
+        <div></div>
         <div class="stats-header-cell">Stamina</div>
         <div class="stats-header-cell">Main</div>
         <div class="stats-header-cell">Crit</div>
@@ -770,14 +781,12 @@ function renderRosterPanel(side, team, rosters) {
           ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}50">#${r.world_rank}</span>` : ''}
         </div>
       </div>
-      <div class="player-stats">
-        <div class="stat-cell">${stat(r.stamina)}</div>
-        <div class="stat-cell">${stat(r.main_stat)}</div>
-        <div class="stat-cell">${stat(r.crit, true)}</div>
-        <div class="stat-cell">${stat(r.expertise, true)}</div>
-        <div class="stat-cell">${stat(r.haste, true)}</div>
-        <div class="stat-cell">${stat(r.spirit, true)}</div>
-      </div>
+      <div class="stat-cell">${stat(r.stamina)}</div>
+      <div class="stat-cell">${stat(r.main_stat)}</div>
+      <div class="stat-cell">${stat(r.crit, true)}</div>
+      <div class="stat-cell">${stat(r.expertise, true)}</div>
+      <div class="stat-cell">${stat(r.haste, true)}</div>
+      <div class="stat-cell">${stat(r.spirit, true)}</div>
     </div>`;
   }
 
@@ -794,17 +803,19 @@ function renderRosterPanel(side, team, rosters) {
       ${pair.map(r => playerRow(r)).join('')}
     </div>`).join('');
 
-  // Start fade cycle if more than one slide
-  if (rosterFadeTimers[side]) clearInterval(rosterFadeTimers[side]);
+  // Clear old timer if any
+  const timerKey = `rosterTimer_${side}`;
+  if (window[timerKey]) clearInterval(window[timerKey]);
   if (slides.length <= 1) return;
 
   let current = 0;
-  rosterFadeTimers[side] = setInterval(() => {
+  window[timerKey] = setInterval(() => {
     const allSlides = container.querySelectorAll('.roster-slide');
+    if (!allSlides.length) return;
     allSlides[current].classList.remove('active');
     current = (current + 1) % slides.length;
     allSlides[current].classList.add('active');
-  }, 30_000);
+  }, 20_000);
 }
 
 // ── SCENE: RUNS ───────────────────────────────────────────────────────────────
