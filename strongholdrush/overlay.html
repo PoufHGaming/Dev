@@ -118,24 +118,24 @@
   .center-panel {
     position: relative; z-index: 1;
     display: grid;
-    grid-template-columns: 56px 1fr 56px;
+    grid-template-columns: 80px 1fr 80px;
     align-items: center;
     padding: 0; gap: 0;
-    background: rgba(0,0,0,0.2);
-    border-left: 1px solid rgba(64,212,212,0.12);
-    border-right: 1px solid rgba(64,212,212,0.12);
+    background: rgba(0,0,0,0.25);
+    border-left: 2px solid rgba(64,212,212,0.2);
+    border-right: 2px solid rgba(64,212,212,0.2);
   }
-  .vp-block { text-align: center; padding: 0 4px; }
+  .vp-block { text-align: center; padding: 0 6px; background: rgba(0,0,0,0.2); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .vp-number {
-    font-family: 'Cinzel', serif; font-size: 54px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 62px; font-weight: 700;
     line-height: 1; color: var(--teal-light);
-    text-shadow: 0 0 16px rgba(64,212,212,0.7), 0 0 30px rgba(64,212,212,0.3);
+    text-shadow: 0 0 20px rgba(64,212,212,0.8), 0 0 40px rgba(64,212,212,0.4);
     transition: all 0.4s;
   }
   .vp-number.updated { animation: vp-pop 0.4s ease; }
   @keyframes vp-pop { 0%{transform:scale(1.3);color:#fff;text-shadow:0 0 20px #fff} 100%{transform:scale(1)} }
   .vp-number.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
-  .vp-target { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.14em; color: var(--text-muted); margin-top: 1px; }
+  .vp-target { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.16em; color: var(--text-muted); margin-top: 2px; }
 
   .center-info {
     display: flex; flex-direction: column;
@@ -171,7 +171,7 @@
   .round-badge { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: ROSTER — 2-player groups with auto-scroll
+     SCENE: ROSTER — 2 visible at a time, fade every 30s
   ════════════════════════════════════════════════════════════════ */
   #scene-roster { display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
   .roster-panel {
@@ -186,29 +186,36 @@
   .roster-panel:first-child::after { left: 0; }
   .roster-panel:last-child::after  { right: 0; }
   .roster-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--text); margin-bottom: 3px; text-transform: uppercase; }
-  .roster-scroll { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 0; }
+  .roster-scroll { flex: 1; overflow: hidden; position: relative; }
 
-  /* 2-player groups: one row per pair */
-  .player-group { display: flex; gap: 4px; padding: 2px 0; border-bottom: 1px solid rgba(64,212,212,0.06); flex-shrink: 0; }
-  .player-group:last-child { border-bottom: none; }
-  .player-row {
-    display: flex; align-items: center; gap: 5px; flex: 1; min-width: 0;
-    background: rgba(255,255,255,0.02); border: 1px solid rgba(64,212,212,0.08);
-    border-radius: 2px; padding: 3px 6px 3px 3px;
+  /* Each pair is a slide */
+  .roster-slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; gap: 4px;
+    opacity: 0; transition: opacity 0.8s ease;
+    pointer-events: none;
   }
-  .player-avatar { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; flex-shrink: 0; }
-  .player-avatar.captain { border-color: var(--gold); }
+  .roster-slide.active { opacity: 1; pointer-events: auto; }
+
+  .stats-header { display: flex; gap: 3px; padding: 0 6px 3px 36px; }
+  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); flex: 1; }
+
+  .player-row {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(64,212,212,0.1);
+    border-radius: 3px; padding: 5px 8px 5px 5px; flex: 1;
+  }
+  .player-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); object-fit: cover; background: #1a2a2a; flex-shrink: 0; }
+  .player-avatar.captain { border-color: var(--gold); box-shadow: 0 0 8px rgba(232,201,106,0.4); }
   .player-info { min-width: 0; flex: 1; }
-  .player-name-sm { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player-hero-rank { display: flex; align-items: center; gap: 4px; }
-  .player-hero-sm { font-size: 10px; color: var(--text-muted); font-style: italic; }
-  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 4px; line-height: 1.4; opacity: 0.85; }
+  .player-name-sm { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-hero-rank { display: flex; align-items: center; gap: 5px; margin-top: 1px; }
+  .player-hero-sm { font-size: 11px; color: var(--text-muted); font-style: italic; }
+  .player-rank-badge { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; border: 1px solid currentColor; border-radius: 2px; padding: 0 5px; line-height: 1.4; opacity: 0.85; }
   .player-stats { display: flex; gap: 3px; flex-shrink: 0; }
-  .stat-cell { text-align: center; min-width: 28px; }
-  .stat-val { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--teal-light); display: block; line-height: 1; }
+  .stat-cell { text-align: center; min-width: 34px; }
+  .stat-val { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; color: var(--teal-light); display: block; line-height: 1; }
   .stat-val.empty { color: var(--text-muted); font-size: 9px; }
-  .stats-header { display: flex; gap: 3px; padding: 0 6px 2px 36px; }
-  .stats-header-cell { text-align: center; font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); min-width: 28px; flex: 1; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: RUNS — clearer win/loss
@@ -262,10 +269,15 @@
   .qual-right { flex: 1; display: flex; flex-direction: column; padding: 6px 16px 6px 12px; border-left: 1px solid rgba(64,212,212,0.12); }
 
   /* Header */
-  .qual-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-  .qual-title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .qual-header { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+  .qual-title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   .qual-title-sub { font-size: 10px; font-weight: 400; letter-spacing: 0.18em; color: var(--text-muted); }
-  .qual-cutoff-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.12em; color: var(--teal-light); font-weight: 700; white-space: nowrap; }
+  .qual-cutoff-label {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.1em;
+    color: var(--teal-light); font-weight: 700; white-space: nowrap;
+    background: rgba(64,212,212,0.1); border: 1px solid rgba(64,212,212,0.3);
+    border-radius: 4px; padding: 2px 10px;
+  }
 
   /* Qualified grid — 4 cols auto */
   .qual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; flex: 1; align-content: start; }
@@ -285,15 +297,26 @@
   .qual-color-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
 
   /* Right panel — pending/others */
-  .qual-right-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+  .qual-right-label {
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #fff; margin-bottom: 6px; font-weight: 700;
+    border-bottom: 1px solid rgba(64,212,212,0.2); padding-bottom: 4px;
+  }
   .qual-pending-list { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 3px; }
-  .qual-pending-card { display: flex; align-items: center; gap: 7px; padding: 4px 8px; border-radius: 3px; border: 1px solid rgba(64,212,212,0.07); background: rgba(255,255,255,0.02); position: relative; overflow: hidden; flex-shrink: 0; }
-  .qual-pending-card.rejected { opacity: 0.5; border-color: rgba(180,60,60,0.2); }
+  .qual-pending-card {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 10px; border-radius: 3px;
+    border: 1px solid rgba(64,212,212,0.12);
+    background: rgba(255,255,255,0.04);
+    position: relative; overflow: hidden; flex-shrink: 0;
+  }
+  .qual-pending-card.rejected { opacity: 0.45; border-color: rgba(180,60,60,0.2); }
   .qual-pending-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
-  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 10px; color: var(--teal-light); white-space: nowrap; }
-  .qual-pending-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 9px; }
-  .qual-pending-rank { color: var(--text-muted); font-size: 9px; }
+  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qual-pending-rank { font-family: 'Cinzel', serif; font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 12px; color: var(--teal-light); white-space: nowrap; flex-shrink: 0; }
+  .qual-pending-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 11px; }
+  .qual-pending-diff { font-family: 'Cinzel', serif; font-size: 10px; color: var(--goober-b); flex-shrink: 0; opacity: 0.8; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: IDLE
@@ -721,6 +744,8 @@ function rankColor(rank) {
   return '#9ca3af';                    // grey
 }
 
+let rosterFadeTimers = {};
+
 function renderRosterPanel(side, team, rosters) {
   document.getElementById(`roster-name-${side}`).textContent = team.name;
   const panel = document.getElementById(`roster-panel-${side}`);
@@ -730,7 +755,7 @@ function renderRosterPanel(side, team, rosters) {
 
   function stat(val, pct = false) {
     if (val == null) return `<span class="stat-val empty">—</span>`;
-    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:8px;opacity:0.7">%</span>' : ''}</span>`;
+    return `<span class="stat-val">${val.toLocaleString()}${pct ? '<span style="font-size:8px;opacity:0.6">%</span>' : ''}</span>`;
   }
 
   function playerRow(r) {
@@ -742,7 +767,7 @@ function renderRosterPanel(side, team, rosters) {
         <div class="player-name-sm">${r.player_name}${r.is_captain?' 👑':''}</div>
         <div class="player-hero-rank">
           <span class="player-hero-sm">${r.hero?.name||'—'}</span>
-          ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}40">#${r.world_rank}</span>` : ''}
+          ${r.world_rank != null ? `<span class="player-rank-badge" style="color:${rankColor(r.world_rank)};border-color:${rankColor(r.world_rank)}50">#${r.world_rank}</span>` : ''}
         </div>
       </div>
       <div class="player-stats">
@@ -756,31 +781,30 @@ function renderRosterPanel(side, team, rosters) {
     </div>`;
   }
 
-  // Group into pairs (tank+heal, then dps pairs)
-  const groups = [];
-  for (let i = 0; i < roster.length; i += 2) groups.push(roster.slice(i, i + 2));
+  // Build slides of 2 players each
+  const slides = [];
+  for (let i = 0; i < roster.length; i += 2) {
+    slides.push(roster.slice(i, i + 2));
+  }
+  if (!slides.length) return;
 
   const container = document.getElementById(`roster-players-${side}`);
-  container.innerHTML = groups.map(pair =>
-    `<div class="player-group">${pair.map(r => playerRow(r)).join('')}</div>`
-  ).join('');
+  container.innerHTML = slides.map((pair, i) => `
+    <div class="roster-slide${i === 0 ? ' active' : ''}" data-slide="${i}">
+      ${pair.map(r => playerRow(r)).join('')}
+    </div>`).join('');
 
-  startRosterScroll(container);
-}
+  // Start fade cycle if more than one slide
+  if (rosterFadeTimers[side]) clearInterval(rosterFadeTimers[side]);
+  if (slides.length <= 1) return;
 
-let rosterScrollTimers = {};
-function startRosterScroll(el) {
-  const id = el.id;
-  if (rosterScrollTimers[id]) clearInterval(rosterScrollTimers[id]);
-  let dir = 1; let paused = false;
-  rosterScrollTimers[id] = setInterval(() => {
-    if (paused) return;
-    const max = el.scrollHeight - el.clientHeight;
-    if (max <= 0) return;
-    el.scrollTop += dir * 0.5;
-    if (el.scrollTop >= max)  { dir = -1; paused = true; setTimeout(() => { paused = false; }, 1800); }
-    if (el.scrollTop <= 0)    { dir =  1; paused = true; setTimeout(() => { paused = false; }, 1200); }
-  }, 30);
+  let current = 0;
+  rosterFadeTimers[side] = setInterval(() => {
+    const allSlides = container.querySelectorAll('.roster-slide');
+    allSlides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    allSlides[current].classList.add('active');
+  }, 30_000);
 }
 
 // ── SCENE: RUNS ───────────────────────────────────────────────────────────────
@@ -884,13 +908,28 @@ async function renderQualifiers(seasonId) {
   }
 
   function pendingCard(t) {
-    const hasTime = !!t.qualifier_time;
-    const cls     = isLocked ? 'rejected' : 'pending';
+    const hasTime  = !!t.qualifier_time;
+    const cls      = isLocked ? 'rejected' : 'pending';
+    // Compute time diff vs last qualifier if possible
+    const lastQual = inTop[inTop.length - 1];
+    let diff = '';
+    if (hasTime && lastQual?.qualifier_time) {
+      const msT = parseMMSS(t.qualifier_time);
+      const msQ = parseMMSS(lastQual.qualifier_time);
+      if (msT != null && msQ != null && msT > msQ) {
+        const delta = msT - msQ;
+        const s = Math.floor(delta / 1000);
+        const ms = Math.floor((delta % 1000) / 10);
+        diff = `+${s}.${String(ms).padStart(2,'0')}s`;
+      }
+    }
     return `
       <div class="qual-pending-card ${cls}">
         <div class="qual-pending-bar" style="background:${t.color}"></div>
+        ${t.qualifier_rank != null ? `<span class="qual-pending-rank">#${t.qualifier_rank}</span>` : ''}
         <div class="qual-pending-name">${t.name}</div>
-        ${hasTime ? `<div class="qual-pending-time">${fmtTime(t.qualifier_time)}<span class="qual-pending-rank"> #${t.qualifier_rank || '?'}</span></div>` : '<div class="qual-pending-time pending">No time</div>'}
+        ${hasTime ? `<span class="qual-pending-time">${fmtTime(t.qualifier_time)}</span>` : `<span class="qual-pending-time pending">No time</span>`}
+        ${diff ? `<span class="qual-pending-diff">${diff}</span>` : ''}
       </div>`;
   }
 
@@ -1033,6 +1072,16 @@ function fmtTime(interval) {
   // Already MM:SS
   if (/^\d{1,2}:\d{2}$/.test(t)) return t;
   return t;
+}
+
+function parseMMSS(interval) {
+  if (!interval) return null;
+  const t = String(interval).trim();
+  const h = t.match(/^(\d+):(\d{2}):(\d{2})$/);
+  if (h) return (+h[1]*3600 + +h[2]*60 + +h[3]) * 1000;
+  const m = t.match(/^(\d{1,2}):(\d{2})$/);
+  if (m) return (+m[1]*60 + +m[2]) * 1000;
+  return null;
 }
 
 function renderDungeonBg(dun) {
