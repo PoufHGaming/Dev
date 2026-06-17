@@ -26,7 +26,7 @@
     --border:     rgba(64,212,212,0.22);
     --text:       #ffffff;
     --text-dim:   #b8f0f0;
-    --text-muted: #5a9090;
+    --text-muted: #8fb8b8;
     --goober-a:   #d744b1;
     --goober-b:   #e8895b;
     --gold:       #e8c96a;
@@ -47,7 +47,7 @@
     z-index: 10;
   }
 
-  /* Dungeon bg */
+  /* Dungeon bg — global fallback layer */
   .dungeon-bg {
     position: absolute; inset: 0;
     background-size: cover; background-position: center;
@@ -55,14 +55,13 @@
   }
   .dungeon-bg.loaded { opacity: 0.10; }
 
-  /* ── SCENES ──────────────────────────────────────────────────── */
-  .scene {
+  /* Per-team dungeon background (score scene) */
+  .team-dungeon-bg {
     position: absolute; inset: 0;
-    display: none; opacity: 0;
-    transition: opacity 0.4s ease;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 1s ease; z-index: 0;
   }
-  .scene.active { display: flex; }
-  .scene.visible { opacity: 1; }
+  .team-dungeon-bg.loaded { opacity: 0.16; }
 
   /* ── SCENES ──────────────────────────────────────────────────── */
   .scene { position: absolute; inset: 0; display: none; opacity: 0; transition: opacity 0.4s ease; }
@@ -77,74 +76,74 @@
   .team-panel {
     position: relative; z-index: 1;
     display: flex; align-items: center;
-    padding: 0 18px; gap: 10px; overflow: hidden;
+    padding: 0 20px; gap: 12px; overflow: hidden;
   }
-  .team-panel:not(.right) { border-right: none; }
-  .team-panel.right { border-left: none; flex-direction: row-reverse; text-align: right; }
+  .team-panel.right { flex-direction: row-reverse; text-align: right; }
   .team-panel::after {
     content: ''; position: absolute; top: 0; bottom: 0; width: 3px;
     background: var(--team-color, #40d4d4);
     box-shadow: 0 0 10px var(--team-color, #40d4d4), 0 0 20px var(--team-color, #40d4d4);
+    z-index: 2;
   }
   .team-panel:not(.right)::after { left: 0; }
   .team-panel.right::after { right: 0; }
-  .team-panel.winner { background: rgba(64,212,212,0.04); }
+  .team-panel.winner { background: rgba(64,212,212,0.06); }
   .team-panel.winner::after { animation: winner-pulse 1.6s ease-in-out infinite; }
   @keyframes winner-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  .team-block { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .team-block { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
   .team-panel.right .team-block { align-items: flex-end; }
   .team-name {
-    font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
     letter-spacing: 0.04em; color: var(--text);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    transition: color 0.3s; text-shadow: 0 2px 8px rgba(0,0,0,1);
+    transition: color 0.3s; text-shadow: 0 2px 10px rgba(0,0,0,1);
   }
   .team-panel.winner .team-name { color: var(--teal-light); }
 
-  .hero-stack { display: flex; flex-shrink: 0; }
+  .hero-stack { position: relative; z-index: 1; display: flex; flex-shrink: 0; }
   .team-panel.right .hero-stack { flex-direction: row-reverse; }
   .hero-wrap { margin-left: -14px; }
   .hero-stack .hero-wrap:first-child { margin-left: 0; }
   .hero-avatar {
-    width: 56px; height: 56px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.15);
+    width: 58px; height: 58px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.18);
     object-fit: cover; background: #1a2a2a; display: block;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.9);
   }
   .hero-avatar.captain { border-color: var(--gold); box-shadow: 0 0 10px rgba(232,201,106,0.5); }
 
-  /* VP now inside center column, close to the info */
+  /* VP inside center column, close to the dungeon info */
   .center-panel {
     position: relative; z-index: 1;
     display: grid;
-    grid-template-columns: 100px 1fr 100px;
+    grid-template-columns: 110px 1fr 110px;
     align-items: center;
     padding: 0; gap: 0;
-    background: rgba(0,0,0,0.25);
-    border-left: 2px solid rgba(64,212,212,0.2);
-    border-right: 2px solid rgba(64,212,212,0.2);
+    background: rgba(0,0,0,0.3);
+    border-left: 2px solid rgba(64,212,212,0.25);
+    border-right: 2px solid rgba(64,212,212,0.25);
   }
   .vp-block { text-align: center; padding: 0 6px; background: rgba(0,0,0,0.2); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .vp-number {
-    font-family: 'Cinzel', serif; font-size: 62px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 64px; font-weight: 700;
     line-height: 1; color: var(--teal-light);
     text-shadow: 0 0 20px rgba(64,212,212,0.8), 0 0 40px rgba(64,212,212,0.4);
     transition: all 0.4s;
   }
   .vp-number.updated { animation: vp-pop 0.4s ease; }
   @keyframes vp-pop { 0%{transform:scale(1.3);color:#fff;text-shadow:0 0 20px #fff} 100%{transform:scale(1)} }
-  .vp-number.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
-  .vp-target { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.16em; color: var(--text-muted); margin-top: 2px; }
+  .vp-number.dim { color: var(--text-muted); text-shadow: none; opacity: 0.5; }
+  .vp-target { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.16em; color: var(--text-muted); margin-top: 2px; }
 
   .center-info {
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 6px 8px; gap: 3px; text-align: center;
+    padding: 4px 10px; gap: 4px; text-align: center;
   }
-  .event-eyebrow { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--text-muted); }
+  .event-eyebrow { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-muted); }
   .event-title {
-    font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 24px; font-weight: 700;
     letter-spacing: 0.06em; text-transform: uppercase;
     color: var(--text); line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.9);
   }
@@ -154,13 +153,13 @@
     background-clip: text; filter: drop-shadow(0 0 10px rgba(215,68,177,0.5));
   }
   .dungeon-name {
-    font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 19px; font-weight: 700;
     letter-spacing: 0.04em; color: var(--text);
-    text-shadow: 0 2px 8px rgba(0,0,0,1); line-height: 1.2; max-width: 280px;
+    text-shadow: 0 2px 8px rgba(0,0,0,1); line-height: 1.2; max-width: 300px;
   }
   .dungeon-type {
-    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.16em;
-    text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; padding: 3px 12px; border-radius: 999px;
     border: 1px solid rgba(64,212,212,0.35);
     color: var(--text-dim); background: rgba(64,212,212,0.07); transition: all 0.3s;
   }
@@ -168,7 +167,7 @@
     border-color: rgba(215,68,177,0.6); color: var(--goober-b);
     background: rgba(215,68,177,0.12); box-shadow: 0 0 8px rgba(215,68,177,0.2);
   }
-  .round-badge { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+  .round-badge { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: ROSTER — 1 player at a time, cycles Tank→Heal→DPS
@@ -176,7 +175,7 @@
   #scene-roster { display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
   .roster-panel {
     display: flex; flex-direction: column;
-    padding: 8px 16px 8px 18px; position: relative; z-index: 1; overflow: hidden;
+    padding: 8px 18px 8px 20px; position: relative; z-index: 1; overflow: hidden;
   }
   .roster-panel:first-child { border-right: 1px solid var(--border); }
   .roster-panel::after {
@@ -187,23 +186,23 @@
   .roster-panel:last-child::after  { right: 0; }
 
   .roster-team-name {
-    font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
-    letter-spacing: 0.1em; color: var(--text); text-transform: uppercase;
-    margin-bottom: 4px;
+    font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--text); text-transform: uppercase;
+    margin-bottom: 5px;
   }
 
   /* Stats header — 8 cols matching player-row */
   .stats-header {
     display: grid;
     grid-template-columns: 52px 1fr 72px 72px 72px 72px 72px 72px;
-    gap: 4px; padding-bottom: 4px;
-    border-bottom: 1px solid rgba(64,212,212,0.15);
+    gap: 4px; padding-bottom: 5px;
+    border-bottom: 1px solid rgba(64,212,212,0.18);
     margin-bottom: 6px;
   }
   .stats-header-cell {
     text-align: center; font-family: 'Cinzel', serif;
-    font-size: 9px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--text-muted);
+    font-size: 11px; letter-spacing: 0.1em; font-weight: 700;
+    text-transform: uppercase; color: var(--teal-light); opacity: 0.85;
   }
 
   /* Slide container */
@@ -222,72 +221,85 @@
     display: grid;
     grid-template-columns: 52px 1fr 72px 72px 72px 72px 72px 72px;
     align-items: center; gap: 4px; width: 100%;
-    background: rgba(255,255,255,0.03); border: 1px solid rgba(64,212,212,0.12);
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(64,212,212,0.15);
     border-radius: 4px; padding: 6px 8px 6px 6px;
   }
   .player-avatar {
     width: 46px; height: 46px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.18);
     object-fit: cover; background: #1a2a2a;
   }
   .player-avatar.captain { border-color: var(--gold); box-shadow: 0 0 10px rgba(232,201,106,0.5); }
   .player-info { min-width: 0; }
   .player-name-sm {
-    font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 19px; font-weight: 700;
     color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .player-hero-rank { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
-  .player-hero-sm { font-size: 14px; color: var(--text-muted); font-style: italic; }
+  .player-hero-sm { font-size: 15px; color: var(--text-dim); font-style: italic; }
   .player-rank-badge {
     font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700;
-    border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; line-height: 1.4; opacity: 0.9;
+    border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; line-height: 1.4; opacity: 0.95;
   }
   .stat-cell { text-align: center; }
   .stat-val {
-    font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 19px; font-weight: 700;
     color: var(--teal-light); display: block; line-height: 1;
   }
   .stat-val.empty { color: var(--text-muted); font-size: 14px; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: RUNS — clearer win/loss
+     SCENE: RUNS — one column per dungeon, with dungeon bg
   ════════════════════════════════════════════════════════════════ */
-  #scene-runs { display: grid; grid-template-columns: 160px 1fr; align-items: stretch; }
-  .runs-left { display: flex; flex-direction: column; justify-content: center; padding: 8px 14px; border-right: 1px solid var(--border); background: rgba(0,0,0,0.15); position: relative; z-index: 1; }
-  .runs-match-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-  .runs-score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-  .runs-team-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .runs-vp { font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.6); flex-shrink: 0; }
-  .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.4; }
-  .runs-divider { height: 1px; background: var(--border); margin: 3px 0; }
-  .runs-target { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.14em; color: var(--text-muted); }
+  #scene-runs { display: grid; grid-template-columns: 200px 1fr; align-items: stretch; }
+  .runs-left {
+    display: flex; flex-direction: column; justify-content: center; padding: 8px 16px;
+    border-right: 1px solid var(--border); background: rgba(0,0,0,0.25); position: relative; z-index: 1;
+  }
+  .runs-match-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; }
+  .runs-score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .runs-team-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .runs-vp { font-family: 'Cinzel', serif; font-size: 30px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.6); flex-shrink: 0; }
+  .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.5; }
+  .runs-divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .runs-target { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.14em; color: var(--text-muted); }
 
-  .runs-table-wrap { padding: 4px 16px; position: relative; z-index: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
-  .runs-table { width: 100%; border-collapse: collapse; }
-  .runs-table th { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); padding: 2px 8px 4px; text-align: left; border-bottom: 1px solid var(--border); }
-  .runs-table th.center { text-align: center; }
-  .runs-table td { padding: 4px 8px; border-bottom: 1px solid rgba(64,212,212,0.05); vertical-align: middle; }
-  .runs-table tr:last-child td { border-bottom: none; }
-  .run-dungeon-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text); }
-  .run-dungeon-type { font-size: 9px; color: var(--text-muted); font-style: italic; }
+  /* Dungeon columns — one per dungeon, horizontally laid out */
+  .runs-cols-wrap { padding: 8px 18px; position: relative; z-index: 1; overflow: hidden; display: flex; align-items: center; height: 100%; }
+  .runs-cols { display: flex; gap: 10px; width: 100%; height: 100%; align-items: center; }
+  .runs-col {
+    flex: 1; min-width: 0; height: 92%;
+    display: flex; flex-direction: column;
+    border-radius: 5px; border: 1px solid rgba(64,212,212,0.15);
+    overflow: hidden; position: relative;
+  }
+  .runs-col-bg {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    opacity: 0.22; z-index: 0;
+  }
+  .runs-col-inner { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; padding: 6px 8px; background: rgba(5,8,8,0.45); }
+  .runs-col-header { text-align: center; margin-bottom: 5px; }
+  .runs-col-dungeon { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.15; }
+  .runs-col-type { font-size: 10px; color: var(--text-dim); font-style: italic; margin-top: 1px; }
+  .runs-col-results { display: flex; flex-direction: column; gap: 4px; flex: 1; justify-content: center; }
 
-  /* Time+result combined cell — winner is highlighted row */
-  .run-result-cell { text-align: center; }
+  .run-result-cell { display: flex; align-items: center; justify-content: center; }
   .run-result-win {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(64,212,212,0.12); border: 1px solid rgba(64,212,212,0.4);
-    border-radius: 4px; padding: 2px 10px;
+    display: inline-flex; align-items: center; gap: 6px; width: 100%; justify-content: center;
+    background: rgba(64,212,212,0.18); border: 1px solid rgba(64,212,212,0.55);
+    border-radius: 4px; padding: 4px 8px;
   }
   .run-result-loss {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 4px; padding: 2px 10px; opacity: 0.55;
+    display: inline-flex; align-items: center; gap: 6px; width: 100%; justify-content: center;
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px; padding: 4px 8px; opacity: 0.6;
   }
-  .run-time-val { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text-dim); }
-  .run-time-val.win  { color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.5); }
-  .run-score-icon { font-size: 13px; font-weight: 700; }
+  .run-time-val { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--text-dim); }
+  .run-time-val.win  { color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.6); }
+  .run-score-icon { font-size: 15px; font-weight: 700; }
   .run-score-icon.win  { color: var(--teal-light); }
   .run-score-icon.loss { color: var(--text-muted); }
+  .runs-empty { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: QUALIFIERS
@@ -295,89 +307,91 @@
   #scene-qualifiers { display: block; }
   .qual-scene { position: absolute; inset: 0; z-index: 1; display: flex; }
 
-  /* 2/3 left + 1/3 right */
   .qual-layout { display: flex; width: 100%; height: 100%; }
-  .qual-left  { flex: 2; display: flex; flex-direction: column; padding: 6px 16px 6px 28px; overflow: hidden; }
-  .qual-right { flex: 1; display: flex; flex-direction: column; padding: 6px 16px 6px 12px; border-left: 1px solid rgba(64,212,212,0.12); }
+  .qual-left  { flex: 2; display: flex; flex-direction: column; padding: 7px 18px 7px 30px; overflow: hidden; position: relative; }
+  .qual-right {
+    flex: 1; display: flex; flex-direction: column; padding: 7px 18px 7px 14px;
+    border-left: 2px solid rgba(215,68,177,0.3);
+    position: relative; overflow: hidden;
+  }
+  /* Dungeon bg behind pending panel as subtle separator/reminder */
+  .qual-right-bg {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    opacity: 0.14; z-index: 0;
+  }
+  .qual-right-overlay { position: absolute; inset: 0; background: rgba(5,8,8,0.55); z-index: 0; }
+  .qual-right > * { position: relative; z-index: 1; }
 
-  /* Header */
-  .qual-header { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
-  .qual-title { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  .qual-title-sub { font-size: 10px; font-weight: 400; letter-spacing: 0.18em; color: var(--text-muted); }
+  .qual-header { display: flex; align-items: center; gap: 16px; margin-bottom: 7px; }
+  .qual-title { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .qual-title-sub { font-size: 12px; font-weight: 400; letter-spacing: 0.18em; color: var(--text-muted); }
   .qual-cutoff-label {
-    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.1em;
+    font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.08em;
     color: var(--teal-light); font-weight: 700; white-space: nowrap;
-    background: rgba(64,212,212,0.1); border: 1px solid rgba(64,212,212,0.3);
-    border-radius: 4px; padding: 2px 10px;
+    background: rgba(64,212,212,0.12); border: 1px solid rgba(64,212,212,0.4);
+    border-radius: 4px; padding: 3px 12px;
   }
 
-  /* Qualified grid — 4 cols auto */
-  .qual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; flex: 1; align-content: start; }
-  .qual-empty { font-family: 'Cinzel', serif; font-size: 10px; color: var(--text-muted); font-style: italic; grid-column: 1/-1; }
+  .qual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex: 1; align-content: start; }
+  .qual-empty { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-muted); font-style: italic; grid-column: 1/-1; }
 
-  .qual-card { display: flex; align-items: center; gap: 6px; border: 1px solid rgba(64,212,212,0.1); border-radius: 3px; padding: 5px 8px; position: relative; overflow: hidden; }
-  .qual-card.qualified      { border-color: rgba(64,212,212,0.35); background: rgba(64,212,212,0.05); }
-  .qual-card.temp_qualified { border-color: rgba(64,212,212,0.2);  background: rgba(64,212,212,0.02); }
-  .qual-rank { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text-muted); min-width: 22px; text-align: center; flex-shrink: 0; }
+  .qual-card { display: flex; align-items: center; gap: 8px; border: 1px solid rgba(64,212,212,0.15); border-radius: 4px; padding: 7px 10px; position: relative; overflow: hidden; }
+  .qual-card.qualified      { border-color: rgba(64,212,212,0.45); background: rgba(64,212,212,0.08); }
+  .qual-card.temp_qualified { border-color: rgba(64,212,212,0.25); background: rgba(64,212,212,0.04); }
+  .qual-rank { font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700; color: var(--text-muted); min-width: 26px; text-align: center; flex-shrink: 0; }
   .qual-rank.r1  { color: var(--gold); text-shadow: 0 0 8px rgba(232,201,106,0.5); }
-  .qual-rank.r2  { color: #c0c8d4; }
-  .qual-rank.r3  { color: #c8956a; }
+  .qual-rank.r2  { color: #d8dee6; }
+  .qual-rank.r3  { color: #d4a574; }
   .qual-rank.top { color: var(--teal-light); }
   .qual-team-info { flex: 1; min-width: 0; }
-  .qual-team-name { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .qual-team-time { font-family: 'Cinzel', serif; font-size: 10px; color: var(--teal-light); margin-top: 1px; }
-  .qual-color-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
+  .qual-team-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; letter-spacing: 0.03em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qual-team-time { font-family: 'Cinzel', serif; font-size: 13px; color: var(--teal-light); margin-top: 1px; }
+  .qual-color-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
 
   /* Right panel — pending/others */
   .qual-right-label {
-    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.16em;
-    text-transform: uppercase; color: #fff; margin-bottom: 6px; font-weight: 700;
-    border-bottom: 1px solid rgba(64,212,212,0.2); padding-bottom: 4px;
+    font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #fff; margin-bottom: 7px; font-weight: 700;
+    border-bottom: 1px solid rgba(215,68,177,0.3); padding-bottom: 5px;
   }
-  .qual-pending-list { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 3px; }
+  .qual-pending-list { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 4px; }
   .qual-pending-card {
-    display: flex; align-items: center; gap: 8px;
-    padding: 5px 10px; border-radius: 3px;
-    border: 1px solid rgba(64,212,212,0.12);
-    background: rgba(255,255,255,0.04);
+    display: flex; align-items: center; gap: 9px;
+    padding: 6px 11px; border-radius: 4px;
+    border: 1px solid rgba(232,137,91,0.25);
+    background: rgba(255,255,255,0.05);
     position: relative; overflow: hidden; flex-shrink: 0;
   }
-  .qual-pending-card.rejected { opacity: 0.45; border-color: rgba(180,60,60,0.2); }
-  .qual-pending-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 2px; }
-  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .qual-pending-rank { font-family: 'Cinzel', serif; font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
-  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 12px; color: var(--teal-light); white-space: nowrap; flex-shrink: 0; }
-  .qual-pending-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 11px; }
-  .qual-pending-diff { font-family: 'Cinzel', serif; font-size: 10px; color: var(--goober-b); flex-shrink: 0; opacity: 0.8; }
+  .qual-pending-card.rejected { opacity: 0.4; border-color: rgba(180,60,60,0.25); }
+  .qual-pending-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qual-pending-rank { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text-dim); flex-shrink: 0; font-weight: 700; }
+  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 14px; color: var(--teal-light); white-space: nowrap; flex-shrink: 0; }
+  .qual-pending-time.pending { color: var(--text-muted); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 12px; }
+  .qual-pending-diff { font-family: 'Cinzel', serif; font-size: 12px; color: var(--goober-b); flex-shrink: 0; font-weight: 700; }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: IDLE
   ════════════════════════════════════════════════════════════════ */
   #scene-idle { display: block; }
   .idle-content { position: absolute; inset: 0; z-index: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; padding: 0 40px; }
-  .idle-side { display: flex; flex-direction: column; gap: 6px; }
+  .idle-side { display: flex; flex-direction: column; gap: 8px; }
   #idle-left-info { align-items: flex-end; text-align: right; padding-right: 32px; }
   #idle-right-info { align-items: flex-start; text-align: left; padding-left: 32px; }
 
-  /* 2-col info grid on left */
-  .idle-info-grid { display: grid; grid-template-columns: auto auto; gap: 2px 10px; align-items: baseline; justify-content: end; }
-  .idle-info-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; text-align: right; }
-  .idle-info-value { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; color: var(--text); white-space: nowrap; text-align: left; }
+  .idle-info-grid { display: grid; grid-template-columns: auto auto; gap: 3px 12px; align-items: baseline; justify-content: end; }
+  .idle-info-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; text-align: right; }
+  .idle-info-value { font-family: 'Cinzel', serif; font-size: 19px; font-weight: 700; letter-spacing: 0.05em; color: var(--text); white-space: nowrap; text-align: left; }
   .idle-info-value.teal { color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.4); }
 
-  /* 2-column team grid on right */
-  .idle-teams-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 8px;
-  }
-  .idle-team-pill { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+  .idle-teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px; }
+  .idle-team-pill { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; letter-spacing: 0.05em; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 
   .idle-center { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; justify-self: center; }
-  .idle-eyebrow { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--text-muted); }
+  .idle-eyebrow { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-muted); }
   .idle-title { font-family: 'Cinzel', serif; font-size: 36px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); line-height: 1; text-shadow: 0 2px 16px rgba(0,0,0,0.9); white-space: nowrap; }
   .idle-rush { background: linear-gradient(90deg, var(--goober-a), var(--goober-b)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 16px rgba(215,68,177,0.6)); }
-  .idle-created { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.1em; color: var(--text-muted); }
+  .idle-created { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.1em; color: var(--text-muted); }
   .idle-goober { background: linear-gradient(90deg, var(--goober-a), var(--goober-b)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; }
   #idle-canvas { opacity: 0.6; }
 
@@ -415,6 +429,7 @@
   <!-- ── SCENE: SCORE ─────────────────────────────────────── -->
   <div class="scene active" id="scene-score">
     <div class="team-panel" id="panel-a">
+      <div class="team-dungeon-bg" id="team-bg-a"></div>
       <div class="team-block">
         <div class="team-name" id="name-a">—</div>
         <div class="hero-stack" id="heroes-a"></div>
@@ -438,6 +453,7 @@
       </div>
     </div>
     <div class="team-panel right" id="panel-b">
+      <div class="team-dungeon-bg" id="team-bg-b"></div>
       <div class="team-block">
         <div class="team-name" id="name-b">—</div>
         <div class="hero-stack" id="heroes-b"></div>
@@ -492,17 +508,8 @@
       </div>
       <div class="runs-target" id="runs-target">First to 3 VP</div>
     </div>
-    <div class="runs-table-wrap">
-      <table class="runs-table" id="runs-table">
-        <thead>
-          <tr>
-            <th>Dungeon</th>
-            <th class="center" id="runs-th-a">Team A</th>
-            <th class="center" id="runs-th-b">Team B</th>
-          </tr>
-        </thead>
-        <tbody id="runs-tbody"></tbody>
-      </table>
+    <div class="runs-cols-wrap">
+      <div class="runs-cols" id="runs-cols"></div>
     </div>
   </div>
 
@@ -577,8 +584,8 @@ const DUNGEONS = {
   'marche-durrak':         { name: 'Urrak Markets',        img: 'marche-durrak.jpg',          capstone: false },
   'sables-empyreens':      { name: 'Empyrean Sands',       img: 'sables-empyreens.jpg',       capstone: false },
   'saccage-de-drakheim':   { name: 'Ransack of Drakheim',  img: 'saccage-de-drakheim.jpg',    capstone: true  },
-  'ruins-of-regath':       { name: 'Ruins of Regath',      img: '',                           capstone: false },
-  'scyers-peak':           { name: "Scyer's Peak",         img: '',                           capstone: false },
+  'ruins-of-regath':       { name: 'Ruins of Regath',      img: 'ruins-of-regath.jpg',         capstone: false },
+  'scyers-peak':           { name: "Scyer's Peak",         img: 'scyers-peak.jpg',             capstone: false },
 };
 
 const ROLE_ORDER = { tank: 0, healer: 1, dps: 2 };
@@ -731,6 +738,18 @@ function renderScore(match, teamA, teamB, rosters, latestSlug) {
   typeEl.textContent = dun ? (dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP') : '';
   typeEl.classList.toggle('capstone', !!dun?.capstone);
   roundEl.textContent = match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
+
+  // Per-team backgrounds — same current dungeon behind each team panel
+  ['a','b'].forEach(side => {
+    const bg = document.getElementById(`team-bg-${side}`);
+    if (!bg) return;
+    if (dun?.img) {
+      bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
+      bg.classList.add('loaded');
+    } else {
+      bg.classList.remove('loaded');
+    }
+  });
 }
 
 function renderScoreTeam(side, team, match, rosters) {
@@ -865,41 +884,44 @@ function renderRuns(match, teamA, teamB, runs) {
   vpA.classList.toggle('dim', !!isLoser(teamA));
   vpB.classList.toggle('dim', !!isLoser(teamB));
   document.getElementById('runs-target').textContent = `First to ${target} VP`;
-  document.getElementById('runs-th-a').textContent = teamA.name;
-  document.getElementById('runs-th-b').textContent = teamB.name;
 
   const slugs = [...new Set(runs.map(r => r.dungeon_slug))];
-  const tbody = document.getElementById('runs-tbody');
+  const colsEl = document.getElementById('runs-cols');
 
   if (!slugs.length) {
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text-muted);font-style:italic;padding:10px">No dungeons played yet</td></tr>`;
+    colsEl.innerHTML = `<div class="runs-empty">No dungeons played yet</div>`;
     return;
   }
 
-  tbody.innerHTML = slugs.map(slug => {
-    const dun  = DUNGEONS[slug] || { name: slug, capstone: false };
+  function resultCell(run) {
+    if (!run) return `<div class="run-result-cell"><div class="run-result-loss"><span class="run-time-val">—</span></div></div>`;
+    const win = run.score === 1;
+    return `<div class="run-result-cell">
+      <div class="${win ? 'run-result-win' : 'run-result-loss'}">
+        <span class="run-score-icon ${win?'win':'loss'}">${win?'✓':'✗'}</span>
+        <span class="run-time-val ${win?'win':''}">${fmtTime(run.run_time)}</span>
+      </div>
+    </div>`;
+  }
+
+  colsEl.innerHTML = slugs.map(slug => {
+    const dun  = DUNGEONS[slug] || { name: slug, capstone: false, img: '' };
     const runA = runs.find(r => r.dungeon_slug === slug && r.team_id === teamA.id);
     const runB = runs.find(r => r.dungeon_slug === slug && r.team_id === teamB.id);
 
-    function resultCell(run) {
-      if (!run) return `<td class="run-result-cell"><div class="run-result-loss"><span class="run-time-val">—</span></div></td>`;
-      const win = run.score === 1;
-      return `<td class="run-result-cell">
-        <div class="${win ? 'run-result-win' : 'run-result-loss'}">
-          <span class="run-score-icon ${win?'win':'loss'}">${win?'✓':'✗'}</span>
-          <span class="run-time-val ${win?'win':''}">${fmtTime(run.run_time)}</span>
+    return `<div class="runs-col">
+      ${dun.img ? `<div class="runs-col-bg" style="background-image:url('${IMG_BASE}${dun.img}')"></div>` : ''}
+      <div class="runs-col-inner">
+        <div class="runs-col-header">
+          <div class="runs-col-dungeon">${dun.name}</div>
+          <div class="runs-col-type">${dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP'}</div>
         </div>
-      </td>`;
-    }
-
-    return `<tr>
-      <td>
-        <div class="run-dungeon-name">${dun.name}</div>
-        <div class="run-dungeon-type">${dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP'}</div>
-      </td>
-      ${resultCell(runA)}
-      ${resultCell(runB)}
-    </tr>`;
+        <div class="runs-col-results">
+          ${resultCell(runA)}
+          ${resultCell(runB)}
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -975,6 +997,12 @@ async function renderQualifiers(seasonId) {
       </div>`;
   }
 
+  // Determine the most common qualifier dungeon to show as a subtle background reminder
+  const dungeonCounts = {};
+  teams.forEach(t => { if (t.qualifier_dungeon) dungeonCounts[t.qualifier_dungeon] = (dungeonCounts[t.qualifier_dungeon]||0) + 1; });
+  const mainDungeonSlug = Object.keys(dungeonCounts).sort((a,b) => dungeonCounts[b]-dungeonCounts[a])[0];
+  const mainDungeon = DUNGEONS[mainDungeonSlug];
+
   const el = document.getElementById('qual-scene');
   el.innerHTML = `
     <div class="qual-layout">
@@ -991,8 +1019,9 @@ async function renderQualifiers(seasonId) {
           ${inTop.length ? inTop.map(t => qualCard(t)).join('') : '<div class="qual-empty">No teams qualified yet</div>'}
         </div>
       </div>
-      <!-- RIGHT 1/3: pending/others with scroll -->
+      <!-- RIGHT 1/3: pending/others with scroll, dungeon bg as separator -->
       <div class="qual-right">
+        ${mainDungeon?.img ? `<div class="qual-right-bg" style="background-image:url('${IMG_BASE}${mainDungeon.img}')"></div><div class="qual-right-overlay"></div>` : ''}
         <div class="qual-right-label">${pendingLabel}</div>
         <div class="qual-pending-list" id="qual-pending-list">
           ${others.map(t => pendingCard(t)).join('')}
