@@ -260,30 +260,46 @@
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: RUNS — one column per dungeon, with dungeon bg
+     Fixed offsets from top guarantee row alignment regardless of content.
   ════════════════════════════════════════════════════════════════ */
-  #scene-runs { display: grid; grid-template-columns: 200px 1fr; align-items: stretch; }
-  .runs-left {
-    display: flex; flex-direction: column; padding: 10px 16px;
-    border-right: 1px solid var(--border); background: rgba(0,0,0,0.3); position: relative; z-index: 1;
-  }
-  .runs-match-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  #scene-runs { display: grid; grid-template-columns: 200px 1fr; align-items: stretch; position: relative; }
 
-  /* Two fixed-height rows that match the result rows in each column exactly */
-  .runs-team-rows { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  /* Shared row geometry constants (also used inline in JS) */
+  /* HEADER_H = 4px top padding; ROW_TOP_A = 8px; ROW_H = 40px; GAP = 6px; ROW_TOP_B = ROW_TOP_A + ROW_H + GAP */
+
+  .runs-left {
+    padding: 4px 16px 0; position: relative; z-index: 1;
+    border-right: 1px solid var(--border); background: rgba(0,0,0,0.3);
+  }
+  .runs-match-label {
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .runs-round-pill {
+    display: inline-block; margin-top: 3px; padding: 2px 9px;
+    border-radius: 999px; font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+  }
+  .runs-round-pill.semifinal { background: rgba(96,165,250,0.16); border: 1px solid rgba(96,165,250,0.5); color: #60a5fa; }
+  .runs-round-pill.final     { background: rgba(232,201,106,0.16); border: 1px solid rgba(232,201,106,0.55); color: var(--gold); }
+
   .runs-team-row {
-    height: 38px; display: flex; align-items: center; gap: 8px;
+    position: absolute; left: 16px; right: 16px; height: 40px;
+    display: flex; align-items: center; gap: 8px;
   }
   .runs-team-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .runs-vp { font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.6); flex-shrink: 0; }
   .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.5; }
-  .runs-target { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.14em; color: var(--text-muted); margin-top: 8px; text-align: center; }
+  .runs-target {
+    position: absolute; left: 16px; right: 16px; bottom: 8px;
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.14em; color: var(--text-muted); text-align: center;
+  }
 
-  /* Dungeon columns — one per dungeon, horizontally laid out */
-  .runs-cols-wrap { padding: 10px 18px; position: relative; z-index: 1; overflow: hidden; display: flex; align-items: stretch; height: 100%; }
-  .runs-cols { display: flex; gap: 10px; width: 100%; align-items: stretch; }
+  /* Dungeon columns */
+  .runs-cols-wrap { padding: 4px 18px 0; position: relative; z-index: 1; height: 100%; }
+  .runs-cols { display: flex; gap: 10px; width: 100%; height: 100%; }
   .runs-col {
-    flex: 1; min-width: 0;
-    display: flex; flex-direction: column;
+    flex: 1; min-width: 0; height: 100%;
     border-radius: 5px; border: 1px solid rgba(64,212,212,0.15);
     overflow: hidden; position: relative;
   }
@@ -291,14 +307,22 @@
     position: absolute; inset: 0; background-size: cover; background-position: center;
     opacity: 0.7; z-index: 0;
   }
-  .runs-col-inner { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; padding: 6px 8px; background: rgba(5,8,8,0.62); }
-  .runs-col-header { text-align: center; margin-bottom: 8px; flex-shrink: 0; }
-  .runs-col-dungeon { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.15; }
-  .runs-col-type { font-size: 10px; color: var(--text-dim); font-style: italic; margin-top: 1px; }
+  .runs-col-inner { position: absolute; inset: 0; z-index: 1; background: rgba(5,8,8,0.65); }
 
-  /* Same fixed row height + gap as .runs-team-row so results line up with team names */
-  .runs-col-results { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
-  .run-result-cell { height: 38px; display: flex; align-items: center; justify-content: center; }
+  .runs-col-header { position: absolute; top: 0; left: 4px; right: 4px; text-align: center; padding-top: 1px; }
+  .runs-col-dungeon-row { display: flex; align-items: center; justify-content: center; gap: 7px; }
+  .runs-col-dungeon { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.1; }
+  .runs-col-vp-pill {
+    font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 1px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+    border: 1.5px solid rgba(64,212,212,0.5); color: var(--teal-light); background: rgba(64,212,212,0.12);
+  }
+  .runs-col-vp-pill.capstone {
+    border-color: rgba(215,68,177,0.65); color: var(--goober-b); background: rgba(215,68,177,0.16);
+  }
+
+  /* Result rows positioned with the SAME absolute offsets as .runs-team-row */
+  .run-result-cell { position: absolute; left: 4px; right: 4px; height: 40px; display: flex; align-items: center; justify-content: center; }
   .run-result-win {
     display: inline-flex; align-items: center; gap: 6px; width: 100%; height: 100%; justify-content: center;
     background: rgba(64,212,212,0.18); border: 1px solid rgba(64,212,212,0.55);
@@ -350,17 +374,17 @@
   .qual-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex: 1; align-content: start; }
   .qual-empty { font-family: 'Cinzel', serif; font-size: 12px; color: var(--text-muted); font-style: italic; grid-column: 1/-1; }
 
-  .qual-card { display: flex; align-items: center; gap: 8px; border: 1px solid rgba(64,212,212,0.15); border-radius: 4px; padding: 7px 10px; position: relative; overflow: hidden; }
+  .qual-card { display: flex; align-items: center; gap: 9px; border: 1px solid rgba(64,212,212,0.15); border-radius: 4px; padding: 8px 11px; position: relative; overflow: hidden; }
   .qual-card.qualified      { border-color: rgba(64,212,212,0.45); background: rgba(64,212,212,0.08); }
   .qual-card.temp_qualified { border-color: rgba(64,212,212,0.25); background: rgba(64,212,212,0.04); }
-  .qual-rank { font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700; color: var(--text-muted); min-width: 26px; text-align: center; flex-shrink: 0; }
+  .qual-rank { font-family: 'Cinzel', serif; font-size: 19px; font-weight: 700; color: var(--text-muted); min-width: 28px; text-align: center; flex-shrink: 0; }
   .qual-rank.r1  { color: var(--gold); text-shadow: 0 0 8px rgba(232,201,106,0.5); }
   .qual-rank.r2  { color: #d8dee6; }
   .qual-rank.r3  { color: #d4a574; }
   .qual-rank.top { color: var(--teal-light); }
-  .qual-team-info { flex: 1; min-width: 0; }
-  .qual-team-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; letter-spacing: 0.03em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .qual-team-time { font-family: 'Cinzel', serif; font-size: 13px; color: var(--teal-light); margin-top: 1px; }
+  .qual-team-info { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+  .qual-team-name { font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700; letter-spacing: 0.02em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qual-team-time { font-family: 'Cinzel', serif; font-size: 17px; font-weight: 700; color: var(--teal-light); flex-shrink: 0; text-shadow: 0 0 8px rgba(64,212,212,0.4); }
   .qual-color-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
 
   /* Right panel — pending/others */
@@ -372,18 +396,24 @@
   .qual-pending-list { flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 4px; }
   .qual-pending-card {
     display: flex; align-items: center; gap: 9px;
-    padding: 6px 11px; border-radius: 4px;
+    padding: 7px 12px; border-radius: 4px;
     border: 1px solid rgba(232,137,91,0.35);
     background: rgba(10,14,14,0.78);
     position: relative; overflow: hidden; flex-shrink: 0;
   }
-  .qual-pending-card.rejected { opacity: 0.55; border-color: rgba(180,60,60,0.3); }
+  /* Not-qualified: fully visible, red border to mark status — no graying out */
+  .qual-pending-card.rejected {
+    border: 1.5px solid rgba(239,68,68,0.7);
+    background: rgba(20,8,8,0.8);
+    box-shadow: inset 0 0 0 1px rgba(239,68,68,0.15);
+  }
   .qual-pending-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
-  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: #fff; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
-  .qual-pending-rank { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text-dim); flex-shrink: 0; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
-  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 14px; color: var(--teal-light); white-space: nowrap; flex-shrink: 0; text-shadow: 0 0 8px rgba(64,212,212,0.5); }
-  .qual-pending-time.pending { color: var(--text-dim); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 12px; }
-  .qual-pending-diff { font-family: 'Cinzel', serif; font-size: 12px; color: var(--goober-b); flex-shrink: 0; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+  .qual-pending-name { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: #fff; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+  .qual-pending-rank { font-family: 'Cinzel', serif; font-size: 14px; color: var(--text-dim); flex-shrink: 0; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+  .qual-pending-time { font-family: 'Cinzel', serif; font-size: 15px; color: var(--teal-light); white-space: nowrap; flex-shrink: 0; text-shadow: 0 0 8px rgba(64,212,212,0.5); font-weight: 700; }
+  .qual-pending-card.rejected .qual-pending-time { color: #f87171; text-shadow: none; }
+  .qual-pending-time.pending { color: var(--text-dim); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 13px; }
+  .qual-pending-diff { font-family: 'Cinzel', serif; font-size: 13px; color: var(--goober-b); flex-shrink: 0; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
 
   /* ════════════════════════════════════════════════════════════════
      SCENE: IDLE
@@ -511,15 +541,14 @@
   <div class="scene" id="scene-runs">
     <div class="runs-left">
       <div class="runs-match-label" id="runs-match-label">Semifinal</div>
-      <div class="runs-team-rows">
-        <div class="runs-team-row">
-          <span class="runs-team-name" id="runs-name-a">—</span>
-          <span class="runs-vp" id="runs-vp-a">0</span>
-        </div>
-        <div class="runs-team-row">
-          <span class="runs-team-name" id="runs-name-b">—</span>
-          <span class="runs-vp" id="runs-vp-b">0</span>
-        </div>
+      <span class="runs-round-pill" id="runs-round-pill"></span>
+      <div class="runs-team-row" id="runs-row-a" style="top:38px">
+        <span class="runs-team-name" id="runs-name-a">—</span>
+        <span class="runs-vp" id="runs-vp-a">0</span>
+      </div>
+      <div class="runs-team-row" id="runs-row-b" style="top:84px">
+        <span class="runs-team-name" id="runs-name-b">—</span>
+        <span class="runs-vp" id="runs-vp-b">0</span>
       </div>
       <div class="runs-target" id="runs-target">First to 3 VP</div>
     </div>
@@ -637,6 +666,10 @@ function switchScene(name) {
   if (!next) return;
   next.classList.add('active');
   requestAnimationFrame(() => next.classList.add('visible'));
+
+  // Roster scene has its own layout, no background dungeon image
+  const globalBg = document.getElementById('dungeon-bg');
+  if (globalBg) globalBg.classList.toggle('loaded', name !== 'roster');
 }
 
 // ── MAIN REFRESH ──────────────────────────────────────────────────────────────
@@ -892,9 +925,16 @@ function renderRosterPanel(side, team, rosters) {
 function renderRuns(match, teamA, teamB, runs) {
   const target   = match.round === 'final' ? 4 : 3;
   const isLoser  = (t) => match.winner_id && match.winner_id !== t.id;
+  const isFinal  = match.round === 'final';
 
   document.getElementById('runs-match-label').textContent =
-    match.round === 'final' ? 'Grand Final' : `Semifinal · Match ${match.match_number}`;
+    isFinal ? 'Grand Final' : `Match ${match.match_number}`;
+
+  const pill = document.getElementById('runs-round-pill');
+  pill.textContent = isFinal ? 'Final' : 'Semifinal';
+  pill.classList.toggle('final', isFinal);
+  pill.classList.toggle('semifinal', !isFinal);
+
   document.getElementById('runs-name-a').textContent = teamA.name;
   document.getElementById('runs-name-b').textContent = teamB.name;
   const vpA = document.getElementById('runs-vp-a');
@@ -913,10 +953,14 @@ function renderRuns(match, teamA, teamB, runs) {
     return;
   }
 
-  function resultCell(run) {
-    if (!run) return `<div class="run-result-cell"><div class="run-result-loss"><span class="run-time-val">—</span></div></div>`;
+  // Exact same offsets as #runs-row-a / #runs-row-b inline styles
+  const ROW_A_TOP = 38;
+  const ROW_B_TOP = 84;
+
+  function resultCell(run, top) {
+    if (!run) return `<div class="run-result-cell" style="top:${top}px"><div class="run-result-loss"><span class="run-time-val">—</span></div></div>`;
     const win = run.score === 1;
-    return `<div class="run-result-cell">
+    return `<div class="run-result-cell" style="top:${top}px">
       <div class="${win ? 'run-result-win' : 'run-result-loss'}">
         <span class="run-score-icon ${win?'win':'loss'}">${win?'✓':'✗'}</span>
         <span class="run-time-val ${win?'win':''}">${fmtTime(run.run_time)}</span>
@@ -933,13 +977,13 @@ function renderRuns(match, teamA, teamB, runs) {
       ${dun.img ? `<div class="runs-col-bg" style="background-image:url('${IMG_BASE}${dun.img}')"></div>` : ''}
       <div class="runs-col-inner">
         <div class="runs-col-header">
-          <div class="runs-col-dungeon">${dun.name}</div>
-          <div class="runs-col-type">${dun.capstone ? 'Capstone · 2 VP' : 'Adventure · 1 VP'}</div>
+          <div class="runs-col-dungeon-row">
+            <span class="runs-col-dungeon">${dun.name}</span>
+            <span class="runs-col-vp-pill${dun.capstone?' capstone':''}">${dun.capstone?'2 VP':'1 VP'}</span>
+          </div>
         </div>
-        <div class="runs-col-results">
-          ${resultCell(runA)}
-          ${resultCell(runB)}
-        </div>
+        ${resultCell(runA, ROW_A_TOP)}
+        ${resultCell(runB, ROW_B_TOP)}
       </div>
     </div>`;
   }).join('');
@@ -986,7 +1030,7 @@ async function renderQualifiers(seasonId) {
         <div class="qual-rank ${rankClass(t.qualifier_rank)}">#${t.qualifier_rank}</div>
         <div class="qual-team-info">
           <div class="qual-team-name">${t.name}</div>
-          <div class="qual-team-time">${t.qualifier_time ? fmtTime(t.qualifier_time) : '—'}${!locked ? '<span style="opacity:.5;font-size:7px;margin-left:3px">~</span>' : ''}</div>
+          <div class="qual-team-time">${t.qualifier_time ? fmtTime(t.qualifier_time) : '—'}${!locked ? '<span style="opacity:.6;font-size:11px;margin-left:2px;font-weight:400">~</span>' : ''}</div>
         </div>
       </div>`;
   }
@@ -1182,7 +1226,7 @@ function renderDungeonBg(dun) {
   bg.classList.remove('loaded');
   setTimeout(() => {
     bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
-    bg.classList.add('loaded');
+    if (currentScene !== 'roster') bg.classList.add('loaded');
   }, 400);
 }
 
