@@ -122,12 +122,12 @@
 
   /* VP inside center column, close to the dungeon info */
   .center-panel {
-    position: relative; z-index: 1;
+    position: relative; z-index: 2;
     display: grid;
     grid-template-columns: 110px 1fr 110px;
     align-items: center;
     padding: 0; gap: 0;
-    background: rgba(0,0,0,0.3);
+    background: rgb(8,12,12);
     border-left: 2px solid rgba(64,212,212,0.25);
     border-right: 2px solid rgba(64,212,212,0.25);
   }
@@ -259,85 +259,69 @@
   .stat-val.empty { color: var(--text-muted); font-size: 14px; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: RUNS — one column per dungeon, with dungeon bg
-     Fixed offsets from top guarantee row alignment regardless of content.
+     SCENE: RUNS — horizontal table: dungeons as columns, teams as rows
+     Built for a WIDE/SHORT overlay — uses width, not height.
   ════════════════════════════════════════════════════════════════ */
-  #scene-runs { display: grid; grid-template-columns: 200px 1fr; align-items: stretch; position: relative; }
+  #scene-runs { display: flex; flex-direction: column; padding: 6px 24px; gap: 4px; }
 
-  /* Shared row geometry constants (also used inline in JS) */
-  /* HEADER_H = 4px top padding; ROW_TOP_A = 8px; ROW_H = 40px; GAP = 6px; ROW_TOP_B = ROW_TOP_A + ROW_H + GAP */
-
-  .runs-left {
-    padding: 4px 16px 0; position: relative; z-index: 1;
-    border-right: 1px solid var(--border); background: rgba(0,0,0,0.3);
-  }
-  .runs-match-label {
-    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--text-muted);
-  }
+  .runs-header-row { display: flex; align-items: center; gap: 14px; }
+  .runs-match-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
   .runs-round-pill {
-    display: inline-block; margin-top: 3px; padding: 2px 9px;
-    border-radius: 999px; font-family: 'Cinzel', serif; font-size: 9px;
-    letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+    padding: 2px 10px; border-radius: 999px; font-family: 'Cinzel', serif; font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
   }
   .runs-round-pill.semifinal { background: rgba(96,165,250,0.16); border: 1px solid rgba(96,165,250,0.5); color: #60a5fa; }
   .runs-round-pill.final     { background: rgba(232,201,106,0.16); border: 1px solid rgba(232,201,106,0.55); color: var(--gold); }
+  .runs-target { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.12em; color: var(--text-muted); margin-left: auto; }
 
-  .runs-team-row {
-    position: absolute; left: 16px; right: 16px; height: 40px;
+  /* Table: first col = team name+VP, rest = one col per dungeon */
+  .runs-table-grid { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  .runs-grid-row { display: flex; align-items: stretch; gap: 6px; height: 32px; }
+  .runs-grid-row.header-row { height: 24px; }
+
+  .runs-team-cell {
+    width: 170px; flex-shrink: 0;
     display: flex; align-items: center; gap: 8px;
+    padding: 0 4px;
   }
-  .runs-team-name { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .runs-vp { font-family: 'Cinzel', serif; font-size: 26px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 10px rgba(64,212,212,0.6); flex-shrink: 0; }
+  .runs-team-name { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .runs-vp { font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.6); flex-shrink: 0; }
   .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.5; }
-  .runs-target {
-    position: absolute; left: 16px; right: 16px; bottom: 8px;
-    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.14em; color: var(--text-muted); text-align: center;
+
+  .runs-dungeon-header {
+    flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 4px; position: relative; overflow: hidden;
+  }
+  .runs-dungeon-header-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5; z-index: 0; }
+  .runs-dungeon-header-overlay { position: absolute; inset: 0; background: rgba(5,8,8,0.55); z-index: 0; }
+  .runs-dungeon-name { position: relative; z-index: 1; font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .runs-dungeon-vp-pill {
+    position: relative; z-index: 1;
+    font-family: 'Cinzel', serif; font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 1px 6px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+    border: 1.5px solid rgba(64,212,212,0.55); color: var(--teal-light); background: rgba(64,212,212,0.14);
+  }
+  .runs-dungeon-vp-pill.capstone {
+    border-color: rgba(215,68,177,0.65); color: var(--goober-b); background: rgba(215,68,177,0.18);
   }
 
-  /* Dungeon columns */
-  .runs-cols-wrap { padding: 4px 18px 0; position: relative; z-index: 1; height: 100%; }
-  .runs-cols { display: flex; gap: 10px; width: 100%; height: 100%; }
-  .runs-col {
-    flex: 1; min-width: 0; height: 100%;
-    border-radius: 5px; border: 1px solid rgba(64,212,212,0.15);
-    overflow: hidden; position: relative;
-  }
-  .runs-col-bg {
-    position: absolute; inset: 0; background-size: cover; background-position: center;
-    opacity: 0.7; z-index: 0;
-  }
-  .runs-col-inner { position: absolute; inset: 0; z-index: 1; background: rgba(5,8,8,0.65); }
-
-  .runs-col-header { position: absolute; top: 0; left: 4px; right: 4px; text-align: center; padding-top: 1px; }
-  .runs-col-dungeon-row { display: flex; align-items: center; justify-content: center; gap: 7px; }
-  .runs-col-dungeon { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.1; }
-  .runs-col-vp-pill {
-    font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
-    padding: 1px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
-    border: 1.5px solid rgba(64,212,212,0.5); color: var(--teal-light); background: rgba(64,212,212,0.12);
-  }
-  .runs-col-vp-pill.capstone {
-    border-color: rgba(215,68,177,0.65); color: var(--goober-b); background: rgba(215,68,177,0.16);
-  }
-
-  /* Result rows positioned with the SAME absolute offsets as .runs-team-row */
-  .run-result-cell { position: absolute; left: 4px; right: 4px; height: 40px; display: flex; align-items: center; justify-content: center; }
+  .run-result-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; }
   .run-result-win {
-    display: inline-flex; align-items: center; gap: 6px; width: 100%; height: 100%; justify-content: center;
+    display: flex; align-items: center; gap: 6px; width: 100%; height: 100%; justify-content: center;
     background: rgba(64,212,212,0.18); border: 1px solid rgba(64,212,212,0.55);
-    border-radius: 4px; padding: 4px 8px;
+    border-radius: 4px;
   }
   .run-result-loss {
-    display: inline-flex; align-items: center; gap: 6px; width: 100%; height: 100%; justify-content: center;
+    display: flex; align-items: center; gap: 6px; width: 100%; height: 100%; justify-content: center;
     background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 4px; padding: 4px 8px; opacity: 0.6;
+    border-radius: 4px; opacity: 0.6;
   }
-  .run-time-val { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--text-dim); }
+  .run-time-val { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; color: var(--text-dim); }
   .run-time-val.win  { color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.6); }
-  .run-score-icon { font-size: 15px; font-weight: 700; }
+  .run-score-icon { font-size: 14px; font-weight: 700; }
   .run-score-icon.win  { color: var(--teal-light); }
   .run-score-icon.loss { color: var(--text-muted); }
+  .runs-empty { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; flex: 1; display: flex; align-items: center; justify-content: center; }
   .runs-empty { font-family: 'Cinzel', serif; font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
 
   /* ════════════════════════════════════════════════════════════════
@@ -539,22 +523,12 @@
 
   <!-- ── SCENE: RUNS ──────────────────────────────────────── -->
   <div class="scene" id="scene-runs">
-    <div class="runs-left">
-      <div class="runs-match-label" id="runs-match-label">Semifinal</div>
+    <div class="runs-header-row">
+      <span class="runs-match-label" id="runs-match-label">Match 1</span>
       <span class="runs-round-pill" id="runs-round-pill"></span>
-      <div class="runs-team-row" id="runs-row-a" style="top:38px">
-        <span class="runs-team-name" id="runs-name-a">—</span>
-        <span class="runs-vp" id="runs-vp-a">0</span>
-      </div>
-      <div class="runs-team-row" id="runs-row-b" style="top:84px">
-        <span class="runs-team-name" id="runs-name-b">—</span>
-        <span class="runs-vp" id="runs-vp-b">0</span>
-      </div>
-      <div class="runs-target" id="runs-target">First to 3 VP</div>
+      <span class="runs-target" id="runs-target">First to 3 VP</span>
     </div>
-    <div class="runs-cols-wrap">
-      <div class="runs-cols" id="runs-cols"></div>
-    </div>
+    <div class="runs-table-grid" id="runs-table-grid"></div>
   </div>
 
   <!-- ── SCENE: QUALIFIERS ───────────────────────────────── -->
@@ -669,7 +643,7 @@ function switchScene(name) {
 
   // Roster scene has its own layout, no background dungeon image
   const globalBg = document.getElementById('dungeon-bg');
-  if (globalBg) globalBg.classList.toggle('loaded', name !== 'roster');
+  if (globalBg) globalBg.classList.toggle('loaded', !['roster','idle'].includes(name));
 }
 
 // ── MAIN REFRESH ──────────────────────────────────────────────────────────────
@@ -923,9 +897,9 @@ function renderRosterPanel(side, team, rosters) {
 
 // ── SCENE: RUNS ───────────────────────────────────────────────────────────────
 function renderRuns(match, teamA, teamB, runs) {
-  const target   = match.round === 'final' ? 4 : 3;
-  const isLoser  = (t) => match.winner_id && match.winner_id !== t.id;
-  const isFinal  = match.round === 'final';
+  const target  = match.round === 'final' ? 4 : 3;
+  const isLoser = (t) => match.winner_id && match.winner_id !== t.id;
+  const isFinal = match.round === 'final';
 
   document.getElementById('runs-match-label').textContent =
     isFinal ? 'Grand Final' : `Match ${match.match_number}`;
@@ -935,32 +909,29 @@ function renderRuns(match, teamA, teamB, runs) {
   pill.classList.toggle('final', isFinal);
   pill.classList.toggle('semifinal', !isFinal);
 
-  document.getElementById('runs-name-a').textContent = teamA.name;
-  document.getElementById('runs-name-b').textContent = teamB.name;
-  const vpA = document.getElementById('runs-vp-a');
-  const vpB = document.getElementById('runs-vp-b');
-  vpA.textContent = match.vp_a;
-  vpB.textContent = match.vp_b;
-  vpA.classList.toggle('dim', !!isLoser(teamA));
-  vpB.classList.toggle('dim', !!isLoser(teamB));
   document.getElementById('runs-target').textContent = `First to ${target} VP`;
 
   const slugs = [...new Set(runs.map(r => r.dungeon_slug))];
-  const colsEl = document.getElementById('runs-cols');
+  const grid  = document.getElementById('runs-table-grid');
 
   if (!slugs.length) {
-    colsEl.innerHTML = `<div class="runs-empty">No dungeons played yet</div>`;
+    grid.innerHTML = `<div class="runs-empty">No dungeons played yet</div>`;
     return;
   }
 
-  // Exact same offsets as #runs-row-a / #runs-row-b inline styles
-  const ROW_A_TOP = 38;
-  const ROW_B_TOP = 84;
+  function dungeonHeaderCell(slug) {
+    const dun = DUNGEONS[slug] || { name: slug, capstone: false, img: '' };
+    return `<div class="runs-dungeon-header">
+      ${dun.img ? `<div class="runs-dungeon-header-bg" style="background-image:url('${IMG_BASE}${dun.img}')"></div><div class="runs-dungeon-header-overlay"></div>` : ''}
+      <span class="runs-dungeon-name">${dun.name}</span>
+      <span class="runs-dungeon-vp-pill${dun.capstone?' capstone':''}">${dun.capstone?'2 VP':'1 VP'}</span>
+    </div>`;
+  }
 
-  function resultCell(run, top) {
-    if (!run) return `<div class="run-result-cell" style="top:${top}px"><div class="run-result-loss"><span class="run-time-val">—</span></div></div>`;
+  function resultCell(run) {
+    if (!run) return `<div class="run-result-cell"><div class="run-result-loss"><span class="run-time-val">—</span></div></div>`;
     const win = run.score === 1;
-    return `<div class="run-result-cell" style="top:${top}px">
+    return `<div class="run-result-cell">
       <div class="${win ? 'run-result-win' : 'run-result-loss'}">
         <span class="run-score-icon ${win?'win':'loss'}">${win?'✓':'✗'}</span>
         <span class="run-time-val ${win?'win':''}">${fmtTime(run.run_time)}</span>
@@ -968,25 +939,28 @@ function renderRuns(match, teamA, teamB, runs) {
     </div>`;
   }
 
-  colsEl.innerHTML = slugs.map(slug => {
-    const dun  = DUNGEONS[slug] || { name: slug, capstone: false, img: '' };
-    const runA = runs.find(r => r.dungeon_slug === slug && r.team_id === teamA.id);
-    const runB = runs.find(r => r.dungeon_slug === slug && r.team_id === teamB.id);
-
-    return `<div class="runs-col">
-      ${dun.img ? `<div class="runs-col-bg" style="background-image:url('${IMG_BASE}${dun.img}')"></div>` : ''}
-      <div class="runs-col-inner">
-        <div class="runs-col-header">
-          <div class="runs-col-dungeon-row">
-            <span class="runs-col-dungeon">${dun.name}</span>
-            <span class="runs-col-vp-pill${dun.capstone?' capstone':''}">${dun.capstone?'2 VP':'1 VP'}</span>
-          </div>
-        </div>
-        ${resultCell(runA, ROW_A_TOP)}
-        ${resultCell(runB, ROW_B_TOP)}
+  function teamRow(team, vp, isLoserFlag) {
+    const cells = slugs.map(slug => {
+      const run = runs.find(r => r.dungeon_slug === slug && r.team_id === team.id);
+      return resultCell(run);
+    }).join('');
+    return `<div class="runs-grid-row">
+      <div class="runs-team-cell">
+        <span class="runs-team-name">${team.name}</span>
+        <span class="runs-vp${isLoserFlag?' dim':''}">${vp}</span>
       </div>
+      ${cells}
     </div>`;
-  }).join('');
+  }
+
+  grid.innerHTML = `
+    <div class="runs-grid-row header-row">
+      <div class="runs-team-cell"></div>
+      ${slugs.map(slug => dungeonHeaderCell(slug)).join('')}
+    </div>
+    ${teamRow(teamA, match.vp_a, isLoser(teamA))}
+    ${teamRow(teamB, match.vp_b, isLoser(teamB))}
+  `;
 }
 
 // ── SCENE: QUALIFIERS ────────────────────────────────────────────────────────
@@ -1226,7 +1200,7 @@ function renderDungeonBg(dun) {
   bg.classList.remove('loaded');
   setTimeout(() => {
     bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
-    if (currentScene !== 'roster') bg.classList.add('loaded');
+    if (!['roster','idle'].includes(currentScene)) bg.classList.add('loaded');
   }, 400);
 }
 
