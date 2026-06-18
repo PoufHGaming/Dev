@@ -646,7 +646,7 @@ function switchScene(name) {
 
   // Roster scene has its own layout, no background dungeon image
   const globalBg = document.getElementById('dungeon-bg');
-  if (globalBg) globalBg.classList.toggle('loaded', !['roster','idle'].includes(name));
+  if (globalBg) globalBg.classList.toggle('loaded', !['roster','idle','runs','qualifiers'].includes(name));
 }
 
 // ── MAIN REFRESH ──────────────────────────────────────────────────────────────
@@ -1193,12 +1193,24 @@ function parseMMSS(interval) {
 
 function renderDungeonBg(dun) {
   const bg = document.getElementById('dungeon-bg');
-  if (!dun?.img || dun.img === currentBgSlug) return;
+  const hideOnThisScene = ['roster','idle','runs','qualifiers'].includes(currentScene);
+
+  if (hideOnThisScene) {
+    bg.classList.remove('loaded');
+    return;
+  }
+
+  if (!dun?.img || dun.img === currentBgSlug) {
+    // Same dungeon, same scene type — just make sure it's visible
+    if (dun?.img) bg.classList.add('loaded');
+    return;
+  }
+
   currentBgSlug = dun?.img;
   bg.classList.remove('loaded');
   setTimeout(() => {
     bg.style.backgroundImage = `url('${IMG_BASE}${dun.img}')`;
-    if (!['roster','idle'].includes(currentScene)) bg.classList.add('loaded');
+    bg.classList.add('loaded');
   }, 400);
 }
 
