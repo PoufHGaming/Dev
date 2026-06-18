@@ -259,18 +259,21 @@
   .stat-val.empty { color: var(--text-muted); font-size: 14px; }
 
   /* ════════════════════════════════════════════════════════════════
-     SCENE: RUNS — ONE grid: col 1 = match/teams, cols 2+ = dungeons
-     3 rows: header row, team A row, team B row — all columns aligned.
+     SCENE: RUNS — column-based: col 1 = match/teams info (no bg),
+     cols 2+ = one full-height column per dungeon, with that dungeon's
+     background spanning header + both result rows.
   ════════════════════════════════════════════════════════════════ */
   #scene-runs { display: flex; flex-direction: column; padding: 8px 24px; gap: 5px; height: 100%; box-sizing: border-box; }
 
-  .runs-table-grid { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-  .runs-grid-row { display: flex; align-items: stretch; gap: 8px; flex: 1; }
+  .runs-table-grid { display: flex; gap: 8px; flex: 1; align-items: stretch; }
 
-  /* Column 1: match header / team rows */
-  .runs-info-cell {
+  /* Column 1: match info + both team rows stacked, no background image */
+  .runs-info-col {
     width: 230px; flex-shrink: 0;
-    display: flex; align-items: center; gap: 10px;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .runs-info-cell {
+    flex: 1; display: flex; align-items: center; gap: 10px;
     padding: 0 6px;
   }
   .runs-info-cell.header-cell { gap: 8px; }
@@ -287,16 +290,21 @@
   .runs-vp { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700; color: var(--teal-light); text-shadow: 0 0 8px rgba(64,212,212,0.6); flex-shrink: 0; }
   .runs-vp.dim { color: var(--text-muted); text-shadow: none; opacity: 0.5; }
 
-  /* Columns 2+: dungeon header / result cells */
+  /* Columns 2+: one full-height dungeon column, background spans header+rows */
+  .runs-dungeon-col {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; gap: 5px;
+    border-radius: 5px; position: relative; overflow: hidden;
+  }
+  .runs-dungeon-col-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5; z-index: 0; }
+  .runs-dungeon-col-overlay { position: absolute; inset: 0; background: rgba(5,8,8,0.55); z-index: 0; }
+
   .runs-dungeon-header {
     flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;
-    border-radius: 4px; position: relative; overflow: hidden;
-  }
-  .runs-dungeon-header-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5; z-index: 0; }
-  .runs-dungeon-header-overlay { position: absolute; inset: 0; background: rgba(5,8,8,0.55); z-index: 0; }
-  .runs-dungeon-name { position: relative; z-index: 1; font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .runs-dungeon-vp-pill {
     position: relative; z-index: 1;
+  }
+  .runs-dungeon-name { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .runs-dungeon-vp-pill {
     font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
     padding: 1px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
     border: 1.5px solid rgba(64,212,212,0.55); color: var(--teal-light); background: rgba(64,212,212,0.14);
@@ -305,7 +313,7 @@
     border-color: rgba(215,68,177,0.65); color: var(--goober-b); background: rgba(215,68,177,0.18);
   }
 
-  .run-result-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; }
+  .run-result-cell { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
   .run-result-win {
     display: flex; align-items: center; gap: 7px; width: 100%; height: 100%; justify-content: center;
     background: rgba(64,212,212,0.18); border: 1px solid rgba(64,212,212,0.55);
@@ -907,15 +915,6 @@ function renderRuns(match, teamA, teamB, runs) {
     return;
   }
 
-  function dungeonHeaderCell(slug) {
-    const dun = DUNGEONS[slug] || { name: slug, capstone: false, img: '' };
-    return `<div class="runs-dungeon-header">
-      ${dun.img ? `<div class="runs-dungeon-header-bg" style="background-image:url('${IMG_BASE}${dun.img}')"></div><div class="runs-dungeon-header-overlay"></div>` : ''}
-      <span class="runs-dungeon-name">${dun.name}</span>
-      <span class="runs-dungeon-vp-pill${dun.capstone?' capstone':''}">${dun.capstone?'2 VP':'1 VP'}</span>
-    </div>`;
-  }
-
   function resultCell(run) {
     if (!run) return `<div class="run-result-cell"><div class="run-result-loss"><span class="run-time-val">—</span></div></div>`;
     const win = run.score === 1;
@@ -927,32 +926,39 @@ function renderRuns(match, teamA, teamB, runs) {
     </div>`;
   }
 
-  function teamRow(team, vp, isLoserFlag) {
-    const cells = slugs.map(slug => {
-      const run = runs.find(r => r.dungeon_slug === slug && r.team_id === team.id);
-      return resultCell(run);
-    }).join('');
-    return `<div class="runs-grid-row">
-      <div class="runs-info-cell">
-        <span class="runs-team-name">${team.name}</span>
-        <span class="runs-vp${isLoserFlag?' dim':''}">${vp}</span>
+  // One full vertical column per dungeon: header + result A + result B, single shared background
+  function dungeonColumn(slug) {
+    const dun  = DUNGEONS[slug] || { name: slug, capstone: false, img: '' };
+    const runA = runs.find(r => r.dungeon_slug === slug && r.team_id === teamA.id);
+    const runB = runs.find(r => r.dungeon_slug === slug && r.team_id === teamB.id);
+    return `<div class="runs-dungeon-col">
+      ${dun.img ? `<div class="runs-dungeon-col-bg" style="background-image:url('${IMG_BASE}${dun.img}')"></div><div class="runs-dungeon-col-overlay"></div>` : ''}
+      <div class="runs-dungeon-header">
+        <span class="runs-dungeon-name">${dun.name}</span>
+        <span class="runs-dungeon-vp-pill${dun.capstone?' capstone':''}">${dun.capstone?'2 VP':'1 VP'}</span>
       </div>
-      ${cells}
+      ${resultCell(runA)}
+      ${resultCell(runB)}
     </div>`;
   }
 
-  // First column carries match info on row 1, team rows on row 2 & 3 — all in one aligned grid
-  grid.innerHTML = `
-    <div class="runs-grid-row">
-      <div class="runs-info-cell header-cell">
-        <span class="runs-match-label">${matchLabel}</span>
-        <span class="runs-round-pill ${roundClass}">${roundLabel}</span>
-      </div>
-      ${slugs.map(slug => dungeonHeaderCell(slug)).join('')}
+  // Column 1: match info on top, team A + team B stacked below — no background
+  const infoCol = `<div class="runs-info-col">
+    <div class="runs-info-cell header-cell">
+      <span class="runs-match-label">${matchLabel}</span>
+      <span class="runs-round-pill ${roundClass}">${roundLabel}</span>
     </div>
-    ${teamRow(teamA, match.vp_a, isLoser(teamA))}
-    ${teamRow(teamB, match.vp_b, isLoser(teamB))}
-  `;
+    <div class="runs-info-cell">
+      <span class="runs-team-name">${teamA.name}</span>
+      <span class="runs-vp${isLoser(teamA)?' dim':''}">${match.vp_a}</span>
+    </div>
+    <div class="runs-info-cell">
+      <span class="runs-team-name">${teamB.name}</span>
+      <span class="runs-vp${isLoser(teamB)?' dim':''}">${match.vp_b}</span>
+    </div>
+  </div>`;
+
+  grid.innerHTML = infoCol + slugs.map(slug => dungeonColumn(slug)).join('');
 }
 
 // ── SCENE: QUALIFIERS ────────────────────────────────────────────────────────
