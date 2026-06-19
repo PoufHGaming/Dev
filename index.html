@@ -347,13 +347,17 @@
 
     .event-banner-pagaille {
       background: linear-gradient(135deg, #080d12 0%, #0d1520 40%, #080d12 100%);
+      background-image: url('images/event/dungeonmayhem.jpg');
+      background-size: cover;
+      background-position: center;
     }
 
     .event-banner-pagaille::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at 50% 50%, rgba(76, 168, 168, 0.1) 0%, transparent 70%);
+      background: linear-gradient(180deg, rgba(8,13,18,0.35) 0%, rgba(8,13,18,0.75) 100%),
+                  radial-gradient(ellipse at 50% 50%, rgba(76, 168, 168, 0.1) 0%, transparent 70%);
     }
 
     .event-banner-empty {
@@ -1059,7 +1063,7 @@
                 Prochain événement communautaire. Détails à venir bientôt…
               </div>
               <div class="event-meta">
-                <span class="event-dates" data-fr="Début pré-saison 3" data-en="Start of Preseason 3">Début pré-saison
+                <span class="event-dates" data-fr="22 Juin - 13 Juillet" data-en="22nd June - 13th July">Début pré-saison
                   3</span>
               </div>
             </div>
