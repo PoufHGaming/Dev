@@ -296,8 +296,8 @@
     display: flex; flex-direction: column; gap: 5px;
     border-radius: 5px; position: relative; overflow: hidden;
   }
-  .runs-dungeon-col-bg { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0; }
-  .runs-dungeon-col-overlay { position: absolute; inset: 0; background: rgba(5,8,8,0.35); z-index: 0; }
+  .runs-dungeon-col-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5; z-index: 0; }
+  .runs-dungeon-col-overlay { position: absolute; inset: 0; background: rgba(5,8,8,0.55); z-index: 0; }
 
   .runs-dungeon-header {
     flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -717,20 +717,26 @@ async function refresh() {
     }
     if (!match) { showWaiting('No active match found'); return; }
 
-    // 4. Fetch all data
+    // 4. Fetch only what this scene actually needs
     const teamIds = [match.team_a_id, match.team_b_id].filter(Boolean);
-    const [teams, runs, rosters, heroes] = await Promise.all([
-      sbGet('sr_teams',      `?id=in.(${teamIds.join(',') || 'null'})`),
-      sbGet('sr_match_runs', `?match_id=eq.${match.id}&order=submitted_at.asc`),
-      sbGet('sr_roster',     `?team_id=in.(${teamIds.join(',') || 'null'})`),
-      sbGet('sr_heroes',     '?select=*'),
-    ]);
+    const teamsP = sbGet('sr_teams', `?id=in.(${teamIds.join(',') || 'null'})`);
+
+    // runs scene never shows rosters/heroes — skip those calls entirely
+    const needsRoster = scene === 'score' || scene === 'roster';
+    const rostersP = needsRoster ? sbGet('sr_roster', `?team_id=in.(${teamIds.join(',') || 'null'})`) : Promise.resolve([]);
+    const heroesP  = needsRoster ? sbGet('sr_heroes', '?select=*') : Promise.resolve([]);
+    // every scene here needs match_runs (score reads the latest dungeon, runs shows the table)
+    const runsP    = sbGet('sr_match_runs', `?match_id=eq.${match.id}&order=submitted_at.asc`);
+
+    const [teams, runs, rosters, heroes] = await Promise.all([teamsP, runsP, rostersP, heroesP]);
 
     const teamA = teams.find(t => t.id === match.team_a_id);
     const teamB = teams.find(t => t.id === match.team_b_id);
     if (!teamA || !teamB) { showWaiting('Teams not configured'); return; }
 
-    const hydrated = rosters.map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }));
+    const hydrated = needsRoster
+      ? rosters.map(r => ({ ...r, hero: heroes.find(h => h.id === r.hero_id) || null }))
+      : [];
 
     // 5. Switch scene & render
     switchScene(scene);
@@ -1228,8 +1234,30 @@ function ping() {
 }
 
 // ── BOOT ──────────────────────────────────────────────────────────────────────
-refresh();
-setInterval(refresh, REFRESH);
+let refreshTimer = null;
+
+function startPolling() {
+  if (refreshTimer) return; // already running
+  console.log('[Polling] started');
+  refresh(); // immediate refresh on resume
+  refreshTimer = setInterval(refresh, REFRESH);
+}
+
+function stopPolling() {
+  if (!refreshTimer) return;
+  console.log('[Polling] paused — tab hidden, no Supabase calls until it becomes visible again');
+  clearInterval(refreshTimer);
+  refreshTimer = null;
+}
+
+// Pause/resume based on tab visibility — protects against an OBS browser
+// source or forgotten browser tab hammering Supabase for hours/days unattended.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopPolling();
+  else startPolling();
+});
+
+startPolling();
 </script>
 </body>
 </html>
