@@ -137,22 +137,29 @@
     .next-tier-label {
       font-size: 9px;
       letter-spacing: 0.18em;
-      color: var(--text-muted);
+      color: var(--text-dim);
       text-transform: uppercase;
       font-weight: 600;
     }
     .next-tier-value {
       font-size: 16px;
       font-weight: 700;
-      color: var(--text-dim);
       letter-spacing: 0.06em;
+      color: var(--text-dim);
+      transition: color 0.3s;
     }
     .next-tier-remain {
       font-size: 11px;
       letter-spacing: 0.08em;
-      color: var(--teal-dim);
       font-weight: 600;
+      color: var(--text-dim);
+      transition: color 0.3s;
     }
+    /* Couleurs vives par palier, contrastées sur fond noir/transparent */
+    .next-tier-value.tier-1, .next-tier-remain.tier-1 { color: #5dff5d; text-shadow: 0 0 10px rgba(93,255,93,0.5); }
+    .next-tier-value.tier-2, .next-tier-remain.tier-2 { color: #5df0f0; text-shadow: 0 0 10px rgba(93,240,240,0.5); }
+    .next-tier-value.tier-3, .next-tier-remain.tier-3 { color: #d4aaff; text-shadow: 0 0 10px rgba(212,170,255,0.5); }
+    .next-tier-value.tier-done, .next-tier-remain.tier-done { color: #5dff5d; text-shadow: 0 0 12px rgba(93,255,93,0.6); }
 
     /* ── SÉPARATEUR CENTRAL ── */
     .hud-sep {
@@ -218,10 +225,23 @@
 
     /* ── PANNEAU : Boss meurtriers ── */
     .panel-boss-rows { display: flex; gap: 8px; align-items: center; }
-    .boss-entry { display: flex; align-items: center; gap: 7px; padding: 4px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 3px; }
-    .boss-avatar { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(64,212,212,0.3); object-fit: cover; flex-shrink: 0; background: rgba(64,212,212,0.05); }
-    .boss-name { font-size: 14px; color: var(--text); font-weight: 600; letter-spacing: 0.04em; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .boss-deaths { font-size: 14px; color: #f07070; font-weight: 700; letter-spacing: 0.06em; text-shadow: 0 0 8px rgba(240,112,112,0.5); }
+    .boss-entry {
+      display: flex; align-items: center; gap: 7px;
+      padding: 4px 12px; border: 1px solid var(--border); border-radius: 3px;
+      position: relative; overflow: hidden;
+    }
+    .boss-entry-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0.35; z-index: 0;
+    }
+    .boss-entry-overlay {
+      position: absolute; inset: 0;
+      background: var(--bg2); opacity: 0.55; z-index: 1;
+    }
+    .boss-avatar { width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(64,212,212,0.4); object-fit: cover; flex-shrink: 0; background: rgba(64,212,212,0.05); position: relative; z-index: 2; }
+    .boss-name { font-size: 14px; color: var(--text); font-weight: 600; letter-spacing: 0.04em; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; z-index: 2; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+    .boss-deaths { font-size: 22px; color: #ff5050; font-weight: 700; letter-spacing: 0.06em; text-shadow: 0 0 10px rgba(255,80,80,0.7), 0 1px 4px rgba(0,0,0,0.8); position: relative; z-index: 2; }
 
     /* ── PANNEAU : !event ── */
     .panel-event { display: flex; flex-direction: column; gap: 3px; }
@@ -336,18 +356,18 @@
       flex-shrink: 0;
     }
     .event-name {
-      font-size: 10px;
-      letter-spacing: 0.25em;
+      font-size: 13px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-dim);
-      font-weight: 600;
+      font-weight: bold;
     }
     .event-season {
       font-size: 13px;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--teal-light);
-      font-weight: 700;
+      font-weight: 600;
     }
 
     .divider-v { width: 1px; background: var(--border); align-self: stretch; margin: 12px 0; }
@@ -535,47 +555,7 @@
       text-shadow: 0 0 12px rgba(64,212,212,0.6);
     }
 
-    /* ── PANNEAU : Boss meurtriers ── */
-    .panel-boss-rows {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .boss-entry {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 3px 10px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-    }
-    .boss-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1px solid rgba(64,212,212,0.3);
-      object-fit: cover;
-      flex-shrink: 0;
-      background: rgba(64,212,212,0.05);
-    }
-    .boss-name {
-      font-size: 14px;
-      color: var(--text);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      max-width: 150px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .boss-deaths {
-      font-size: 14px;
-      color: #f07070;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-shadow: 0 0 8px rgba(240,112,112,0.5);
-    }
+    /* ── PANNEAU : Boss meurtriers (styles dans bloc principal plus haut) ── */
 
     /* ── PANNEAU : !event ── */
     .panel-event {
@@ -673,7 +653,7 @@
     <div class="hud-left">
       <div class="event-label">
         <div class="event-name">Dungeon Mayhem</div>
-        <div class="event-season">Season 1</div>
+        <div class="event-season">Pre-Season 3</div>
       </div>
 
       <div class="divider-v"></div>
@@ -754,9 +734,9 @@
   const SUPABASE_URL  = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
   const SUPABASE_KEY  = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
   const SEASON        = 'S1';
-  const REFRESH_MS    = 60 * 1000;       // refresh données toutes les 60s
+  const REFRESH_MS    = 15 * 60 * 1000;  // refresh toutes les 15min, décalé de 5min vs le cron Edge Function
 
-  const N_PLAYERS     = 21;
+  const N_PLAYERS     = 23;
   const TIERS_BASE    = [1000, 2500, 5000];
   const N_REF         = 20;
   function computeTiers(n) {
@@ -785,11 +765,46 @@
     "Fodir Kaldur":                    "fodirkaldur",
     "Chilgar the Drowned":             "chilgarthedrowned",
     "Auga Handhafi the Blind":         "augahandhafitheblind",
+    "Xurath, Fist of the Warden":      "xurath",
+    "Overlord Varux":                  "overlordvarux",
+    "Xul'vorith, Sentinel of the Bloodbound Gate": "xulvorith",
+    "Han-Eth, Sentry of Xul":          "haneth",
+    "Vel'korath the Sanctified, Vision of the Covenant": "velkorath",
   };
   function bossImg(name) {
     const key = BOSS_IMG[name] || name.replace(/[',]/g,'').replace(/\s+/g,'').toLowerCase();
     return `../images/bosses/${key}.jpg`;
   }
+
+  // Boss → image de fond du donjon (pour les cartes "boss meurtriers")
+  const BOSS_TO_DUNGEON_IMG = {
+    "Sinthara":                        "../gloire/images/abime-des-marins.jpg",
+    "Malgut the Fetid":                "../gloire/images/bois-de-laube.jpg",
+    "Godfall Titan":                   "../gloire/images/carriere-tombe-dieu.jpg",
+    "Deathless Katrine":               "../gloire/images/caveau-de-lamespectre.jpg",
+    "Bael'Aurum":                      "../gloire/images/caveau-de-lamespectre.jpg",
+    "First Mate Marrow":               "../gloire/images/caveau-de-lamespectre.jpg",
+    "Apostate Veras":                  "../gloire/images/coeur-de-guivre.jpg",
+    "Moar'gore, Master of Sacrifice":  "../gloire/images/coeur-de-tuzari.jpg",
+    "Vun'Kahr, The Thorned Maw":       "../gloire/images/coeur-de-tuzari.jpg",
+    "Prophet Ez'rath":                 "../gloire/images/coeur-de-tuzari.jpg",
+    "Vexira, Mother of Nightmares":    "../gloire/images/creux-soyeux.jpg",
+    "Warlord Brogg":                   "../gloire/images/guet-tempete.jpg",
+    "Noor, The Betrayer":              "../gloire/images/la-chute-cithrel.jpg",
+    "Ancient Koros":                   "../gloire/images/la-chute-cithrel.jpg",
+    "Cithrel":                         "../gloire/images/la-chute-cithrel.jpg",
+    "Drazhul & Brull":                 "../gloire/images/marche-durrak.jpg",
+    "Sin-Magir":                       "../gloire/images/sables-empyreens.jpg",
+    "Fodir Kaldur":                    "../gloire/images/saccage-de-drakheim.jpg",
+    "Chilgar the Drowned":             "../gloire/images/saccage-de-drakheim.jpg",
+    "Auga Handhafi the Blind":         "../gloire/images/saccage-de-drakheim.jpg",
+    "Xurath, Fist of the Warden":      "../gloire/images/ruins-of-regath.jpg",
+    "Overlord Varux":                  "../gloire/images/scyers-peak.jpg",
+    "Xul'vorith, Sentinel of the Bloodbound Gate": "../gloire/images/xul-the-blood-monolith.jpg",
+    "Han-Eth, Sentry of Xul":          "../gloire/images/xul-the-blood-monolith.jpg",
+    "Vel'korath the Sanctified, Vision of the Covenant": "../gloire/images/xul-the-blood-monolith.jpg",
+  };
+  function dungeonImg(boss) { return BOSS_TO_DUNGEON_IMG[boss] || ''; }
 
   async function sbPost(path, body) {
     const r = await fetch(SUPABASE_URL + path, {
@@ -854,15 +869,26 @@
     ).join('');
 
     // Prochain palier (compact dans la zone gauche)
-    const nextTier = TIERS.find(t => total < t);
+    const nextTier    = TIERS.find(t => total < t);
+    const nextTierIdx = TIERS.findIndex(t => total < t); // 0,1,2 ou -1 si tout débloqué
+    const valueEl  = document.getElementById('next-tier-value');
+    const remainEl = document.getElementById('next-tier-remain');
+    valueEl.classList.remove('tier-1','tier-2','tier-3','tier-done');
+    remainEl.classList.remove('tier-1','tier-2','tier-3','tier-done');
+
     if (nextTier) {
       document.getElementById('next-tier-label').textContent = 'NEXT TIER';
-      document.getElementById('next-tier-value').textContent = nextTier.toLocaleString();
-      document.getElementById('next-tier-remain').textContent = `${(nextTier - total).toLocaleString()} to go`;
+      valueEl.textContent  = nextTier.toLocaleString();
+      remainEl.textContent = `${(nextTier - total).toLocaleString()} to go`;
+      const tierClass = `tier-${nextTierIdx + 1}`; // tier-1, tier-2, tier-3
+      valueEl.classList.add(tierClass);
+      remainEl.classList.add(tierClass);
     } else {
       document.getElementById('next-tier-label').textContent = 'STATUS';
-      document.getElementById('next-tier-value').textContent = 'ALL TIERS';
-      document.getElementById('next-tier-remain').textContent = 'UNLOCKED ✓';
+      valueEl.textContent  = 'ALL TIERS';
+      remainEl.textContent = 'UNLOCKED ✓';
+      valueEl.classList.add('tier-done');
+      remainEl.classList.add('tier-done');
     }
 
     // Vérifier milestones
@@ -921,13 +947,15 @@
       return;
     }
 
-    document.getElementById('panel-boss-rows').innerHTML = sorted.map(([boss, deaths]) =>
-      `<div class="boss-entry">
+    document.getElementById('panel-boss-rows').innerHTML = sorted.map(([boss, deaths]) => {
+      const dImg = dungeonImg(boss);
+      return `<div class="boss-entry">
+        ${dImg ? `<div class="boss-entry-bg" style="background-image:url('${dImg}')"></div><div class="boss-entry-overlay"></div>` : ''}
         <img class="boss-avatar" src="${bossImg(boss)}" alt="${boss}" onerror="this.style.opacity='0.2'">
         <span class="boss-name">${boss}</span>
         <span class="boss-deaths">${deaths}☠</span>
-      </div>`
-    ).join('');
+      </div>`;
+    }).join('');
   }
 
   // ── ROTATION PANNEAUX ──
@@ -1029,8 +1057,18 @@
     // Démarrer la rotation sur le leaderboard
     showPanel('panel-lb', randomDuration());
 
-    // Refresh données toutes les 60s
-    setInterval(fetchData, REFRESH_MS);
+    // Refresh toutes les 15min, décalé de 5min après chaque créneau du cron (:00,:15,:30,:45)
+    // Ex: cron à 9h00 → overlay refetch à 9h05, 9h20, 9h35, 9h50...
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const msSinceLastQuarter = (minutes % 15) * 60000 + now.getSeconds() * 1000;
+    const msToOffset = ((5 * 60000) - msSinceLastQuarter + (15 * 60000)) % (15 * 60000);
+    const initialDelay = msToOffset || (15 * 60000);
+
+    setTimeout(() => {
+      fetchData();
+      setInterval(fetchData, REFRESH_MS);
+    }, initialDelay);
   }
 
   init();
