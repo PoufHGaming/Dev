@@ -850,7 +850,8 @@
   <script> 
     const SUPABASE_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
-    const CACHE_MS = 60 * 1000;
+    const CACHE_MS         = 60 * 1000;       // cache summary : 60s
+    const PLAYERS_CACHE_MS = 10 * 60 * 1000;  // cache players : 10min (change très rarement)
     const SEASON   = 'S1';
     const N_PLAYERS_AT_LAUNCH = 21;
     const TIERS_BASE = [1000, 2500, 5000]; // paliers calibrés pour N_REF joueurs
@@ -1063,6 +1064,10 @@
     function getCached() { return (_cache && Date.now()-_cacheTs < CACHE_MS) ? _cache : null; }
     function setCache(d) { _cache = d; _cacheTs = Date.now(); }
 
+    let _playersCache = null, _playersCacheTs = 0;
+    function getCachedPlayers() { return (_playersCache && Date.now()-_playersCacheTs < PLAYERS_CACHE_MS) ? _playersCache : null; }
+    function setCachedPlayers(d) { _playersCache = d; _playersCacheTs = Date.now(); }
+
     // ── Fetch via RPC summary (1 ligne/joueur, JSON agrégé) ──
     async function loadLeaderboard(force = false) {
       const cached = force ? null : getCached();
@@ -1070,13 +1075,20 @@
       const btn = document.getElementById('refresh-btn');
       if (btn) btn.classList.add('spinning');
       try {
-        const [summary, players] = await Promise.all([
+        // players changent très rarement → cache séparé de 10min
+        let players = getCachedPlayers();
+        const fetchPromises = [
           sbFetch(`/rest/v1/rpc/get_pagaille_summary`, null, {
             method: 'POST',
             body: { season_filter: SEASON }
-          }),
-          sbFetch('/rest/v1/players?select=id,name&order=name')
-        ]);
+          })
+        ];
+        if (!players) fetchPromises.push(sbFetch('/rest/v1/players?select=id,name&order=name'));
+
+        const results = await Promise.all(fetchPromises);
+        const summary = results[0];
+        if (!players) { players = results[1]; setCachedPlayers(players); }
+
         const data = { summary, players };
         setCache(data);
         await loadBadges();
