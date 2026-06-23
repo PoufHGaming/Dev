@@ -945,6 +945,18 @@
     ).join('');
   }
 
+  window.testKillFx = function(delta) {
+    delta = delta || 5;
+    const current = _prevTotal !== null ? _prevTotal : parseInt(document.getElementById('kills-count-value').textContent.replace(/[^0-9]/g,'')) || 100;
+    const newTotal = current + delta;
+    const TIERS = computeTiers(N_PLAYERS);
+    const maxTier = TIERS[TIERS.length-1];
+    const prevPct = Math.min(100, current / maxTier * 100);
+    const newPct  = Math.min(100, newTotal / maxTier * 100);
+    runKillSequence(current, newTotal, prevPct, newPct);
+    _prevTotal = newTotal;
+  };
+
   async function init() {
     await fetchData();
 
