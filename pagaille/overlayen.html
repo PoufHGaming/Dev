@@ -659,11 +659,23 @@
     const bottom = document.getElementById('hud-bottom');
     const layer  = document.getElementById('frag-layer');
     const fillEl = document.getElementById('progress-fill');
+    const killsBlock = document.querySelector('.kills-block');
     if (!bottom || !layer) return;
 
     const trackW = bottom.offsetWidth;
     const fromX  = trackW * (fromPct / 100);
     const toX    = trackW * (toPct / 100);
+
+    // Position réelle du compteur de kills, relative au frag-layer
+    // (qui est positionné à l'intérieur de hud-bottom, en haut de la barre)
+    const layerRect = layer.getBoundingClientRect();
+    let killsOriginX = 60;
+    let killsOriginY = -120;
+    if (killsBlock) {
+      const kbRect = killsBlock.getBoundingClientRect();
+      killsOriginX = (kbRect.left + kbRect.width / 2) - layerRect.left;
+      killsOriginY = (kbRect.top + kbRect.height / 2) - layerRect.top;
+    }
 
     const fragCount = Math.min(16, 6 + Math.round(delta / 2));
 
@@ -671,8 +683,9 @@
       const frag = document.createElement('div');
       frag.className = 'frag';
 
-      const originX = 40 + Math.random() * 60;
-      const originY = -(60 + Math.random() * 50);
+      // Origine dispersée autour du compteur de kills (où le chiffre vient d'exploser)
+      const originX = killsOriginX + (Math.random() * 50 - 25);
+      const originY = killsOriginY + (Math.random() * 30 - 15);
 
       const landX = fromX + Math.random() * Math.max(4, (toX - fromX));
 
