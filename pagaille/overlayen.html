@@ -74,6 +74,8 @@
       gap: 14px;
       padding: 0 20px;
       border-right: 1px solid var(--border);
+      position: relative;
+      overflow: visible;
     }
 
     .event-label {
@@ -105,6 +107,7 @@
       flex-direction: column;
       gap: 1px;
       flex-shrink: 0;
+      position: relative;
     }
     .kills-label {
       font-size: 10px;
@@ -121,10 +124,76 @@
       line-height: 1;
       text-shadow: 0 0 24px rgba(64,212,212,0.85), 0 0 2px rgba(64,212,212,0.5);
       transition: color 0.3s;
+      position: relative;
+      display: inline-block;
     }
     .kills-count.bump {
       color: #fff;
       text-shadow: 0 0 30px rgba(255,255,255,0.9), 0 0 60px rgba(64,212,212,0.5);
+    }
+
+    /* Halo qui pulse derrière le chiffre au kill */
+    .kills-burst-ring {
+      position: absolute;
+      left: 0; top: 50%;
+      width: 70px; height: 70px;
+      transform: translate(-18px, -50%) scale(0.3);
+      border-radius: 50%;
+      border: 2px solid rgba(64,212,212,0.8);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .kills-burst-ring.go {
+      animation: burstRing 0.7s cubic-bezier(0.2,0.7,0.3,1) forwards;
+    }
+    @keyframes burstRing {
+      0%   { opacity: 0.9; transform: translate(-18px, -50%) scale(0.3); }
+      60%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translate(-18px, -50%) scale(1.8); }
+    }
+
+    /* Petit "+N" qui s'envole au-dessus du compteur */
+    .kills-pop {
+      position: absolute;
+      left: 4px; top: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(64,212,212,0.9);
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 1;
+    }
+    .kills-pop.go {
+      animation: popFloat 0.9s ease-out forwards;
+    }
+    @keyframes popFloat {
+      0%   { opacity: 0; transform: translateY(4px) scale(0.8); }
+      15%  { opacity: 1; transform: translateY(-2px) scale(1.05); }
+      75%  { opacity: 1; transform: translateY(-22px) scale(1); }
+      100% { opacity: 0; transform: translateY(-30px) scale(0.95); }
+    }
+
+    /* Étincelles autour du compteur */
+    .kills-spark {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      box-shadow: 0 0 6px 1px rgba(64,212,212,0.9);
+      left: 0; top: 50%;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .kills-spark.go {
+      animation: sparkFly 0.6s ease-out forwards;
+    }
+    @keyframes sparkFly {
+      0%   { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--sx,30px), var(--sy,-20px)) scale(0.2); }
     }
 
     /* Next tier compact */
@@ -261,6 +330,7 @@
       background: rgba(64,212,212,0.04);
       border-top: 1px solid rgba(64,212,212,0.12);
       flex-shrink: 0;
+      overflow: visible;
     }
     .progress-fill {
       height: 100%;
@@ -273,6 +343,25 @@
       background-repeat: no-repeat;
       transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
       box-shadow: 0 0 10px rgba(64,212,212,0.35);
+      position: relative;
+    }
+    /* Lueur qui glisse sur le front de la barre quand elle progresse */
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 18px;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%);
+      opacity: 0;
+      filter: blur(1px);
+    }
+    .progress-fill.growing::after {
+      animation: edgeGlow 1.5s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes edgeGlow {
+      0%   { opacity: 0.95; }
+      70%  { opacity: 0.6; }
+      100% { opacity: 0; }
     }
     .progress-markers { position: absolute; inset: 0; pointer-events: none; }
     .tier-marker {
@@ -287,6 +376,53 @@
       color: rgba(255,255,255,0.4);
       white-space: nowrap;
     }
+    /* Fragments qui volent vers la barre et "atterrissent" sur le front de progression */
+    .frag-layer {
+      position: absolute;
+      inset: -40px 0 0 0;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 4;
+    }
+    .frag {
+      position: absolute;
+      width: 6px; height: 6px;
+      background: var(--teal-light);
+      box-shadow: 0 0 8px 2px rgba(64,212,212,0.85);
+      border-radius: 1px;
+      opacity: 0;
+      top: 0; left: 0;
+      will-change: transform, opacity;
+    }
+    .frag.go {
+      animation-name: fragFly;
+      animation-timing-function: cubic-bezier(0.3,0.6,0.25,1);
+      animation-fill-mode: forwards;
+    }
+    @keyframes fragFly {
+      0%   { opacity: 1; transform: translate(var(--fx0,0px), var(--fy0,-30px)) scale(1) rotate(0deg); }
+      75%  { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--fx1,0px), 0px) scale(0.4) rotate(160deg); }
+    }
+    /* Petit flash au point d'impact sur la barre */
+    .frag-impact {
+      position: absolute;
+      top: -3px;
+      width: 14px; height: 14px;
+      margin-left: -7px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(64,212,212,0.6) 45%, rgba(64,212,212,0) 75%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .frag-impact.go {
+      animation: impactPop 0.5s ease-out forwards;
+    }
+    @keyframes impactPop {
+      0%   { opacity: 0.95; transform: scale(0.4); }
+      100% { opacity: 0; transform: scale(2.1); }
+    }
 
     /* ── DOTS + TIMER PANEL ── */
     .panel-dots { position: absolute; bottom: 6px; right: 16px; display: flex; gap: 5px; align-items: center; }
@@ -295,334 +431,12 @@
 
     @keyframes killbump {
       0%   { transform: scale(1); }
-      30%  { transform: scale(1.15); }
-      60%  { transform: scale(0.97); }
+      30%  { transform: scale(1.22); }
+      55%  { transform: scale(0.95); }
+      75%  { transform: scale(1.06); }
       100% { transform: scale(1); }
     }
-    .kills-count.bump { animation: killbump 0.5s ease; }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      width: 1920px;
-      height: var(--h);
-      overflow: hidden;
-      background: transparent;
-      font-family: 'Cinzel', serif;
-    }
-
-    /* ── HUD CONTAINER ── */
-    .hud {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: var(--h);
-      display: flex;
-      align-items: stretch;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-    }
-
-    /* Trait lumineux en haut */
-    .hud::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg,
-        transparent 0%,
-        var(--teal-dim) 15%,
-        var(--teal) 50%,
-        var(--teal-dim) 85%,
-        transparent 100%
-      );
-    }
-
-    /* ── SECTION GAUCHE — fixe, toujours visible ── */
-    .hud-left {
-      flex-shrink: 0;
-      width: 420px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 0 20px;
-      border-right: 1px solid var(--border);
-    }
-
-    .event-label {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      flex-shrink: 0;
-    }
-    .event-name {
-      font-size: 13px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      font-weight: bold;
-    }
-    .event-season {
-      font-size: 13px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--teal-light);
-      font-weight: 600;
-    }
-
-    .divider-v { width: 1px; background: var(--border); align-self: stretch; margin: 12px 0; }
-
-    /* Compteur kills */
-    .kills-block {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      flex-shrink: 0;
-    }
-    .kills-label {
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-    .kills-count {
-      font-size: 34px;
-      font-weight: 700;
-      color: var(--teal-light);
-      letter-spacing: 0.05em;
-      line-height: 1;
-      text-shadow: 0 0 24px rgba(64,212,212,0.85), 0 0 2px rgba(64,212,212,0.5);
-      transition: color 0.3s;
-    }
-    .kills-count.bump {
-      color: #fff;
-      text-shadow: 0 0 30px rgba(255,255,255,0.9), 0 0 60px rgba(64,212,212,0.5);
-    }
-
-    /* Barre de progression */
-    .progress-block {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      justify-content: center;
-    }
-    .progress-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    .progress-next {
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      color: var(--text-dim);
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    .progress-remain {
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      color: var(--teal-light);
-      font-weight: 700;
-    }
-    .progress-track {
-      position: relative;
-      height: 8px;
-      background: rgba(64,212,212,0.08);
-      border-radius: 4px;
-      border: 1px solid rgba(64,212,212,0.15);
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      border-radius: 4px;
-      background: linear-gradient(90deg,
-        #1a991a 0%, var(--tier1) 20%,
-        #1f8888 40%, var(--tier2) 55%,
-        #7744cc 78%, var(--tier3) 100%
-      );
-      background-size: var(--track-w, 340px) 100%;
-      background-repeat: no-repeat;
-      transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
-      box-shadow: 0 0 8px rgba(64,212,212,0.4);
-    }
-    /* Marqueurs de paliers */
-    .progress-markers {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    .tier-marker {
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 1px;
-      background: rgba(255,255,255,0.25);
-    }
-
-    /* ── SÉPARATEUR CENTRAL ── */
-    .hud-sep {
-      flex-shrink: 0;
-      width: 1px;
-      background: var(--border);
-    }
-
-    /* ── SECTION DROITE — rotation ── */
-    .hud-right {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Chaque panneau */
-    .panel {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      gap: 20px;
-      opacity: 0;
-      transform: translateX(30px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      pointer-events: none;
-    }
-    .panel.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
-    }
-    .panel.exit {
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-
-    .panel-icon {
-      font-size: 22px;
-      flex-shrink: 0;
-      filter: drop-shadow(0 0 8px rgba(64,212,212,0.5));
-    }
-
-    .panel-title {
-      font-size: 10px;
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      color: var(--teal-light);
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    /* ── PANNEAU : Leaderboard ── */
-    .panel-lb-rows {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .lb-entry {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 10px 3px 7px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-    }
-    .lb-rank {
-      font-size: 11px;
-      color: var(--text-dim);
-      letter-spacing: 0.1em;
-      font-weight: 700;
-      min-width: 18px;
-    }
-    .lb-entry.r1 { border-color: rgba(64,212,212,0.6); }
-    .lb-entry.r1 .lb-rank { color: var(--teal-light); }
-    .lb-entry.r2 { border-color: rgba(64,212,212,0.35); }
-    .lb-name {
-      font-size: 15px;
-      color: var(--text);
-      letter-spacing: 0.04em;
-      font-weight: 600;
-      max-width: 120px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .lb-score {
-      font-size: 15px;
-      color: var(--teal-light);
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 12px rgba(64,212,212,0.6);
-    }
-
-    /* ── PANNEAU : Boss meurtriers (styles dans bloc principal plus haut) ── */
-
-    /* ── PANNEAU : !event ── */
-    .panel-event {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .panel-event-main {
-      font-size: 20px;
-      letter-spacing: 0.06em;
-      color: var(--text);
-      font-weight: 600;
-    }
-    .panel-event-main strong {
-      color: var(--teal-light);
-      font-weight: 700;
-      text-shadow: 0 0 16px rgba(64,212,212,0.7);
-    }
-    .panel-event-sub {
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      color: var(--text-dim);
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    /* ── PANNEAU : Milestone (palier atteint) ── */
-    .panel-milestone {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .panel-milestone-main {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: var(--tier1);
-      text-shadow: 0 0 24px rgba(68,238,68,0.6);
-    }
-    .panel-milestone-sub {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: var(--text-dim);
-      text-transform: uppercase;
-    }
-
-    /* ── INDICATEUR DE PANEL (dots) ── */
-    .panel-dots {
-      position: absolute;
-      bottom: 8px;
-      right: 16px;
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-    .panel-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--text-muted);
-      transition: background 0.3s, transform 0.3s;
-    }
-    .panel-dot.active {
-      background: var(--teal-light);
-      transform: scale(1.4);
-    }
+    .kills-count.bump { animation: killbump 0.55s cubic-bezier(0.34,1.56,0.64,1); }
 
     /* ── TIMER BAR (durée du panel courant) ── */
     .panel-timer {
@@ -632,15 +446,6 @@
       background: rgba(64,212,212,0.35);
       transition: width linear;
     }
-
-    /* Animation bump kills */
-    @keyframes killbump {
-      0%   { transform: scale(1); }
-      30%  { transform: scale(1.15); }
-      60%  { transform: scale(0.97); }
-      100% { transform: scale(1); }
-    }
-    .kills-count.bump { animation: killbump 0.5s ease; }
   </style>
 </head>
 <body>
@@ -660,7 +465,10 @@
 
       <div class="kills-block">
         <div class="kills-label">Bosses killed</div>
-        <div class="kills-count" id="kills-count">—</div>
+        <div class="kills-count" id="kills-count">
+          <span class="kills-burst-ring" id="kills-burst-ring"></span>
+          <span id="kills-count-value">—</span>
+        </div>
       </div>
 
       <div class="divider-v"></div>
@@ -726,6 +534,7 @@
   <div class="hud-bottom" id="hud-bottom">
     <div class="progress-fill" id="progress-fill" style="width:0%"></div>
     <div class="progress-markers" id="progress-markers"></div>
+    <div class="frag-layer" id="frag-layer"></div>
   </div>
 
 </div>
@@ -734,11 +543,10 @@
   const SUPABASE_URL  = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
   const SUPABASE_KEY  = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
   const SEASON        = 'S1';
-  const REFRESH_MS    = 15 * 60 * 1000;  // refresh toutes les 15min, décalé de 5min vs le cron Edge Function
-
-  const N_PLAYERS     = 23;
-  const TIERS_BASE    = [1000, 2500, 5000];
-  const N_REF         = 20;
+  const REFRESH_MS    = 20 * 60 * 1000;  // refresh toutes les 20min, décalé de 5min vs le cron Edge Function
+  const N_PLAYERS     = 48;
+    const TIERS_BASE = [2000, 5000, 10000]; // paliers calibrés pour N_REF joueurs
+    const N_REF      = 40; 
   function computeTiers(n) {
     const f = Math.sqrt(Math.max(1,n) / N_REF);
     return TIERS_BASE.map(b => Math.round(b * f));
@@ -799,7 +607,7 @@
     "Chilgar the Drowned":             "../gloire/images/saccage-de-drakheim.jpg",
     "Auga Handhafi the Blind":         "../gloire/images/saccage-de-drakheim.jpg",
     "Xurath, Fist of the Warden":      "../gloire/images/ruins-of-regath.jpg",
-    "Overlord Varux":                  "../gloire/images/scyers-peak.jpg",
+    "Overlord Varux":                  "../gloire/images/scryers-peak.jpg",
     "Xul'vorith, Sentinel of the Bloodbound Gate": "../gloire/images/xul-the-blood-monolith.jpg",
     "Han-Eth, Sentry of Xul":          "../gloire/images/xul-the-blood-monolith.jpg",
     "Vel'korath the Sanctified, Vision of the Covenant": "../gloire/images/xul-the-blood-monolith.jpg",
@@ -836,6 +644,110 @@
     }
   }
 
+  // ─────────────────────────────────────────────────────────
+  // EFFETS PUNCHY : compteur de kills
+  // ─────────────────────────────────────────────────────────
+  function playKillCounterFx(delta) {
+    const block = document.querySelector('.kills-block');
+    if (!block) return;
+
+    // 1) Anneau qui pulse derrière le chiffre
+    const ring = document.getElementById('kills-burst-ring');
+    if (ring) {
+      ring.classList.remove('go');
+      void ring.offsetWidth;
+      ring.classList.add('go');
+    }
+
+    // 2) "+N" qui s'envole au-dessus
+    const pop = document.createElement('div');
+    pop.className = 'kills-pop';
+    pop.textContent = '+' + delta;
+    block.appendChild(pop);
+    void pop.offsetWidth;
+    pop.classList.add('go');
+    setTimeout(() => pop.remove(), 1000);
+
+    // 3) Étincelles qui jaillissent
+    const sparkCount = Math.min(8, 3 + Math.floor(delta));
+    for (let i = 0; i < sparkCount; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'kills-spark';
+      const angle = (Math.random() * Math.PI) - (Math.PI * 1.4); // vers le haut/côtés
+      const dist  = 18 + Math.random() * 28;
+      spark.style.setProperty('--sx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+      spark.style.setProperty('--sy', (Math.sin(angle) * dist).toFixed(1) + 'px');
+      spark.style.top = (50 + (Math.random()*10-5)) + '%';
+      spark.style.left = (10 + Math.random()*40) + 'px';
+      block.appendChild(spark);
+      void spark.offsetWidth;
+      spark.classList.add('go');
+      setTimeout(() => spark.remove(), 700);
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // EFFETS PUNCHY : barre de progression — fragments qui volent
+  // ─────────────────────────────────────────────────────────
+  function playProgressFragFx(fromPct, toPct, delta) {
+    const bottom = document.getElementById('hud-bottom');
+    const layer  = document.getElementById('frag-layer');
+    const fillEl = document.getElementById('progress-fill');
+    if (!bottom || !layer) return;
+
+    const trackW = bottom.offsetWidth;
+    const fromX  = trackW * (fromPct / 100);
+    const toX    = trackW * (toPct / 100);
+
+    // Lueur qui glisse sur le front de la barre pendant qu'elle grandit
+    if (fillEl) {
+      fillEl.classList.remove('growing');
+      void fillEl.offsetWidth;
+      fillEl.classList.add('growing');
+      setTimeout(() => fillEl.classList.remove('growing'), 1600);
+    }
+
+    // Nombre de fragments proportionnel au gain, plafonné pour rester lisible
+    const fragCount = Math.min(14, 4 + Math.round(delta / 3));
+
+    for (let i = 0; i < fragCount; i++) {
+      const frag = document.createElement('div');
+      frag.className = 'frag';
+
+      // Origine : dispersée autour du compteur de kills (à gauche du HUD), à hauteur de la barre
+      const originX = 40 + Math.random() * 60;
+      const originY = -(50 + Math.random() * 40);
+
+      // Destination : un point aléatoire le long du nouveau segment rempli de la barre
+      const landX = fromX + Math.random() * Math.max(4, (toX - fromX));
+
+      frag.style.setProperty('--fx0', originX.toFixed(1) + 'px');
+      frag.style.setProperty('--fy0', originY.toFixed(1) + 'px');
+      frag.style.setProperty('--fx1', landX.toFixed(1) + 'px');
+      frag.style.left = '0px';
+
+      const delay    = Math.random() * 250;
+      const duration = 550 + Math.random() * 350;
+      frag.style.animationDelay = delay + 'ms';
+      frag.style.animationDuration = duration + 'ms';
+
+      layer.appendChild(frag);
+      requestAnimationFrame(() => frag.classList.add('go'));
+
+      // Petit flash d'impact au point d'atterrissage, une fois le vol terminé
+      setTimeout(() => {
+        const impact = document.createElement('div');
+        impact.className = 'frag-impact';
+        impact.style.left = landX.toFixed(1) + 'px';
+        layer.appendChild(impact);
+        void impact.offsetWidth;
+        impact.classList.add('go');
+        setTimeout(() => impact.remove(), 550);
+        frag.remove();
+      }, delay + duration);
+    }
+  }
+
   function updateHUD() {
     if (!_data) return;
     const TIERS    = computeTiers(N_PLAYERS);
@@ -844,16 +756,25 @@
     // Total kills
     const total = _data.reduce((s, r) => s + (Number(r.total_kills) || 0), 0);
 
-    // Bump animation si nouveau kill
+    // Bump animation + effets punchy si nouveau kill
     const countEl = document.getElementById('kills-count');
-    if (_prevTotal !== null && total > _prevTotal) {
+    const hasIncreased = _prevTotal !== null && total > _prevTotal;
+    let delta = 0;
+
+    if (hasIncreased) {
+      delta = total - _prevTotal;
       countEl.classList.remove('bump');
       void countEl.offsetWidth;
       countEl.classList.add('bump');
       setTimeout(() => countEl.classList.remove('bump'), 600);
+      playKillCounterFx(delta);
     }
+
+    // Calcul du % avant mise à jour, pour connaître le point de départ des fragments
+    const prevPct = _prevTotal !== null ? Math.min(100, _prevTotal / maxTier * 100) : 0;
+
     _prevTotal = total;
-    countEl.textContent = total.toLocaleString();
+    document.getElementById('kills-count-value').textContent = total.toLocaleString();
 
     // Barre de progression (en bas)
     const bottom   = document.getElementById('hud-bottom');
@@ -861,6 +782,10 @@
     const pct      = Math.min(100, total / maxTier * 100);
     fill.style.width = pct + '%';
     fill.style.setProperty('--track-w', bottom.offsetWidth + 'px');
+
+    if (hasIncreased && pct > prevPct) {
+      playProgressFragFx(prevPct, pct, delta);
+    }
 
     // Marqueurs de paliers
     const markersEl = document.getElementById('progress-markers');
@@ -1057,13 +982,13 @@
     // Démarrer la rotation sur le leaderboard
     showPanel('panel-lb', randomDuration());
 
-    // Refresh toutes les 15min, décalé de 5min après chaque créneau du cron (:00,:15,:30,:45)
-    // Ex: cron à 9h00 → overlay refetch à 9h05, 9h20, 9h35, 9h50...
+    // Refresh toutes les 20min, décalé de 5min après chaque créneau du cron (:00,:20,:40)
+    // Ex: cron à 9h00 → overlay refetch à 9h05, 9h25, 9h45...
     const now = new Date();
     const minutes = now.getMinutes();
-    const msSinceLastQuarter = (minutes % 15) * 60000 + now.getSeconds() * 1000;
-    const msToOffset = ((5 * 60000) - msSinceLastQuarter + (15 * 60000)) % (15 * 60000);
-    const initialDelay = msToOffset || (15 * 60000);
+    const msSinceLastSlot = (minutes % 20) * 60000 + now.getSeconds() * 1000;
+    const msToOffset = ((5 * 60000) - msSinceLastSlot + (20 * 60000)) % (20 * 60000);
+    const initialDelay = msToOffset || (20 * 60000);
 
     setTimeout(() => {
       fetchData();
