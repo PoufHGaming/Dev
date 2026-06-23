@@ -957,6 +957,20 @@
     _prevTotal = newTotal;
   };
 
+  let _testLoopTimer = null;
+  window.testKillFxLoop = function(intervalMs, delta) {
+    intervalMs = intervalMs || 8000;
+    if (_testLoopTimer) {
+      clearInterval(_testLoopTimer);
+      _testLoopTimer = null;
+      console.log('[testKillFxLoop] stopped');
+      return;
+    }
+    console.log(`[testKillFxLoop] started, firing every ${intervalMs}ms — call testKillFxLoop() again to stop`);
+    window.testKillFx(delta);
+    _testLoopTimer = setInterval(() => window.testKillFx(delta), intervalMs);
+  };
+
   async function init() {
     await fetchData();
 
