@@ -293,7 +293,26 @@
       font-weight: 700;
     }
 
-    .panel-lb-rows { display: flex; gap: 10px; align-items: center; }
+    .panel-scroll-wrap {
+      overflow: hidden;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel-lb-rows {
+      display: flex; gap: 10px; align-items: center;
+      width: max-content;
+      will-change: transform;
+    }
+    .panel-boss-rows {
+      display: flex; gap: 8px; align-items: center;
+      width: max-content;
+      will-change: transform;
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(var(--marquee-distance, -50%)); }
+    }
     .lb-entry {
       display: flex; align-items: center; gap: 6px;
       padding: 4px 12px 4px 8px;
@@ -306,7 +325,7 @@
     .lb-name { font-size: 15px; color: var(--text); letter-spacing: 0.04em; font-weight: 600; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .lb-score { font-size: 15px; color: var(--teal-light); font-weight: 700; letter-spacing: 0.05em; text-shadow: 0 0 12px rgba(64,212,212,0.6); }
 
-    .panel-boss-rows { display: flex; gap: 8px; align-items: center; }
+    .panel-boss-rows { }
     .boss-entry {
       display: flex; align-items: center; gap: 7px;
       padding: 4px 12px; border: 1px solid var(--border); border-radius: 3px;
@@ -486,7 +505,7 @@
 
       <div class="panel" id="panel-lb">
         <div class="panel-icon">🏆</div>
-        <div>
+        <div class="panel-scroll-wrap">
           <div class="panel-title">Leaderboard</div>
           <div class="panel-lb-rows" id="panel-lb-rows"><div class="lb-entry">—</div></div>
         </div>
@@ -494,7 +513,7 @@
 
       <div class="panel" id="panel-boss">
         <div class="panel-icon">💀</div>
-        <div>
+        <div class="panel-scroll-wrap">
           <div class="panel-title">Most deadly bosses</div>
           <div class="panel-boss-rows" id="panel-boss-rows"><div class="boss-entry">—</div></div>
         </div>
@@ -840,15 +859,17 @@
     const scores = _data
       .map(r => ({ name: r.player_name || '?', total: Number(r.total_kills) || 0 }))
       .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
+      .slice(0, 15);
 
-    document.getElementById('panel-lb-rows').innerHTML = scores.map((s, i) =>
+    const rowsHtml = scores.map((s, i) =>
       `<div class="lb-entry ${i===0?'r1':i===1?'r2':''}">
         <span class="lb-rank">#${i+1}</span>
         <span class="lb-name">${s.name}</span>
         <span class="lb-score">${s.total}</span>
       </div>`
     ).join('');
+
+    setupMarquee('panel-lb-rows', rowsHtml, scores.length);
   }
 
   function updatePanelBoss() {
@@ -865,14 +886,14 @@
     const sorted = Object.entries(bossDeaths)
       .sort(([,a],[,b]) => b - a)
       .filter(([,d]) => d > 0)
-      .slice(0, 4);
+      .slice(0, 12);
 
     if (!sorted.length) {
       document.getElementById('panel-boss-rows').innerHTML = '<div class="boss-entry" style="color:var(--text-muted);font-size:13px">No deaths yet</div>';
       return;
     }
 
-    document.getElementById('panel-boss-rows').innerHTML = sorted.map(([boss, deaths]) => {
+    const rowsHtml = sorted.map(([boss, deaths]) => {
       const dImg = dungeonImg(boss);
       return `<div class="boss-entry">
         ${dImg ? `<div class="boss-entry-bg" style="background-image:url('${dImg}')"></div><div class="boss-entry-overlay"></div>` : ''}
@@ -881,6 +902,34 @@
         <span class="boss-deaths">${deaths}☠</span>
       </div>`;
     }).join('');
+
+    setupMarquee('panel-boss-rows', rowsHtml, sorted.length);
+  }
+
+  // ── MARQUEE : défilement horizontal continu si trop d'entrées pour tenir ──
+  const MARQUEE_MIN_ITEMS = 6; // au-delà, on déclenche le défilement
+  const MARQUEE_SPEED_PX_PER_S = 38;
+
+  function setupMarquee(containerId, rowsHtml, itemCount) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (itemCount < MARQUEE_MIN_ITEMS) {
+      container.style.animation = 'none';
+      container.style.transform = 'none';
+      container.innerHTML = rowsHtml;
+      return;
+    }
+
+    // Duplique le contenu pour un défilement continu sans coupure visible
+    container.innerHTML = rowsHtml + rowsHtml;
+
+    requestAnimationFrame(() => {
+      const fullWidth = container.scrollWidth / 2;
+      const duration  = fullWidth / MARQUEE_SPEED_PX_PER_S;
+      container.style.setProperty('--marquee-distance', `-${fullWidth}px`);
+      container.style.animation = `marqueeScroll ${duration}s linear infinite`;
+    });
   }
 
   const PANELS_BASE = ['panel-lb', 'panel-boss'];
