@@ -1573,13 +1573,45 @@
             allBosses.push({ boss, dungeon: d, kills: bk.kills, deaths: bk.deaths });
           });
         });
-        allBosses.sort((a,b) => b[mode] - a[mode]);
 
-        const maxVal = allBosses[0]?.[mode] || 1;
+        // Les boss de Xul, the Blood Monolith sont isolés : leurs chiffres
+        // sont disproportionnés (capstone) et écrasent les autres boss.
+        const XUL_DUNGEON_NAME = "Xul, the Blood Monolith";
+        const xulBosses   = allBosses.filter(b => b.dungeon === XUL_DUNGEON_NAME).sort((a,b) => b[mode] - a[mode]);
+        const otherBosses = allBosses.filter(b => b.dungeon !== XUL_DUNGEON_NAME);
+        otherBosses.sort((a,b) => b[mode] - a[mode]);
+
+        const maxVal = otherBosses[0]?.[mode] || 1; // recalculé SANS les boss de Xul
 
         html += `<div class="stats-section-title">${sectionLabel}</div><div class="bossbar-list">`;
 
-        allBosses.forEach((b, i) => {
+        // ── Boss de Xul, séparés, barre toujours pleine, % calculé sur le total global ──
+        xulBosses.forEach(b => {
+          const val      = b[mode];
+          const pct      = totalVal > 0 ? (val/totalVal*100) : 0;
+          const dngImg   = DUNGEON_IMAGES[b.dungeon] || '';
+          const avatarSrc = `../images/bosses/${bossImgName(b.boss)}.jpg`;
+
+          html += `<div class="bossbar-wrap top${val===0?' empty':''}" style="margin-bottom:8px;">
+            <div class="bossbar-left">
+              <div class="bossbar-name">${b.boss}</div>
+              <div class="bossbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
+            </div>
+            <div class="bossbar-sep"></div>
+            <div class="bossbar-right">
+              ${dngImg ? `<div class="bossbar-dng-img" style="width:100%;background-image:url('${dngImg}')"></div>` : ''}
+              <div class="bossbar-avatar" style="left:calc(100% - 20px);background-image:url('${avatarSrc}')"></div>
+            </div>
+            <div class="bossbar-sep"></div>
+            <div class="bossbar-pct-col">${val > 0 ? '('+pct.toFixed(1)+'%)' : ''}</div>
+          </div>`;
+        });
+        if (xulBosses.length) {
+          html += `<div style="height:1px;background:var(--border);margin:4px 0 14px;"></div>`;
+        }
+
+        // ── Les autres boss, classés entre eux uniquement ──
+        otherBosses.forEach((b, i) => {
           const val    = b[mode];
           const pct    = totalVal > 0 ? (val/totalVal*100) : 0;
           const barPct = maxVal   > 0 ? (val/maxVal*100)   : 0;
