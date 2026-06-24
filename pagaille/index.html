@@ -1585,22 +1585,25 @@
 
         html += `<div class="stats-section-title">${sectionLabel}</div><div class="bossbar-list">`;
 
-        // ── Boss de Xul, séparés, barre toujours pleine, % calculé sur le total global ──
-        xulBosses.forEach(b => {
+        // ── Boss de Xul, séparés, comparés entre eux, % calculé sur le total global ──
+        const maxValXul = Math.max(...xulBosses.map(b => b[mode] || 0), 1);
+        xulBosses.forEach((b, i) => {
           const val      = b[mode];
-          const pct      = totalVal > 0 ? (val/totalVal*100) : 0;
+          const pct      = totalVal  > 0 ? (val/totalVal*100)  : 0;
+          const barPct   = maxValXul > 0 ? (val/maxValXul*100) : 0;
           const dngImg   = DUNGEON_IMAGES[b.dungeon] || '';
           const avatarSrc = `../images/bosses/${bossImgName(b.boss)}.jpg`;
+          const isTopXul = i === 0 && val > 0;
 
-          html += `<div class="bossbar-wrap top${val===0?' empty':''}" style="margin-bottom:8px;">
+          html += `<div class="bossbar-wrap${isTopXul?' top':''}${val===0?' empty':''}" style="margin-bottom:8px;">
             <div class="bossbar-left">
               <div class="bossbar-name">${b.boss}</div>
               <div class="bossbar-count">${val > 0 ? val.toLocaleString('fr-FR') : '—'}</div>
             </div>
             <div class="bossbar-sep"></div>
             <div class="bossbar-right">
-              ${dngImg ? `<div class="bossbar-dng-img" style="width:100%;background-image:url('${dngImg}')"></div>` : ''}
-              <div class="bossbar-avatar" style="left:calc(100% - 20px);background-image:url('${avatarSrc}')"></div>
+              ${dngImg ? `<div class="bossbar-dng-img" style="width:${barPct}%;background-image:url('${dngImg}')"></div>` : ''}
+              <div class="bossbar-avatar" style="left:calc(clamp(20px, ${barPct}%, 100% - 20px));background-image:url('${avatarSrc}')"></div>
             </div>
             <div class="bossbar-sep"></div>
             <div class="bossbar-pct-col">${val > 0 ? '('+pct.toFixed(1)+'%)' : ''}</div>
