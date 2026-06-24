@@ -691,7 +691,7 @@
     <div id="page-leaderboard" class="page active">
       <div class="progress-section">
         <div class="progress-header">
-          <span class="progress-title" data-fr="Boss tués (Les données actuelles sont fausses et seront reset au début de l'event)" data-en="Bosses killed (Current data are fake and will be reseted when event will start)">Boss tués — total communauté</span>
+          <span class="progress-title" data-fr="Boss tués" data-en="Bosses killed">Boss tués — total communauté</span>
           <span class="progress-count"><span id="total-kills">—</span><span data-fr=" boss" data-en=" bosses"> boss</span></span>
         </div>
         <div class="progress-track">
@@ -853,9 +853,9 @@
     const CACHE_MS         = 60 * 1000;       // cache summary : 60s
     const PLAYERS_CACHE_MS = 10 * 60 * 1000;  // cache players : 10min (change très rarement)
     const SEASON   = 'S1';
-    const N_PLAYERS_AT_LAUNCH = 39;
-    const TIERS_BASE = [1200, 3000, 6000]; // paliers calibrés pour N_REF joueurs
-    const N_REF      = 20;                 // référence de calibration
+    const N_PLAYERS_AT_LAUNCH = 50;
+    const TIERS_BASE = [2000, 5000, 10000]; // paliers calibrés pour N_REF joueurs
+    const N_REF      = 40;                 // référence de calibration
     // Formule : palier(N) = base × √(N / N_REF)  — racine carrée
     function computeTiers(n) {
       const factor = Math.sqrt(Math.max(1, n) / N_REF);
@@ -866,7 +866,7 @@
       "Coeur de guivre","Creux Soyeux","Guet Tempete",
       "Marché d'Urrak","Sables Empyréens","Caveau de Lamespectre",
       "Coeur de Tuzari","La chute Cithrel","Saccage de Drakheim",
-      "Ruins of Regath","Scyer's Peak","Xul, the Blood Monolith"
+      "Ruins of Regath","Scryer's Peak","Xul, the Blood Monolith"
     ];
 
     const DUNGEON_IMAGES = {
@@ -884,7 +884,7 @@
       "Saccage de Drakheim":   "../gloire/images/saccage-de-drakheim.jpg",
       // ── Nouveaux donjons ──
       "Ruins of Regath":       "../gloire/images/ruins-of-regath.jpg",
-      "Scyer's Peak":          "../gloire/images/scyers-peak.jpg",
+      "Scryer's Peak":          "../gloire/images/scryers-peak.jpg",
       "Xul, the Blood Monolith": "../gloire/images/xul-the-blood-monolith.jpg",
     };
 
@@ -953,9 +953,9 @@
       // ── Ruins of Regath ──
       "Ruins of Regath":                 "Ruins of Regath",
       "Xurath, Fist of the Warden":       "Ruins of Regath",
-      // ── Scyer's Peak ──
-      "Scyer's Peak":                     "Scyer's Peak",
-      "Overlord Varux":                   "Scyer's Peak",
+      // ── Scryer's Peak ──
+      "Scryer's Peak":                     "Scryer's Peak",
+      "Overlord Varux":                   "Scryer's Peak",
       // ── Xul, the Blood Monolith (capstone) ──
       "Xul, the Blood Monolith":          "Xul, the Blood Monolith",
       "Xul'vorith, Sentinel of the Bloodbound Gate": "Xul, the Blood Monolith",
@@ -979,7 +979,7 @@
       "La chute Cithrel":      "Cithrel's Fall",
       "Saccage de Drakheim":   "Ransack of Drakheim",
       "Ruins of Regath":       "Ruins of Regath",
-      "Scyer's Peak":          "Scyer's Peak",
+      "Scryer's Peak":          "Scryer's Peak",
       "Xul, the Blood Monolith": "Xul, the Blood Monolith",
     };
     function tDungeon(nameFR) {
@@ -1000,7 +1000,7 @@
       "La chute Cithrel":      ["Noor, The Betrayer","Ancient Koros","Cithrel"],
       "Saccage de Drakheim":   ["Fodir Kaldur","Chilgar the Drowned","Auga Handhafi the Blind"],
       "Ruins of Regath":       ["Xurath, Fist of the Warden"],
-      "Scyer's Peak":          ["Overlord Varux"],
+      "Scryer's Peak":          ["Overlord Varux"],
       "Xul, the Blood Monolith": ["Xul'vorith, Sentinel of the Bloodbound Gate","Han-Eth, Sentry of Xul","Vel'korath the Sanctified, Vision of the Covenant"],
     };
 
@@ -1260,7 +1260,7 @@
             detail += `<div class="dng-block ${hasAny ? 'has-kills' : ''}">`;
             if (img) detail += `<div class="dng-bg" style="background-image:url('${img}')"></div>`;
             detail += `<div class="dng-inner">`;
-            detail += `<div class="dng-header"><span class="dng-name">${d}</span><span class="dng-col-label">${fr2 ? 'Tués' : 'Killed'}</span></div>`;
+            detail += `<div class="dng-header"><span class="dng-name">${tDungeon(d)}</span><span class="dng-col-label">${fr2 ? 'Tués' : 'Killed'}</span></div>`;
             detail += `<div class="dng-boss-list">`;
             bosses.forEach(boss => {
               const bk   = s.byBoss[boss] || { kills: 0, deaths: 0 };
@@ -1468,13 +1468,58 @@
           ? (fr ? 'Boss tués par donjon'  : 'Bosses killed per dungeon')
           : (fr ? 'Morts par donjon'      : 'Deaths per dungeon');
 
-        const sorted = [...DUNGEONS]
-          .map(d => ({ name: d, kills: byDungeon[d].kills, deaths: byDungeon[d].deaths }))
-          .sort((a,b) => b[mode] - a[mode]);
-        const maxVal = sorted[0]?.[mode] || 1;
+        const allDungeons = DUNGEONS.map(d => ({ name: d, kills: byDungeon[d].kills, deaths: byDungeon[d].deaths }));
+
+        // Xul, the Blood Monolith est isolé : ses chiffres sont disproportionnés
+        // (capstone à 3 boss) et écrasent visuellement les autres donjons.
+        const XUL_NAME = "Xul, the Blood Monolith";
+        const xulEntry   = allDungeons.find(d => d.name === XUL_NAME);
+        const otherDungeons = allDungeons.filter(d => d.name !== XUL_NAME);
+
+        const sorted = [...otherDungeons].sort((a,b) => b[mode] - a[mode]);
+        const maxVal = sorted[0]?.[mode] || 1; // recalculé SANS Xul
 
         html += `<div class="stats-section-title">${sectionLabel}</div><div class="shbar-list">`;
 
+        // ── Ligne Xul, séparée, toujours pleine, % calculé sur le total global ──
+        if (xulEntry) {
+          const xulVal     = xulEntry[mode];
+          const xulPct     = totalVal > 0 ? (xulVal/totalVal*100) : 0;
+          const xulImg     = DUNGEON_IMAGES[xulEntry.name] || '';
+          const xulIsExp   = _statsExpanded === xulEntry.name;
+          const xulBosses  = DUNGEON_BOSSES[xulEntry.name] || [];
+          const xulClickable = xulBosses.length > 0 && xulVal > 0;
+
+          html += `<div class="shbar-wrap${xulIsExp?' expanded':''}" style="margin-bottom:14px;">
+            <div class="shbar-row top${xulVal===0?' empty':''}" ${xulClickable?`onclick="toggleStatsDungeon('${xulEntry.name.replace(/'/g,"\\'")}')"`:''} style="${xulClickable?'cursor:pointer':''}">
+              <div class="shbar-name">${tDungeon(xulEntry.name).toUpperCase()}</div>
+              <div class="shbar-count">${xulVal > 0 ? xulVal.toLocaleString('fr-FR') : '—'}</div>
+              <div class="shbar-track">
+                ${xulImg ? `<div class="shbar-img" style="width:100%;background-image:url('${xulImg}')"></div><div class="shbar-marker" style="left:100%"></div>` : ''}
+              </div>
+              <div class="shbar-pct">${xulVal > 0 ? '('+xulPct.toFixed(1)+'%)' : ''}</div>
+              ${xulClickable ? `<div class="shbar-chevron">${xulIsExp?'▲':'▼'}</div>` : '<div class="shbar-chevron"></div>'}
+            </div>`;
+
+          if (xulIsExp && xulClickable) {
+            const maxBoss = Math.max(...xulBosses.map(b => byBoss[b]?.[mode]||0), 1);
+            html += `<div class="shbar-detail">`;
+            xulBosses.forEach(boss => {
+              const bk   = byBoss[boss] || { kills: 0, deaths: 0 };
+              const bval = bk[mode] || 0;
+              html += `<div class="shbar-boss-row">
+                <div class="shbar-boss-name">${boss}</div>
+                <div class="shbar-boss-count">${bval > 0 ? bval.toLocaleString('fr-FR') : '—'}</div>
+                <div class="shbar-boss-track"><div class="shbar-boss-fill" style="width:${bval/maxBoss*100}%"></div></div>
+              </div>`;
+            });
+            html += `</div>`;
+          }
+          html += `</div>
+          <div style="height:1px;background:var(--border);margin:4px 0 14px;"></div>`;
+        }
+
+        // ── Les autres donjons, classés entre eux uniquement ──
         sorted.forEach((d, i) => {
           const val    = d[mode];
           const pct    = totalVal > 0 ? (val/totalVal*100) : 0;
