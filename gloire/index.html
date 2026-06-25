@@ -390,9 +390,34 @@
       justify-content: space-between;
       align-items: center;
       font-size: 11px;
-      margin-bottom: 8px;
-      padding-bottom: 6px;
+      margin-bottom: 0;
+      padding: 6px 4px;
       border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+      border-radius: 3px;
+    }
+
+    .dp-header:hover {
+      background: rgba(201, 168, 76, 0.04);
+    }
+
+    .dp-header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dp-chevron {
+      color: var(--text-muted);
+      font-size: 9px;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+
+    .dungeon-section.open .dp-chevron {
+      transform: rotate(90deg);
     }
 
     .dp-name {
@@ -411,9 +436,61 @@
     }
 
     .hf-list {
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 3px;
+      margin-top: 8px;
+    }
+
+    .dungeon-section.open .hf-list {
+      display: flex;
+    }
+
+    .season-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .season-badge.s2 {
+      color: var(--text-muted);
+      border-color: var(--border);
+    }
+
+    .season-badge.s3 {
+      color: #7ddf7d;
+      border-color: rgba(125, 223, 125, 0.35);
+    }
+
+    .lb-detail-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .lb-detail-toolbar button {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .lb-detail-toolbar button:hover {
+      color: var(--text);
+      border-color: var(--border-bright);
     }
 
     .hf-item {
@@ -1589,6 +1666,12 @@
     // - achievements/dungeonsOrder : pour le rendu groupé par donjon (bonus +5 inclus)
     // - affixes/affixesOrder       : pour le rendu de la catégorie "Affixes" à part (pas de bonus +5)
     // - allScorable                : achievements + affixes confondus, pour le calcul des points (base score)
+    // Marque chaque HF d'un tableau avec sa saison d'origine (utilisé en mode TOTAL
+    // pour afficher un badge "S2"/"S3" sur chaque ligne). Ne mute pas les tableaux sources.
+    function tagSeason(list, season) {
+      return list.map(a => ({ ...a, _season: season }));
+    }
+
     function getSeasonData(season) {
       if (season === 'S2') {
         return { achievements: ACHIEVEMENTS_S2, dungeonsOrder: DUNGEONS_ORDER_S2, affixes: [], affixesOrder: [], allScorable: ACHIEVEMENTS_S2 };
@@ -1599,10 +1682,13 @@
       // TOTAL : union complète, donjons dédupliqués en conservant l'ordre S2 puis les nouveaux de S3
       const mergedDungeons = [...DUNGEONS_ORDER_S2];
       DUNGEONS_ORDER_S3.forEach(d => { if (!mergedDungeons.includes(d)) mergedDungeons.push(d); });
+      const taggedS2 = tagSeason(ACHIEVEMENTS_S2, 'S2');
+      const taggedS3 = tagSeason(ACHIEVEMENTS_S3, 'S3');
+      const taggedAffixes = tagSeason(AFFIXES_S3, 'S3');
       return {
-        achievements: [...ACHIEVEMENTS_S2, ...ACHIEVEMENTS_S3],
+        achievements: [...taggedS2, ...taggedS3],
         dungeonsOrder: mergedDungeons,
-        affixes: AFFIXES_S3,
+        affixes: taggedAffixes,
         affixesOrder: AFFIXES_ORDER_S3,
         allScorable: [...ACHIEVEMENTS_S2, ...ACHIEVEMENTS_S3, ...AFFIXES_S3]
       };
@@ -1740,6 +1826,15 @@
       }
     }
 
+    // Déplie/replie toutes les sections donjon/affixe d'un détail joueur en une fois
+    function toggleAllDungeonSections(detailId, open) {
+      const root = document.getElementById(detailId);
+      if (!root) return;
+      root.querySelectorAll('.dungeon-section').forEach(sec => {
+        sec.classList.toggle('open', open);
+      });
+    }
+
     function renderLeaderboard(scores) {
       const rankIcons = ['I', 'II', 'III'];
       const hideBonus = currentSeason === 'TOTAL';
@@ -1783,16 +1878,25 @@
         }
 
         const { achievements: seasonAchievements, dungeonsOrder: seasonDungeonsOrder, affixes: seasonAffixes, affixesOrder: seasonAffixesOrder } = getSeasonData(currentSeason);
+        const showSeasonBadge = currentSeason === 'TOTAL';
+        const seasonBadgeHtml = (a) => showSeasonBadge && a._season
+          ? `<span class="season-badge ${a._season.toLowerCase()}">${a._season}</span>` : '';
 
-        let detailHtml = '<div class="lb-detail"><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px">';
+        const detailId = `lb-detail-${s.id}`;
+        let detailHtml = `<div class="lb-detail" id="${detailId}">
+      <div class="lb-detail-toolbar">
+        <button onclick="event.stopPropagation(); toggleAllDungeonSections('${detailId}', true)">${t('lb.detail.expand_all')}</button>
+        <button onclick="event.stopPropagation(); toggleAllDungeonSections('${detailId}', false)">${t('lb.detail.collapse_all')}</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px">`;
         seasonDungeonsOrder.forEach(d => {
           const dHFs = seasonAchievements.filter(a => a.dungeon === d);
           if (!dHFs.length) return; // donjon sans HF dans cette saison (ex: nouveaux donjons S3 absents de S2)
           const dDone = dHFs.filter(a => s.done.has(a.id)).length;
           const complete = dDone === dHFs.length;
           detailHtml += `<div class="dungeon-section">
-        <div class="dp-header">
-          <span class="dp-name">${t(d)}</span>
+        <div class="dp-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('open')">
+          <span class="dp-header-left"><span class="dp-chevron">▸</span><span class="dp-name">${t(d)}</span></span>
           <span class="dp-count ${complete ? 'complete' : ''}">${dDone}/${dHFs.length}${complete ? ' · +5pts' : ''}</span>
         </div>
         <div class="hf-list">`;
@@ -1801,6 +1905,7 @@
             const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
             detailHtml += `<div class="hf-item ${done ? 'done' : ''}">
           <div class="hf-check-icon">${done ? '✓' : ''}</div>
+          ${seasonBadgeHtml(a)}
           <span class="hf-item-name">${title}</span>
           <div class="hf-item-badges">${renderBadges(a)}</div>
           <span class="hf-item-pts">${done ? '+' + a.points : a.points} pts</span>
@@ -1813,8 +1918,8 @@
         // Section Affixes (catégorie à part, pas de bonus +5)
         if (seasonAffixes.length) {
           detailHtml += `<div class="dungeon-section" style="margin-top:14px">
-        <div class="dp-header">
-          <span class="dp-name">${t('affixes.section')}</span>
+        <div class="dp-header" onclick="event.stopPropagation(); this.parentElement.classList.toggle('open')">
+          <span class="dp-header-left"><span class="dp-chevron">▸</span><span class="dp-name">${t('affixes.section')}</span></span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 28px">`;
           seasonAffixesOrder.forEach(aff => {
@@ -1827,6 +1932,7 @@
               const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
               detailHtml += `<div class="hf-item ${done ? 'done' : ''}">
           <div class="hf-check-icon">${done ? '✓' : ''}</div>
+          ${seasonBadgeHtml(a)}
           <span class="hf-item-name">${title}</span>
           <div class="hf-item-badges">${renderBadges(a)}</div>
           <span class="hf-item-pts">${done ? '+' + a.points : a.points} pts</span>
@@ -2135,6 +2241,8 @@
       'cond.poulet': { fr: 'Poulet interdit', en: 'Chicken forbidden' },
       'cond.dash': { fr: 'Dash interdit', en: 'Dash forbidden' },
       'affixes.section': { fr: 'Affixes', en: 'Affixes' },
+      'lb.detail.expand_all': { fr: 'Tout déplier', en: 'Expand all' },
+      'lb.detail.collapse_all': { fr: 'Tout replier', en: 'Collapse all' },
       'season.s2': { fr: 'Pre-Saison 2', en: 'Pre-Season 2' },
       'season.s3': { fr: 'Pre-Saison 3', en: 'Pre-Season 3' },
       'season.total': { fr: 'Total', en: 'Total' },
