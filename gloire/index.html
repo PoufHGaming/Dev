@@ -175,6 +175,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 4px;
     }
 
@@ -1471,7 +1472,7 @@
     </div>
   </nav>
 
-  <div id="season-nav" style="display:flex;justify-content:center;gap:8px;padding:14px 24px 0;flex-wrap:wrap;">
+  <div id="season-nav" style="display:flex;justify-content:center;align-items:stretch;gap:8px;padding:14px 24px 0;flex-wrap:wrap;">
     <button class="season-tab" id="season-tab-S2" onclick="setSeason('S2', this)">
       <span class="season-tab-label">Pre-Saison 2</span>
       <span class="season-tab-status status-past" id="season-status-S2">Passé</span>
@@ -1762,6 +1763,7 @@
     function computeScores(players, completions) {
       // completions: [{player_id, achievement_id}]
       const { allScorable, dungeonsOrder } = getSeasonData(currentSeason);
+      const scorableIds = new Set(allScorable.map(a => a.id));
       const byPlayer = {};
       players.forEach(p => byPlayer[p.id] = new Set());
       completions.forEach(c => {
@@ -1781,13 +1783,18 @@
           const dungeonHFs = allScorable.filter(a => a.dungeon === d);
           if (dungeonHFs.length && dungeonHFs.every(a => done.has(a.id))) bonus += 5;
         });
+        // hf_count : uniquement les HF complétés qui appartiennent à la saison/vue active
+        // (done peut contenir des achievement_id d'autres saisons, car player_achievements est global)
+        let hfCount = 0;
+        done.forEach(aid => { if (scorableIds.has(aid)) hfCount++; });
         return {
           id: p.id,
           name: p.name,
           base,
           bonus,
           total: base + bonus,
-          hf_count: done.size,
+          hf_count: hfCount,
+          hf_total: allScorable.length,
           done
         };
       }).sort((a, b) => b.total - a.total);
@@ -1949,7 +1956,7 @@
       <div class="player-name" onclick="event.stopPropagation(); openProfile(${s.id}, '${s.name.replace(/'/g, "\\'")})" style="cursor:pointer">${s.name}${renderBadgesInline(s.id)}</div>
       <div class="score-base col-base">${s.base}</div>
       ${hideBonus ? '' : `<div class="score-bonus col-bonus">${s.bonus > 0 ? '+' + s.bonus : '—'}</div>`}
-      <div class="hf-count col-hf">${s.hf_count}</div>
+      <div class="hf-count col-hf">${s.hf_count}/${s.hf_total}</div>
       <div class="score-total">${s.total}</div>
       ${detailHtml}
     </div>`;
