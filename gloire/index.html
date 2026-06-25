@@ -172,6 +172,10 @@
       cursor: pointer;
       transition: all 0.2s;
       border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
     }
 
     .season-tab:hover {
@@ -185,6 +189,48 @@
       background: rgba(201, 168, 76, 0.08);
     }
 
+    .season-tab-label {
+      font-size: 13px;
+      letter-spacing: 0.1em;
+    }
+
+    .season-tab-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      font-weight: 600;
+    }
+
+    .season-tab-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .season-tab-status.status-ongoing {
+      color: #7ddf7d;
+    }
+
+    .season-tab-status.status-ongoing::before {
+      background: #7ddf7d;
+      box-shadow: 0 0 6px #7ddf7d;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .season-tab-status.status-past {
+      color: var(--text-muted);
+    }
+
+    .season-tab-status.status-past::before {
+      background: var(--text-muted);
+    }
+
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
     #season-nav {
       border-bottom: 1px solid var(--border);
       padding-bottom: 14px !important;
@@ -193,6 +239,8 @@
 
     @media (max-width: 640px) {
       .season-tab { font-size: 11px; padding: 6px 12px; }
+      .season-tab-label { font-size: 11px; }
+      .season-tab-status { font-size: 9px; }
     }
 
     /* MAIN */
@@ -236,6 +284,12 @@
       margin-bottom: 4px;
       transition: all 0.2s;
       cursor: default;
+    }
+
+    /* Mode TOTAL : pas de colonne bonus, on retombe sur 5 colonnes */
+    .lb-header.no-bonus-col,
+    .lb-row.no-bonus-col {
+      grid-template-columns: 40px 1fr 80px 80px 80px;
     }
 
     .lb-row:hover {
@@ -1277,7 +1331,7 @@
 <body>
 
   <header>
-    <div class="event-title" id="event-title">Gloire à la Compagnie I</div>
+    <div class="event-title" id="event-title">Gloire à la Compagnie</div>
     <div class="event-subtitle" id="header-subtitle">Du 21/04 au 17/05 &nbsp;·&nbsp; Classement en direct</div>
     <div class="event-subtitle" id="header-organiser">Organisé par Pouf</div>
     <div class="social-links">
@@ -1319,9 +1373,9 @@
           style="padding:6px 10px;font-size:12px;border-radius:0 3px 3px 0;">EN</button>
       </div>
 
-      <button class="tab" id="help-btn" onclick="toggleHelpMenu()" style=""></button>
+      <button class="tab" id="join-btn" onclick="toggleJoinMenu()">Join</button>
 
-      <div id="help-menu" style="
+      <div id="join-menu" style="
     display:none;
     position:absolute;
     top:40px;
@@ -1335,17 +1389,23 @@
   ">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1t3Eol7FKP1efLmgBTiJSQ43mjIdSqltBys6Egv-3W-Hfzw/viewform?usp=sharing&ouid=118146898505717091637"
           target="_blank" id="joiningform" class="help-link">Join the event</a>
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfKiGWA_6jCTaeZVyJ_9nsNibcy2WK0u9KLaPEh1nxNZSgNtA/viewform?usp=sharing&ouid=118146898505717091637"
-          target="_blank" id="feedbackform" class="help-link">Submit feedback</a>
       </div>
 
     </div>
   </nav>
 
-  <div id="season-nav" style="display:flex;justify-content:center;gap:2px;padding:14px 24px 0;">
-    <button class="season-tab" id="season-tab-S2" onclick="setSeason('S2', this)">Saison 2</button>
-    <button class="season-tab" id="season-tab-S3" onclick="setSeason('S3', this)">Saison 3</button>
-    <button class="season-tab" id="season-tab-TOTAL" onclick="setSeason('TOTAL', this)">Total</button>
+  <div id="season-nav" style="display:flex;justify-content:center;gap:8px;padding:14px 24px 0;flex-wrap:wrap;">
+    <button class="season-tab" id="season-tab-S2" onclick="setSeason('S2', this)">
+      <span class="season-tab-label">Pre-Saison 2</span>
+      <span class="season-tab-status status-past" id="season-status-S2">Passé</span>
+    </button>
+    <button class="season-tab" id="season-tab-S3" onclick="setSeason('S3', this)">
+      <span class="season-tab-label">Pre-Saison 3</span>
+      <span class="season-tab-status status-ongoing" id="season-status-S3">En cours</span>
+    </button>
+    <button class="season-tab" id="season-tab-TOTAL" onclick="setSeason('TOTAL', this)">
+      <span class="season-tab-label">Total</span>
+    </button>
   </div>
 
   <main>
@@ -1682,11 +1742,13 @@
 
     function renderLeaderboard(scores) {
       const rankIcons = ['I', 'II', 'III'];
-      let html = `<div class="lb-header">
+      const hideBonus = currentSeason === 'TOTAL';
+      const noBonusClass = hideBonus ? ' no-bonus-col' : '';
+      let html = `<div class="lb-header${noBonusClass}">
     <div></div>
     <div>${t('lb.col.player')}</div>
     <div class="col-base" style="text-align:right">${t('lb.col.base')}</div>
-    <div class="col-bonus" style="text-align:right">${t('lb.col.bonus')}</div>
+    ${hideBonus ? '' : `<div class="col-bonus" style="text-align:right">${t('lb.col.bonus')}</div>`}
     <div class="col-hf" style="text-align:right">${t('lb.col.hf')}</div>
     <div style="text-align:right">${t('lb.col.total')}</div>
   </div>`;
@@ -1776,11 +1838,11 @@
         }
         detailHtml += '</div>';
 
-        html += `<div class="lb-row ${rankClass}" onclick="this.classList.toggle('open')">
+        html += `<div class="lb-row ${rankClass}${noBonusClass}" onclick="this.classList.toggle('open')">
       <div class="rank-num">${rankLabel}</div>
       <div class="player-name" onclick="event.stopPropagation(); openProfile(${s.id}, '${s.name.replace(/'/g, "\\'")})" style="cursor:pointer">${s.name}${renderBadgesInline(s.id)}</div>
       <div class="score-base col-base">${s.base}</div>
-      <div class="score-bonus col-bonus">${s.bonus > 0 ? '+' + s.bonus : '—'}</div>
+      ${hideBonus ? '' : `<div class="score-bonus col-bonus">${s.bonus > 0 ? '+' + s.bonus : '—'}</div>`}
       <div class="hf-count col-hf">${s.hf_count}</div>
       <div class="score-total">${s.total}</div>
       ${detailHtml}
@@ -2028,12 +2090,9 @@
     // ---- TRADUCTIONS ----
     // Remplis les valeurs EN ci-dessous. Les FR sont les textes par défaut.
     const TRANSLATIONS = {
-      'nav.help': { fr: 'Aide ?', en: 'Help ?' },
-      'header.event-title.S2': { fr: 'Gloire à la Compagnie — Saison 2', en: 'Glory to the Fellowship — Season 2' },
-      'header.event-title.S3': { fr: 'Gloire à la Compagnie — Saison 3', en: 'Glory to the Fellowship — Season 3' },
-      'header.event-title.TOTAL': { fr: 'Gloire à la Compagnie — Total', en: 'Glory to the Fellowship — Total' },
+      'nav.join': { fr: 'Rejoindre', en: 'Join' },
+      'header.event-title': { fr: 'Gloire à la Compagnie', en: 'Glory to the Fellowship' },
       'nav.joiningform': { fr: 'Rejoindre l\'événement', en: 'Join the event' },
-      'nav.feedbackform': { fr: 'Donner votre avis', en: 'Provide feedback' },
       'nav.leaderboard': { fr: 'Classement', en: 'Leaderboard' },
       'nav.achievements': { fr: 'Hauts-faits', en: 'Achievements' },
       'nav.rules': { fr: 'Règles', en: 'Rules' },
@@ -2050,11 +2109,11 @@
       'rules.valid.1': { fr: "Pas de logs obligatoires pendant la complétion. Jouez le jeu honnêtement, c'est tout ce qu'on demande.", en: "No logs required during completion. Play honestly. That's all we ask." },
       'rules.valid.2': { fr: "Les hauts-faits sont liés au compte. Pour les valider, envoyez un MP à Pouf ou postez un message sur le Discord avec le nom des challenges accomplis. Le score sera mis à jour en conséquence.", en: 'Achievement are bind to account. To validate them, send a DM to Pouf or post a message on Discord with the completed challenge names. The score will be updated accordingly.' },
       'rules.dungeon.1': { fr: 'Les donjons sont à faire uniquement entre Eternal 5 & Eternal 9.', en: 'Dungeons must be completed between Eternal 5 & Eternal 9 only.' },
-      'header.subtitle': { fr: 'Event Pre-saison 2 · Classement en direct', en: 'Pre Season 2 Event · Live rankings' },
+      'header.subtitle': { fr: 'Complétez un maximum de hauts-faits de donjons', en: 'Complete as many dungeon achievements as possible' },
       'header.organiser': { fr: 'Organisé par Pouf', en: 'Hosted by Pouf' },
       'lb.col.player': { fr: 'Joueur', en: 'Player' },
       'lb.col.base': { fr: 'Base', en: 'Base' },
-      'lb.col.bonus': { fr: 'Bonus', en: 'Bonus' },
+      'lb.col.bonus': { fr: 'Bonus Saison', en: 'Season Bonus' },
       'lb.col.hf': { fr: 'HF', en: 'Ach.' },
       'lb.col.total': { fr: 'Total', en: 'Total' },
       'hf.bonus_tag': { fr: '+5 pts si complet', en: '+5 pts if complete' },
@@ -2076,9 +2135,11 @@
       'cond.poulet': { fr: 'Poulet interdit', en: 'Chicken forbidden' },
       'cond.dash': { fr: 'Dash interdit', en: 'Dash forbidden' },
       'affixes.section': { fr: 'Affixes', en: 'Affixes' },
-      'season.s2': { fr: 'Saison 2', en: 'Season 2' },
-      'season.s3': { fr: 'Saison 3', en: 'Season 3' },
+      'season.s2': { fr: 'Pre-Saison 2', en: 'Pre-Season 2' },
+      'season.s3': { fr: 'Pre-Saison 3', en: 'Pre-Season 3' },
       'season.total': { fr: 'Total', en: 'Total' },
+      'season.status.past': { fr: 'Passé', en: 'Past' },
+      'season.status.ongoing': { fr: 'En cours', en: 'Ongoing' },
       // Noms de donjons
       "Abime des marins": { fr: "Abime des marins", en: "Sailor's Abyss" },
       "Bois de L'aube": { fr: "Bois de L'aube", en: "Everdawn Grove" },
@@ -2162,15 +2223,16 @@
       document.getElementById('tab-leaderboard').textContent = t('nav.leaderboard');
       document.getElementById('tab-achievements').textContent = t('nav.achievements');
       document.getElementById('tab-rules').textContent = t('nav.rules');
-      document.getElementById('help-btn').textContent = t('nav.help');
-      document.getElementById('event-title').textContent = t('header.event-title.' + currentSeason);
+      document.getElementById('join-btn').textContent = t('nav.join');
+      document.getElementById('event-title').textContent = t('header.event-title');
       document.getElementById('joiningform').textContent = t('nav.joiningform');
-      document.getElementById('feedbackform').textContent = t('nav.feedbackform');
       document.getElementById('lang-btn-fr').classList.toggle('active', currentLang === 'fr');
       document.getElementById('lang-btn-en').classList.toggle('active', currentLang === 'en');
-      document.getElementById('season-tab-S2').textContent = t('season.s2');
-      document.getElementById('season-tab-S3').textContent = t('season.s3');
-      document.getElementById('season-tab-TOTAL').textContent = t('season.total');
+      document.querySelector('#season-tab-S2 .season-tab-label').textContent = t('season.s2');
+      document.querySelector('#season-tab-S3 .season-tab-label').textContent = t('season.s3');
+      document.querySelector('#season-tab-TOTAL .season-tab-label').textContent = t('season.total');
+      document.getElementById('season-status-S2').textContent = t('season.status.past');
+      document.getElementById('season-status-S3').textContent = t('season.status.ongoing');
       document.documentElement.lang = currentLang;
     }
 
@@ -2183,15 +2245,15 @@
       if (document.getElementById('page-rules').classList.contains('active')) renderRules();
     }
 
-    function toggleHelpMenu() {
-      const menu = document.getElementById('help-menu');
+    function toggleJoinMenu() {
+      const menu = document.getElementById('join-menu');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
     // Fermer si clic ailleurs
     document.addEventListener('click', function (e) {
-      const menu = document.getElementById('help-menu');
-      const btn = document.getElementById('help-btn');
+      const menu = document.getElementById('join-menu');
+      const btn = document.getElementById('join-btn');
       if (!menu.contains(e.target) && e.target !== btn) {
         menu.style.display = 'none';
       }
