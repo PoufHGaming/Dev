@@ -125,6 +125,14 @@
     }
 
     /* NAV */
+    #sticky-nav-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg);
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+    }
+
     nav {
       display: flex;
       justify-content: center;
@@ -1683,60 +1691,63 @@
     </div>
   </header>
 
-  <nav>
-    <a href="../index.html" class="tab home-btn" title="Accueil"
-      style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:8px 14px;opacity:0.7;transition:opacity 0.2s;"
-      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-      </svg>
-    </a>
-    <div style="width:1px;height:20px;background:var(--border);margin:0 2px;align-self:center;"></div>
-    <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard', this)">Classement</button>
-    <button class="tab" id="tab-achievements" onclick="showPage('achievements', this)">Hauts-faits</button>
-    <button class="tab" id="tab-rules" onclick="showPage('rules', this)">Règles</button>
-    <div style="margin-left:auto; display:flex; align-items:center; gap:10px; position:relative;">
+  <div id="sticky-nav-wrapper">
+    <nav>
+      <a href="../index.html" class="tab home-btn" title="Accueil"
+        style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:8px 14px;opacity:0.7;transition:opacity 0.2s;"
+        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+      </a>
+      <div style="width:1px;height:20px;background:var(--border);margin:0 2px;align-self:center;"></div>
+      <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard', this)">Classement</button>
+      <button class="tab" id="tab-achievements" onclick="showPage('achievements', this)">Hauts-faits</button>
+      <button class="tab" id="tab-rules" onclick="showPage('rules', this)">Règles</button>
+      <div style="position:relative;">
+        <button class="tab" id="join-btn" onclick="toggleJoinMenu()">Join</button>
 
-      <div style="display:flex;gap:2px;">
-        <button class="tab lang-btn-fr" id="lang-btn-fr" onclick="setLang('fr')"
-          style="padding:6px 10px;font-size:12px;border-radius:3px 0 0 3px;">FR</button>
-        <button class="tab lang-btn-en" id="lang-btn-en" onclick="setLang('en')"
-          style="padding:6px 10px;font-size:12px;border-radius:0 3px 3px 0;">EN</button>
+        <div id="join-menu" style="
+      display:none;
+      position:absolute;
+      top:40px;
+      left:0;
+      background:var(--bg2);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:10px;
+      min-width:200px;
+      z-index:60;
+    ">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1t3Eol7FKP1efLmgBTiJSQ43mjIdSqltBys6Egv-3W-Hfzw/viewform?usp=sharing&ouid=118146898505717091637"
+            target="_blank" id="joiningform" class="help-link">Join the event</a>
+        </div>
       </div>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:10px; position:relative;">
 
-      <button class="tab" id="join-btn" onclick="toggleJoinMenu()">Join</button>
+        <div style="display:flex;gap:2px;">
+          <button class="tab lang-btn-fr" id="lang-btn-fr" onclick="setLang('fr')"
+            style="padding:6px 10px;font-size:12px;border-radius:3px 0 0 3px;">FR</button>
+          <button class="tab lang-btn-en" id="lang-btn-en" onclick="setLang('en')"
+            style="padding:6px 10px;font-size:12px;border-radius:0 3px 3px 0;">EN</button>
+        </div>
 
-      <div id="join-menu" style="
-    display:none;
-    position:absolute;
-    top:40px;
-    right:0;
-    background:var(--bg2);
-    border:1px solid var(--border);
-    border-radius:6px;
-    padding:10px;
-    min-width:200px;
-    z-index:10;
-  ">
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc1t3Eol7FKP1efLmgBTiJSQ43mjIdSqltBys6Egv-3W-Hfzw/viewform?usp=sharing&ouid=118146898505717091637"
-          target="_blank" id="joiningform" class="help-link">Join the event</a>
       </div>
+    </nav>
 
+    <div id="season-nav" style="display:flex;justify-content:center;align-items:stretch;gap:8px;padding:14px 24px 0;flex-wrap:wrap;">
+      <button class="season-tab" id="season-tab-S2" onclick="setSeason('S2', this)">
+        <span class="season-tab-label">Pre-Saison 2</span>
+        <span class="season-tab-status status-past" id="season-status-S2">Passé</span>
+      </button>
+      <button class="season-tab" id="season-tab-S3" onclick="setSeason('S3', this)">
+        <span class="season-tab-label">Pre-Saison 3</span>
+        <span class="season-tab-status status-ongoing" id="season-status-S3">En cours</span>
+      </button>
+      <button class="season-tab" id="season-tab-TOTAL" onclick="setSeason('TOTAL', this)">
+        <span class="season-tab-label">Total</span>
+      </button>
     </div>
-  </nav>
-
-  <div id="season-nav" style="display:flex;justify-content:center;align-items:stretch;gap:8px;padding:14px 24px 0;flex-wrap:wrap;">
-    <button class="season-tab" id="season-tab-S2" onclick="setSeason('S2', this)">
-      <span class="season-tab-label">Pre-Saison 2</span>
-      <span class="season-tab-status status-past" id="season-status-S2">Passé</span>
-    </button>
-    <button class="season-tab" id="season-tab-S3" onclick="setSeason('S3', this)">
-      <span class="season-tab-label">Pre-Saison 3</span>
-      <span class="season-tab-status status-ongoing" id="season-status-S3">En cours</span>
-    </button>
-    <button class="season-tab" id="season-tab-TOTAL" onclick="setSeason('TOTAL', this)">
-      <span class="season-tab-label">Total</span>
-    </button>
   </div>
 
   <main>
