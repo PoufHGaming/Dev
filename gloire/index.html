@@ -259,6 +259,127 @@
       display: block;
     }
 
+    /* LEADERBOARD SEARCH */
+    .lb-search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .lb-search-bar:focus-within {
+      border-color: var(--border-bright);
+    }
+
+    .lb-search-icon {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .lb-search-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Crimson Pro', serif;
+      font-size: 15px;
+      font-weight: 300;
+    }
+
+    .lb-search-input::placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .lb-search-clear {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 4px;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .lb-search-clear:hover {
+      color: var(--text);
+    }
+
+    .lb-no-results {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* LEADERBOARD PAGINATION */
+    .lb-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .lb-page-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 3px;
+      transition: all 0.15s;
+      min-width: 34px;
+    }
+
+    .lb-page-btn:hover:not(:disabled) {
+      border-color: var(--border-bright);
+      color: var(--text);
+    }
+
+    .lb-page-btn.active {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+      background: rgba(201, 168, 76, 0.08);
+    }
+
+    .lb-page-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .lb-page-ellipsis {
+      color: var(--text-muted);
+      padding: 0 4px;
+      font-size: 12px;
+    }
+
+    .lb-pagination-info {
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 640px) {
+      .lb-page-btn { font-size: 11px; padding: 5px 9px; min-width: 28px; }
+    }
+
     /* LEADERBOARD */
     .lb-header {
       display: grid;
@@ -1622,6 +1743,14 @@
 
     <!-- LEADERBOARD -->
     <div id="page-leaderboard" class="page active">
+      <div class="lb-search-bar">
+        <svg class="lb-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="lb-search-input" class="lb-search-input" oninput="onLbSearchInput(this.value)" autocomplete="off">
+        <button id="lb-search-clear" class="lb-search-clear" onclick="clearLbSearch()" style="display:none;">✕</button>
+      </div>
       <div id="lb-content" class="loading">Chargement...</div>
     </div>
 
@@ -1974,6 +2103,32 @@
       });
     }
 
+    // ---- LEADERBOARD SEARCH & PAGINATION ----
+    let lbSearchQuery = '';
+    let lbCurrentPage = 1;
+    const LB_PAGE_SIZE = 20;
+
+    function onLbSearchInput(value) {
+      lbSearchQuery = value;
+      lbCurrentPage = 1; // toute nouvelle recherche repart à la page 1 des résultats filtrés
+      document.getElementById('lb-search-clear').style.display = value ? 'block' : 'none';
+      if (lbData) renderLeaderboard(lbData);
+    }
+
+    function clearLbSearch() {
+      lbSearchQuery = '';
+      lbCurrentPage = 1;
+      document.getElementById('lb-search-input').value = '';
+      document.getElementById('lb-search-clear').style.display = 'none';
+      if (lbData) renderLeaderboard(lbData);
+    }
+
+    function goToLbPage(page) {
+      lbCurrentPage = page;
+      if (lbData) renderLeaderboard(lbData);
+      document.getElementById('lb-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     function renderLeaderboard(scores) {
       const rankIcons = ['I', 'II', 'III'];
       const hideBonus = currentSeason === 'TOTAL';
@@ -1988,6 +2143,9 @@
   </div>`;
 
       // Rang dense : 1,1,1,2,3,4,4,4... (saute les 0 pts)
+      // IMPORTANT : calculé sur la liste COMPLÈTE et déjà triée, avant tout filtrage/pagination,
+      // pour que le rang affiché reste le vrai rang dans le classement global (ex: 21, 22 page 2),
+      // peu importe la recherche ou la page actuelle.
       let nextRank = 1;
       scores.forEach((s, i) => {
         if (s.total === 0) {
@@ -2000,7 +2158,25 @@
         }
       });
 
-      scores.forEach((s, i) => {
+      // Filtrage par nom (insensible à la casse/accents), sur la liste déjà rangée
+      const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      const query = normalize(lbSearchQuery.trim());
+      const filtered = query ? scores.filter(s => normalize(s.name).includes(query)) : scores;
+
+      // Pagination du résultat filtré
+      const totalPages = Math.max(1, Math.ceil(filtered.length / LB_PAGE_SIZE));
+      if (lbCurrentPage > totalPages) lbCurrentPage = totalPages;
+      if (lbCurrentPage < 1) lbCurrentPage = 1;
+      const pageStart = (lbCurrentPage - 1) * LB_PAGE_SIZE;
+      const pageItems = filtered.slice(pageStart, pageStart + LB_PAGE_SIZE);
+
+      if (!filtered.length) {
+        html += `<div class="lb-no-results">${t('lb.search.no_results')}</div>`;
+        document.getElementById('lb-content').innerHTML = html;
+        return;
+      }
+
+      pageItems.forEach((s, i) => {
         const rank = s._rank;
         // Style visuel : on colore les 3 premières positions distinctes
         const topRanks = [...new Set(scores.filter(x => x.total > 0).map(x => x._rank))].slice(0, 3);
@@ -2094,7 +2270,43 @@
     </div>`;
       });
 
+      html += renderLbPagination(filtered.length, totalPages, lbCurrentPage);
+
       document.getElementById('lb-content').innerHTML = html;
+    }
+
+    // Génère les contrôles de pagination avec ellipses (1 … 4 5 [6] 7 8 … 12)
+    function renderLbPagination(totalItems, totalPages, currentPage) {
+      if (totalPages <= 1) {
+        return `<div class="lb-pagination-info">${t('lb.pagination.total').replace('{count}', totalItems)}</div>`;
+      }
+
+      const pages = [];
+      const windowSize = 1; // pages voisines affichées autour de la page courante
+      for (let p = 1; p <= totalPages; p++) {
+        if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= windowSize) {
+          pages.push(p);
+        } else if (pages[pages.length - 1] !== '…') {
+          pages.push('…');
+        }
+      }
+
+      let html = '<div class="lb-pagination">';
+      html += `<button class="lb-page-btn" onclick="goToLbPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} aria-label="${t('lb.pagination.prev')}">‹</button>`;
+      pages.forEach(p => {
+        if (p === '…') {
+          html += '<span class="lb-page-ellipsis">…</span>';
+        } else {
+          html += `<button class="lb-page-btn ${p === currentPage ? 'active' : ''}" onclick="goToLbPage(${p})">${p}</button>`;
+        }
+      });
+      html += `<button class="lb-page-btn" onclick="goToLbPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} aria-label="${t('lb.pagination.next')}">›</button>`;
+      html += '</div>';
+      html += `<div class="lb-pagination-info">${t('lb.pagination.range')
+        .replace('{from}', String((currentPage - 1) * LB_PAGE_SIZE + 1))
+        .replace('{to}', String(Math.min(currentPage * LB_PAGE_SIZE, totalItems)))
+        .replace('{total}', String(totalItems))}</div>`;
+      return html;
     }
 
     // ---- ACHIEVEMENTS LIST ----
@@ -2361,6 +2573,12 @@
       'lb.col.bonus': { fr: 'Bonus Saison', en: 'Season Bonus' },
       'lb.col.hf': { fr: 'HF', en: 'Ach.' },
       'lb.col.total': { fr: 'Total', en: 'Total' },
+      'lb.search.placeholder': { fr: 'Rechercher un joueur…', en: 'Search a player…' },
+      'lb.search.no_results': { fr: 'Aucun joueur trouvé.', en: 'No player found.' },
+      'lb.pagination.prev': { fr: 'Page précédente', en: 'Previous page' },
+      'lb.pagination.next': { fr: 'Page suivante', en: 'Next page' },
+      'lb.pagination.range': { fr: '{from}–{to} sur {total} joueurs', en: '{from}–{to} of {total} players' },
+      'lb.pagination.total': { fr: '{count} joueurs', en: '{count} players' },
       'hf.bonus_tag': { fr: '+5 pts si complet', en: '+5 pts if complete' },
       'hf.pts_max': { fr: 'pts max', en: 'pts max' },
       'secret.section': { fr: '✦ Haut-fait secret ✦', en: '✦ Secret Achievement ✦' },
@@ -2481,6 +2699,7 @@
       document.querySelector('#season-tab-TOTAL .season-tab-label').textContent = t('season.total');
       document.getElementById('season-status-S2').textContent = t('season.status.past');
       document.getElementById('season-status-S3').textContent = t('season.status.ongoing');
+      document.getElementById('lb-search-input').placeholder = t('lb.search.placeholder');
       document.documentElement.lang = currentLang;
     }
 
