@@ -1097,6 +1097,133 @@
       font-family: 'Cinzel', serif;
     }
 
+    /* EASTER EGG — rune discrète dans le header, déguisée en simple ornement */
+    .header-ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 6px;
+      color: var(--text-muted);
+      opacity: 0.5;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      transition: opacity 0.4s;
+    }
+
+    .header-ornament-line {
+      width: 28px;
+      height: 1px;
+      background: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .secret-rune {
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      color: var(--text-muted);
+      transition: color 0.5s, text-shadow 0.5s, transform 0.3s;
+      padding: 4px;
+    }
+
+    .secret-rune:hover {
+      color: #b8a0f0;
+      text-shadow: 0 0 10px rgba(155, 127, 234, 0.6);
+      transform: scale(1.3) rotate(8deg);
+    }
+
+    /* Modale de la rune secrète : même esprit que .secret-card, en overlay */
+    .rune-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      backdrop-filter: blur(4px);
+    }
+
+    .rune-modal-overlay.open {
+      display: flex;
+    }
+
+    .rune-modal {
+      background: #120d1c;
+      border: 1px solid rgba(155, 127, 234, 0.4);
+      border-radius: 8px;
+      max-width: 420px;
+      width: 100%;
+      padding: 28px 26px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 40px rgba(155, 127, 234, 0.08);
+    }
+
+    .rune-modal::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg,
+          transparent,
+          transparent 8px,
+          rgba(155, 127, 234, 0.025) 8px,
+          rgba(155, 127, 234, 0.025) 16px);
+      pointer-events: none;
+    }
+
+    .rune-modal-symbol {
+      font-size: 28px;
+      color: #b8a0f0;
+      margin-bottom: 14px;
+      text-shadow: 0 0 16px rgba(155, 127, 234, 0.5);
+    }
+
+    .rune-modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #b8a0f0;
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+
+    .rune-modal-desc {
+      color: #a090d8;
+      font-size: 14px;
+      line-height: 1.7;
+      font-style: italic;
+      letter-spacing: 0.03em;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .rune-modal-close {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid rgba(155, 127, 234, 0.3);
+      border-radius: 4px;
+      padding: 7px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .rune-modal-close:hover {
+      color: #b8a0f0;
+      border-color: rgba(155, 127, 234, 0.5);
+    }
+
     /* LOADING */
     .loading {
       text-align: center;
@@ -1412,6 +1539,11 @@
     <div class="event-title" id="event-title">Gloire à la Compagnie</div>
     <div class="event-subtitle" id="header-subtitle">Du 21/04 au 17/05 &nbsp;·&nbsp; Classement en direct</div>
     <div class="event-subtitle" id="header-organiser">Organisé par Pouf</div>
+    <div class="header-ornament">
+      <span class="header-ornament-line"></span>
+      <span class="secret-rune" id="secret-rune" onclick="openRuneModal()" title="">✦</span>
+      <span class="header-ornament-line"></span>
+    </div>
     <div class="social-links">
       <a href="https://www.twitch.tv/pouf_hgaming" target="_blank" rel="noopener" class="social-link twitch">
         <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -2235,6 +2367,7 @@
       'secret.title': { fr: '— ? —', en: '— ? —' },
       'secret.desc': { fr: "Sous des coques immobiles, ils prennent jusqu'à sombrer sous son poids.", en: 'Beneath motionless hulls, they take until they sink under its weight.' },
       'secret.coming': { fr: "Sous des coques immobiles, ils prennent jusqu'à sombrer sous son poids.", en: 'Beneath motionless hulls, they take until they sink under its weight.' },
+      'secret.close': { fr: 'Fermer', en: 'Close' },
       'badge.hard': { fr: 'Difficile', en: 'Hard' },
       'badge.solo': { fr: 'Solo', en: 'Solo' },
       'badge.log': { fr: 'Preuve (log/replay) requise', en: 'Proof (log/replay) required' },
@@ -2455,6 +2588,16 @@
     </div>
   </div>
 
+  <!-- ── RUNE SECRÈTE (easter egg) ── -->
+  <div class="rune-modal-overlay" id="rune-modal-overlay" onclick="if(event.target===this)closeRuneModal()">
+    <div class="rune-modal">
+      <div class="rune-modal-symbol">✦</div>
+      <div class="rune-modal-title" id="rune-modal-title">— ? —</div>
+      <div class="rune-modal-desc" id="rune-modal-desc"></div>
+      <button class="rune-modal-close" onclick="closeRuneModal()" id="rune-modal-close-btn">Fermer</button>
+    </div>
+  </div>
+
   <script>
     // ── BADGES ──
     let _allBadges = null, _playerBadges = null;
@@ -2509,7 +2652,27 @@
       document.getElementById('profile-modal').classList.remove('open');
       document.body.style.overflow = '';
     }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ── RUNE SECRÈTE (easter egg) ──
+    function openRuneModal() {
+      document.getElementById('rune-modal-title').textContent = t('secret.title');
+      document.getElementById('rune-modal-desc').textContent = t('secret.coming');
+      document.getElementById('rune-modal-close-btn').textContent = t('secret.close');
+      document.getElementById('rune-modal-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeRuneModal() {
+      document.getElementById('rune-modal-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeRuneModal();
+      }
+    });
   </script>
 
 </body>
