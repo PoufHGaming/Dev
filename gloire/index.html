@@ -2536,19 +2536,6 @@
         html += `</div></div>`;
       }
 
-      // HF SECRET
-      html += `<div class="secret-section">
-    <div class="secret-title">${t('secret.section')}</div>
-    <div class="secret-card" onclick="this.classList.toggle('open')">
-      <div class="secret-card-header">
-        <span class="secret-card-title">${t('secret.title')}</span>
-      </div>
-      <div class="secret-card-desc">
-        <span class="secret-coming-soon">${t('secret.coming')}</span>
-      </div>
-    </div>
-  </div>`;
-
       document.getElementById('ach-content').innerHTML = html;
     }
 
