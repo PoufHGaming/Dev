@@ -800,6 +800,8 @@
       height: 22px;
       border-radius: 4px;
       flex-shrink: 0;
+      position: relative;
+      cursor: default;
     }
 
     .badge img {
@@ -807,6 +809,45 @@
       height: 18px;
       object-fit: contain;
       display: block;
+    }
+
+    /* Tooltip custom flottant unique, partagé par toutes les icônes de badges/conditions.
+       Positionné dynamiquement en JS (position: fixed) pour ne jamais être tronqué par
+       un ancêtre en overflow:hidden (ex: .dungeon-block, nécessaire pour ses coins arrondis). */
+    #hf-tooltip {
+      display: none;
+      position: fixed;
+      background: #0e1210;
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      border-radius: 4px;
+      padding: 5px 9px;
+      white-space: nowrap;
+      font-family: 'Cinzel', serif;
+      font-size: 10.5px;
+      letter-spacing: 0.05em;
+      font-style: normal;
+      color: #e8c96a;
+      z-index: 500;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+      transform: translateX(-50%);
+    }
+
+    #hf-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: rgba(201, 168, 76, 0.35);
+    }
+
+    #hf-tooltip.below::after {
+      top: auto;
+      bottom: 100%;
+      border-top-color: transparent;
+      border-bottom-color: rgba(201, 168, 76, 0.35);
     }
 
     .badge-pts {
@@ -1833,6 +1874,7 @@
   </main>
 
   <div class="toast" id="toast"></div>
+  <div id="hf-tooltip"></div>
 
   <script>
     // ============================================================
@@ -2669,13 +2711,13 @@
       if (a.comingSoon) return ''; // pas de points ni badges pour un HF pas encore défini
       let html = '';
       if (a.hard)
-        html += `<span class="badge" title="${t('badge.hard')}"><img src="images/badges/hard.png" alt="${t('badge.hard')}"></span>`;
+        html += `<span class="badge" data-tooltip="${t('badge.hard')}"><img src="images/badges/hard.png" alt="${t('badge.hard')}"></span>`;
       if (a.personal)
-        html += `<span class="badge" title="${t('badge.solo')}"><img src="images/badges/solo.png" alt="${t('badge.solo')}"></span>`;
+        html += `<span class="badge" data-tooltip="${t('badge.solo')}"><img src="images/badges/solo.png" alt="${t('badge.solo')}"></span>`;
       if (a.logRequired)
-        html += `<span class="badge" title="${t('badge.log')}"><img src="images/badges/log.png" alt="${t('badge.log')}"></span>`;
+        html += `<span class="badge" data-tooltip="${t('badge.log')}"><img src="images/badges/log.png" alt="${t('badge.log')}"></span>`;
       (a.conditions || []).forEach(c =>
-        html += `<span class="badge" title="${t('cond.' + c)}"><img src="images/conditions/${c}.png" alt="${c}"></span>`
+        html += `<span class="badge" data-tooltip="${t('cond.' + c)}"><img src="images/conditions/${c}.png" alt="${c}"></span>`
       );
       html += `<span class="badge badge-pts">${a.points} pts</span>`;
       return html;
@@ -2930,6 +2972,53 @@
       if (id === 'achievements') renderAchievements();
       if (id === 'rules') renderRules();
     }
+
+    // ---- TOOLTIP FLOTTANT (badges/conditions des HF) ----
+    // Délégation d'événements sur document : fonctionne même quand les .badge sont
+    // regénérés dynamiquement (renderAchievements/renderLeaderboard). Positionné en
+    // position:fixed + JS pour ne jamais être tronqué par un ancêtre overflow:hidden
+    // (ex: .dungeon-block, nécessaire pour ses coins arrondis sur l'image de fond).
+    (function () {
+      const tooltip = document.getElementById('hf-tooltip');
+      let activeBadge = null;
+
+      function positionTooltip(badge) {
+        const rect = badge.getBoundingClientRect();
+        tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+        const tooltipHeight = tooltip.offsetHeight || 28;
+        const spaceAbove = rect.top;
+        if (spaceAbove < tooltipHeight + 14) {
+          // Pas assez de place au-dessus (ex: badge tout en haut de l'écran) -> afficher en dessous
+          tooltip.style.top = (rect.bottom + 7) + 'px';
+          tooltip.classList.add('below');
+        } else {
+          tooltip.style.top = (rect.top - tooltipHeight - 7) + 'px';
+          tooltip.classList.remove('below');
+        }
+      }
+
+      document.addEventListener('mouseover', function (e) {
+        const badge = e.target.closest('.badge[data-tooltip]');
+        if (!badge || badge === activeBadge) return;
+        activeBadge = badge;
+        tooltip.textContent = badge.getAttribute('data-tooltip');
+        tooltip.style.display = 'block';
+        positionTooltip(badge);
+      });
+
+      document.addEventListener('mouseout', function (e) {
+        const badge = e.target.closest('.badge[data-tooltip]');
+        if (!badge) return;
+        if (e.relatedTarget && badge.contains(e.relatedTarget)) return; // survol d'un enfant interne
+        activeBadge = null;
+        tooltip.style.display = 'none';
+      });
+
+      // Si la fenêtre défile/se redimensionne pendant un survol, on recale ou on masque
+      window.addEventListener('scroll', function () {
+        if (activeBadge) positionTooltip(activeBadge);
+      }, { passive: true });
+    })();
 
     // ---- INIT ----
     applyLangToStaticElements();
