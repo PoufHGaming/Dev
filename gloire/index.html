@@ -2083,19 +2083,24 @@
     // Métadonnées d'affichage des affixes : nom officiel in-game, couleur thématique,
     // chemin d'icône (à fournir — l'affichage se dégrade proprement si le fichier n'existe pas encore).
     const AFFIX_META = {
-      "Enforcer": { name: "Empowered Minions", color: "#c9a84c", icon: "images/affixes/empowered-minions.jpg" },
-      "Foudre": { name: "Storm Shield", color: "#7b4fc7", icon: "images/affixes/storm-shield.jpg" },
-      "Shadow": { name: "Shadow Lord's Trial", color: "#9b6fd6", icon: "images/affixes/shadow-lords-trial.jpg" },
-      "Orbs": { name: "Anomalous Orbs", color: "#e8c050", icon: "images/affixes/anomalous-orbs.jpg" },
-      "Gelée": { name: "Binding Ice", color: "#4fc8e8", icon: "images/affixes/binding-ice.jpg" },
-      "Boss Boost": { name: "Ultimatum", color: "#7b8fd6", icon: "images/affixes/ultimatum.jpg" },
-      "Sang": { name: "Blood Shards", color: "#e85a2d", icon: "images/affixes/blood-shards.jpg" },
-      "Pierre": { name: "Stone Skin", color: "#b8924f", icon: "images/affixes/stone-skin.jpg" },
-      "Eira": { name: "Eira the White Witch", color: "#5fc8f0", icon: "images/affixes/eira-the-white-witch.jpg" },
-      "Ghorn": { name: "Ghorn the Avalanche", color: "#3fd6e8", icon: "images/affixes/ghorn-the-avalanche.jpg" },
-      "Meteor": { name: "Meteor Rain", color: "#f0941f", icon: "images/affixes/meteor-rain.jpg" },
-      "Truesight": { name: "Truesight", color: "#d63838", icon: "images/affixes/truesight.jpg" },
+      "Enforcer": { name: "Sbires Renforcés", name_en: "Empowered Minions", color: "#c9a84c", icon: "images/affixes/empowered-minions.jpg" },
+      "Foudre": { name: "Bouclier de Tempête", name_en: "Storm Shield", color: "#7b4fc7", icon: "images/affixes/storm-shield.jpg" },
+      "Shadow": { name: "L'Épreuve du Seigneur des Ombres", name_en: "Shadow Lord's Trial", color: "#9b6fd6", icon: "images/affixes/shadow-lords-trial.jpg" },
+      "Orbs": { name: "Orbes Anormales", name_en: "Anomalous Orbs", color: "#e8c050", icon: "images/affixes/anomalous-orbs.jpg" },
+      "Gelée": { name: "Glace Liante", name_en: "Binding Ice", color: "#4fc8e8", icon: "images/affixes/binding-ice.jpg" },
+      "Boss Boost": { name: "Ultimatum", name_en: "Ultimatum", color: "#7b8fd6", icon: "images/affixes/ultimatum.jpg" },
+      "Sang": { name: "Éclats de Sang", name_en: "Blood Shards", color: "#e85a2d", icon: "images/affixes/blood-shards.jpg" },
+      "Pierre": { name: "Peau de Pierre", name_en: "Stone Skin", color: "#b8924f", icon: "images/affixes/stone-skin.jpg" },
+      "Eira": { name: "Eira la Sorcière Blanche", name_en: "Eira the White Witch", color: "#5fc8f0", icon: "images/affixes/eira-the-white-witch.jpg" },
+      "Ghorn": { name: "Ghorn l'Avalanche", name_en: "Ghorn the Avalanche", color: "#3fd6e8", icon: "images/affixes/ghorn-the-avalanche.jpg" },
+      "Meteor": { name: "Pluie de Météores", name_en: "Meteor Rain", color: "#f0941f", icon: "images/affixes/meteor-rain.jpg" },
+      "Truesight": { name: "Vue Véritable", name_en: "Truesight", color: "#d63838", icon: "images/affixes/truesight.jpg" },
     };
+
+    // Renvoie le nom de l'affixe dans la langue active (FR par défaut, EN si currentLang === 'en')
+    function affixDisplayName(meta) {
+      return (currentLang === 'en' && meta.name_en) ? meta.name_en : meta.name;
+    }
 
     // ============================================================
     // SÉLECTEUR DE SAISON ACTIVE
@@ -2480,9 +2485,9 @@
           seasonAffixesOrder.forEach(aff => {
             const affHFs = seasonAffixes.filter(a => a.affix === aff);
             if (!affHFs.length) return;
-            const meta = AFFIX_META[aff] || { name: aff, color: 'var(--text-dim)' };
+            const meta = AFFIX_META[aff] || { name: aff, name_en: aff, color: 'var(--text-dim)' };
             detailHtml += `<div class="hf-list" style="margin-bottom:10px">
-          <div style="font-size:12px;color:${meta.color};margin-bottom:4px;font-style:italic;font-weight:600">${meta.name}</div>`;
+          <div style="font-size:12px;color:${meta.color};margin-bottom:4px;font-style:italic;font-weight:600">${affixDisplayName(meta)}</div>`;
             affHFs.forEach(a => {
               const done = s.done.has(a.id);
               const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
@@ -2616,12 +2621,13 @@
         seasonAffixesOrder.forEach(aff => {
           const affHFs = seasonAffixes.filter(a => a.affix === aff);
           if (!affHFs.length) return;
-          const meta = AFFIX_META[aff] || { name: aff, color: 'var(--gold)', icon: '' };
+          const meta = AFFIX_META[aff] || { name: aff, name_en: aff, color: 'var(--gold)', icon: '' };
+          const affName = affixDisplayName(meta);
           html += `<div class="affix-subheader" style="border-color:${meta.color}33;background:${meta.color}14;">
           <span class="affix-icon-wrap" style="border-color:${meta.color}66;">
-            <img src="${meta.icon}" alt="${meta.name}" onerror="this.style.display='none'">
+            <img src="${meta.icon}" alt="${affName}" onerror="this.style.display='none'">
           </span>
-          <span class="affix-name" style="color:${meta.color}">${meta.name}</span>
+          <span class="affix-name" style="color:${meta.color}">${affName}</span>
         </div>
         <div class="hf-grid">`;
           affHFs.forEach(a => {
@@ -2714,7 +2720,7 @@
         seasonAffixesOrder.forEach(aff => {
           const affHFs = seasonAffixes.filter(a => a.affix === aff);
           if (!affHFs.length) return;
-          const meta = AFFIX_META[aff] || { name: aff };
+          const meta = AFFIX_META[aff] || { name: aff, name_en: aff };
           html += `<div class="admin-dungeon">
       <div class="admin-dungeon-title">Affixe — ${meta.name} <span style="opacity:0.5;font-size:11px">(${aff})</span></div>`;
           affHFs.forEach(a => {
@@ -2779,7 +2785,7 @@
       if (a.personal)
         html += `<span class="badge" data-tooltip="${t('badge.solo')}"><img src="images/badges/solo.png" alt="${t('badge.solo')}"></span>`;
       if (a.logRequired)
-        html += `<span class="badge" data-tooltip="${t('badge.log')}"><img src="images/badges/log.png" alt="${t('badge.log')}"></span>`;
+        html += `<span class="badge" data-tooltip="${t('badge.log')}"><img src="images/conditions/log.png" alt="${t('badge.log')}"></span>`;
       (a.conditions || []).forEach(c =>
         html += `<span class="badge" data-tooltip="${t('cond.' + c)}"><img src="images/conditions/${c}.png" alt="${c}"></span>`
       );
