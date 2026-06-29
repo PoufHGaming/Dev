@@ -740,6 +740,43 @@
       gap: 8px;
     }
 
+    .affix-subheader {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 8px;
+      padding: 8px 12px;
+      border: 1px solid;
+      border-radius: 6px;
+    }
+
+    .affix-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .affix-icon-wrap img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .affix-name {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
     .hf-card {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -2035,11 +2072,30 @@
       { id: 93, affix: "Ghorn", title: "Sans mort-teau", title_en: "No Harm-mer", desc: "Le groupe doit compléter le donjon en ayant vaincu Ghorn et en s'assurant qu'il n'inflige jamais de dégâts au boss.", desc_en: "The group must complete the dungeon having defeated Ghorn while making sure he never deals damage to the boss.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 94, affix: "Meteor", title: "Like a Pro II", title_en: "Like a Pro II", desc: "Le groupe doit compléter le donjon sans qu'aucun membre ne se prenne de dégâts de météorite.", desc_en: "The group must complete the dungeon without any member taking meteor damage.", points: 10, hard: false, personal: false, conditions: [], logRequired: true },
       { id: 95, affix: "Meteor", title: "As a Team", title_en: "As a Team", desc: "Tous les joueurs doivent se prendre les dégâts d'une même météorite pendant le combat contre le boss (la zone d'impact ne compte pas).", desc_en: "All players must take damage from the same meteor during the boss fight (the impact zone doesn't count).", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 121, affix: "Truesight", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
+      { id: 122, affix: "Truesight", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
       { id: 107, affix: "Eira", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
       { id: 109, affix: "Ghorn", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
     ];
 
-    const AFFIXES_ORDER_S3 = ["Enforcer", "Foudre", "Shadow", "Orbs", "Gelée", "Boss Boost", "Sang", "Pierre", "Eira", "Ghorn", "Meteor"];
+    const AFFIXES_ORDER_S3 = ["Enforcer", "Foudre", "Shadow", "Orbs", "Gelée", "Boss Boost", "Sang", "Pierre", "Eira", "Ghorn", "Meteor", "Truesight"];
+
+    // Métadonnées d'affichage des affixes : nom officiel in-game, couleur thématique,
+    // chemin d'icône (à fournir — l'affichage se dégrade proprement si le fichier n'existe pas encore).
+    const AFFIX_META = {
+      "Enforcer": { name: "Empowered Minions", color: "#c9a84c", icon: "images/affixes/empowered-minions.png" },
+      "Foudre": { name: "Storm Shield", color: "#5b8fd6", icon: "images/affixes/storm-shield.png" },
+      "Shadow": { name: "Shadow Lord's Trial", color: "#7b5fc7", icon: "images/affixes/shadow-lords-trial.png" },
+      "Orbs": { name: "Anomalous Orbs", color: "#d65fc7", icon: "images/affixes/anomalous-orbs.png" },
+      "Gelée": { name: "Binding Ice", color: "#7ddee8", icon: "images/affixes/binding-ice.png" },
+      "Boss Boost": { name: "Ultimatum", color: "#d6555b", icon: "images/affixes/ultimatum.png" },
+      "Sang": { name: "Blood Shards", color: "#a82424", icon: "images/affixes/blood-shards.png" },
+      "Pierre": { name: "Stone Skin", color: "#8a7a63", icon: "images/affixes/stone-skin.png" },
+      "Eira": { name: "Eira the White Witch", color: "#bfe6f0", icon: "images/affixes/eira-the-white-witch.png" },
+      "Ghorn": { name: "Ghorn the Avalanche", color: "#6b7b8c", icon: "images/affixes/ghorn-the-avalanche.png" },
+      "Meteor": { name: "Meteor Rain", color: "#e8893d", icon: "images/affixes/meteor-rain.png" },
+      "Truesight": { name: "Truesight", color: "#5cc4c4", icon: "images/affixes/truesight.png" },
+    };
 
     // ============================================================
     // SÉLECTEUR DE SAISON ACTIVE
@@ -2424,8 +2480,9 @@
           seasonAffixesOrder.forEach(aff => {
             const affHFs = seasonAffixes.filter(a => a.affix === aff);
             if (!affHFs.length) return;
+            const meta = AFFIX_META[aff] || { name: aff, color: 'var(--text-dim)' };
             detailHtml += `<div class="hf-list" style="margin-bottom:10px">
-          <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;font-style:italic">${aff}</div>`;
+          <div style="font-size:12px;color:${meta.color};margin-bottom:4px;font-style:italic;font-weight:600">${meta.name}</div>`;
             affHFs.forEach(a => {
               const done = s.done.has(a.id);
               const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
@@ -2559,7 +2616,13 @@
         seasonAffixesOrder.forEach(aff => {
           const affHFs = seasonAffixes.filter(a => a.affix === aff);
           if (!affHFs.length) return;
-          html += `<div style="margin:10px 0 6px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);font-family:'Cinzel',serif">${aff}</div>
+          const meta = AFFIX_META[aff] || { name: aff, color: 'var(--gold)', icon: '' };
+          html += `<div class="affix-subheader" style="border-color:${meta.color}33;background:${meta.color}14;">
+          <span class="affix-icon-wrap" style="border-color:${meta.color}66;">
+            <img src="${meta.icon}" alt="${meta.name}" onerror="this.style.display='none'">
+          </span>
+          <span class="affix-name" style="color:${meta.color}">${meta.name}</span>
+        </div>
         <div class="hf-grid">`;
           affHFs.forEach(a => {
             const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
@@ -2651,8 +2714,9 @@
         seasonAffixesOrder.forEach(aff => {
           const affHFs = seasonAffixes.filter(a => a.affix === aff);
           if (!affHFs.length) return;
+          const meta = AFFIX_META[aff] || { name: aff };
           html += `<div class="admin-dungeon">
-      <div class="admin-dungeon-title">Affixe — ${aff}</div>`;
+      <div class="admin-dungeon-title">Affixe — ${meta.name} <span style="opacity:0.5;font-size:11px">(${aff})</span></div>`;
           affHFs.forEach(a => {
             const checked = adminCurrentDone.has(a.id);
             const disabled = !!a.comingSoon;
@@ -2767,7 +2831,7 @@
       'secret.close': { fr: 'Fermer', en: 'Close' },
       'badge.hard': { fr: 'Difficile', en: 'Hard' },
       'badge.solo': { fr: 'Solo', en: 'Solo' },
-      'badge.log': { fr: 'Preuve (log/replay) requise', en: 'Proof (log/replay) required' },
+      'badge.log': { fr: 'Log requis', en: 'Log required' },
       'badge.group': { fr: 'Groupe', en: 'Group' },
       'cond.portal': { fr: 'Portail interdit', en: 'Portal forbidden' },
       'cond.dispell': { fr: 'Dispell interdit', en: 'Dispell forbidden' },
