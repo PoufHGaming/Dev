@@ -167,6 +167,33 @@
       opacity: 1;
     }
 
+    /* LANG TOGGLE (FR/EN) — style isolé de .tab pour ne pas être désélectionné par showPage() */
+    .lang-tab {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.6;
+    }
+
+    .lang-tab:hover {
+      opacity: 1;
+      border-color: var(--border);
+    }
+
+    .lang-tab.active {
+      color: var(--gold);
+      border-color: var(--border-bright);
+      background: rgba(201, 168, 76, 0.05);
+      opacity: 1;
+    }
+
     /* SEASON TOGGLE — style isolé de .tab pour ne pas être affecté par showPage()/setLang() */
     .season-tab {
       font-family: 'Cinzel', serif;
@@ -1859,9 +1886,9 @@
       <div style="margin-left:auto; display:flex; align-items:center; gap:10px; position:relative;">
 
         <div style="display:flex;gap:2px;">
-          <button class="tab lang-btn-fr" id="lang-btn-fr" onclick="setLang('fr')"
+          <button class="lang-tab lang-btn-fr" id="lang-btn-fr" onclick="setLang('fr')"
             style="padding:6px 10px;font-size:12px;border-radius:3px 0 0 3px;">FR</button>
-          <button class="tab lang-btn-en" id="lang-btn-en" onclick="setLang('en')"
+          <button class="lang-tab lang-btn-en" id="lang-btn-en" onclick="setLang('en')"
             style="padding:6px 10px;font-size:12px;border-radius:0 3px 3px 0;">EN</button>
         </div>
 
@@ -2058,7 +2085,7 @@
       { id: 79, affix: "Orbs", title: "Simon", title_en: "Simon", desc: "Le groupe doit vaincre les orbes dans cet ordre : Rouge > Violet > Jaune > Vert > Bleu > Blanc.", desc_en: "The group must defeat the orbs in this order: Red > Purple > Yellow > Green > Blue > White.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 80, affix: "Gelée", title: "Gèle-les", title_en: "Froz-Them", desc: "Tous les joueurs doivent être gelés à chaque fois.", desc_en: "All players must be frozen every time.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 81, affix: "Boss Boost", title: "Tyranique", title_en: "Tyrannical", desc: "Le groupe doit compléter le donjon avec X ilvl en moins (retirer X pièce(s) d'équipement).", desc_en: "The group must complete the dungeon with X less ilvl (remove X item(s) from your gear).", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 82, affix: "Sang", title: "Vampire", title_en: "Vampire", desc: "Dès que le 1er buff apparaît, le groupe doit obtenir un score de 100% du donjon sans perdre le buff.", desc_en: "As soon as the 1st buff appears, the group must reach a 100% dungeon score without losing the buff.", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 82, affix: "Sang", title: "Vampire", title_en: "Vampire", desc: "Dès que le 1er buff apparaît, le groupe doit obtenir un score de 100% du donjon sans perdre le buff (pas besoin de tuer le boss).", desc_en: "As soon as the 1st buff appears, the group must reach a 100% dungeon score without losing the buff (no need to kill the boss).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 83, affix: "Pierre", title: "Explosion en chaîne", title_en: "Chain Reaction", desc: "Les explosions causées par la mort d'une créature doivent toujours infliger des dégâts à d'autres créatures (sauf si la créature possède déjà ce dot).", desc_en: "Explosions caused by a creature's death must always deal damage to other creatures (unless that creature already has this dot).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 84, affix: "Enforcer", title: "Who's the boss ?", title_en: "Who's the boss ?", desc: "Le groupe doit vaincre 2 créatures renforcées et le boss du donjon dans un même pull.", desc_en: "The group must defeat 2 enforced creatures and the dungeon boss in the same pull.", points: 10, hard: false, personal: false, conditions: ['poulet'] },
       { id: 85, affix: "Foudre", title: "Voltage limité", title_en: "Limited Voltage", desc: "Le joueur ne doit être lié qu'à 1 autre personne à chaque fois que la foudre frappe.", desc_en: "The player must only be linked to 1 other person each time the lightning strikes.", points: 10, hard: false, personal: true, conditions: [] },
@@ -2072,8 +2099,8 @@
       { id: 93, affix: "Ghorn", title: "Sans mort-teau", title_en: "No Harm-mer", desc: "Le groupe doit compléter le donjon en ayant vaincu Ghorn et en s'assurant qu'il n'inflige jamais de dégâts au boss.", desc_en: "The group must complete the dungeon having defeated Ghorn while making sure he never deals damage to the boss.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 94, affix: "Meteor", title: "Like a Pro II", title_en: "Like a Pro II", desc: "Le groupe doit compléter le donjon sans qu'aucun membre ne se prenne de dégâts de météorite.", desc_en: "The group must complete the dungeon without any member taking meteor damage.", points: 10, hard: false, personal: false, conditions: [], logRequired: true },
       { id: 95, affix: "Meteor", title: "As a Team", title_en: "As a Team", desc: "Tous les joueurs doivent se prendre les dégâts d'une même météorite pendant le combat contre le boss (la zone d'impact ne compte pas).", desc_en: "All players must take damage from the same meteor during the boss fight (the impact zone doesn't count).", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 121, affix: "Truesight", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
-      { id: 122, affix: "Truesight", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
+      { id: 121, affix: "Truesight", title: "Vue sanglante", title_en: "Bloody Sight", desc: "Le groupe doit tuer 3 mobs boostés par les Heskyr en un seul pull.", desc_en: "The group must kill 3 mobs empowered by the Heskyr in a single pull.", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 122, affix: "Truesight", title: "Wanted", title_en: "Wanted", desc: "Dès qu'une orbe tombe, le groupe doit impérativement tuer le mob désigné dans le temps imparti.", desc_en: "As soon as an orb drops, the group must kill the designated mob within the given time.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 107, affix: "Eira", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
       { id: 109, affix: "Ghorn", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
     ];
