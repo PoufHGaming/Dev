@@ -829,6 +829,69 @@
       border-color: var(--border);
     }
 
+    /* ── LOG CHECK WIDGET ─────────────────────────────────── */
+    .log-check-wrap {
+      margin-top: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+    .log-check-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(201,168,76,0.07);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--gold-dim);
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .log-check-btn:hover:not(:disabled) {
+      background: rgba(201,168,76,0.14);
+      border-color: var(--border-bright);
+      color: var(--gold-light);
+    }
+    .log-check-btn:disabled {
+      opacity: 0.4; cursor: not-allowed;
+    }
+    .log-check-input-row {
+      display: none; margin-top: 8px;
+      gap: 6px; align-items: center;
+    }
+    .log-check-input-row.open { display: flex; }
+    .log-check-input {
+      flex: 1; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 3px;
+      color: var(--text); font-family: 'Crimson Pro', serif;
+      font-size: 14px; padding: 5px 8px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .log-check-input:focus { border-color: var(--border-bright); }
+    .log-check-submit {
+      font-family: 'Cinzel', serif; font-size: 10px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid var(--border-bright);
+      border-radius: 3px; color: var(--gold-light);
+      padding: 5px 10px; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .log-check-submit:hover:not(:disabled) { background: rgba(201,168,76,0.2); }
+    .log-check-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+    .log-check-result {
+      margin-top: 8px; font-size: 13px;
+      display: none; align-items: center; gap: 6px;
+    }
+    .log-check-result.show { display: flex; }
+    .log-check-result.ok { color: #7ddf7d; }
+    .log-check-result.fail { color: var(--red); }
+    .log-check-result.error { color: var(--text-muted); font-style: italic; }
+    .log-check-cooldown {
+      font-size: 11px; color: var(--text-muted);
+      margin-left: 4px;
+    }
+
     .hf-card.coming-soon .hf-card-title {
       font-style: italic;
       color: var(--text-muted);
@@ -2033,7 +2096,7 @@
     const ACHIEVEMENTS_S3 = [
       { id: 49, dungeon: "Marché d'Urrak", title: "Prisno break", title_en: "Prison Break", desc: "Le groupe doit compléter le donjon sans tuer aucune créature associée à un totem (marquée par un curseur vert).", desc_en: "The group must complete the dungeon without killing any creature associated with a totem (marked with a green cursor).", points: 10, hard: false, personal: false, conditions: ['portal', 'poulet', 'shadow', 'dash'] },
       { id: 50, dungeon: "Guet Tempete", title: "Sniper", title_en: "Sniper", desc: "Le groupe doit faire toucher le boss par une boule de foudre (\"Ball Lightning\") d'un \"Stormscreamer\", sans être en combat contre le boss.", desc_en: "The group must make the boss get hit by a \"Ball Lightning\" from a \"Stormscreamer\", without being in combat against the boss.", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 51, dungeon: "Sables Empyréens", title: "Like a Pro I", title_en: "Like a Pro I", desc: "Le groupe doit vaincre Sin-Magir sans se prendre de dégâts de \"Penumbra\", \"Celestial Burst\" et \"Sinnari's Judgement\".", desc_en: "The group must defeat Sin-Magir without taking damage from \"Penumbra\", \"Celestial Burst\" and \"Sinnari's Judgement\".", points: 10, hard: false, personal: false, conditions: [], logRequired: true },
+      { id: 51, dungeon: "Sables Empyréens", title: "Like a Pro I", title_en: "Like a Pro I", desc: "Le groupe doit vaincre Sin-Magir sans se prendre de dégâts de \"Celestial Burst\".", desc_en: "The group must defeat Sin-Magir without taking damage from \"Celestial Burst\".", points: 10, hard: false, personal: false, conditions: [], logRequired: true, logCheckable: { encounterID: 100006, abilityID: 457, type: 'DamageDone' } },
       { id: 52, dungeon: "Creux Soyeux", title: "Calin mortel", title_en: "Deadly Cuddle", desc: "Le groupe doit compléter le donjon sans interrompre le sort \"Kidnap\" des \"Gravesnare Kidnapper\".", desc_en: "The group must complete the dungeon without interrupting the \"Kidnap\" spell from the \"Gravesnare Kidnapper\".", points: 10, hard: false, personal: false, conditions: ['portal', 'poulet', 'shadow'] },
       { id: 53, dungeon: "Carrière tombe-dieu", title: "Sous les radard", title_en: "Under the Radar", desc: "Le groupe ne doit détruire aucune Wardstone (sauf celle du boss).", desc_en: "The group must not destroy any Wardstone (except the boss's one).", points: 10, hard: false, personal: false, conditions: ['shadow', 'poulet'] },
       { id: 54, dungeon: "Coeur de guivre", title: "Sneaky II", title_en: "Sneaky II", desc: "Le groupe ne doit aggro aucune patrouille.", desc_en: "The group must not aggro any patrol.", points: 10, hard: false, personal: false, conditions: ['portal', 'poulet', 'shadow', 'dash'] },
@@ -2632,6 +2695,7 @@
           <div class="hf-badges">${renderBadges(a)}</div>
         </div>
         <div class="hf-card-desc">${currentLang === 'en' && a.desc_en ? a.desc_en : a.desc}</div>
+        ${a.logCheckable ? renderLogCheckWidget(a) : ''}
       </div>`;
         });
         html += `</div></div></div>`;
@@ -2665,6 +2729,7 @@
           <div class="hf-badges">${renderBadges(a)}</div>
         </div>
         <div class="hf-card-desc">${currentLang === 'en' && a.desc_en ? a.desc_en : a.desc}</div>
+        ${a.logCheckable ? renderLogCheckWidget(a) : ''}
       </div>`;
           });
           html += `</div>`;
@@ -2804,6 +2869,153 @@
     // ---- BADGES ----
     // Images dans images/badges/hard.png, solo.png, group.png, log.png
     // Images conditions dans images/conditions/portal.png, dispell.png, dice.png, res.png, shadow.png, drum.png, poulet.png, dash.png, mount.png, jump.png, campfire.png
+    // ---- LOG CHECK WIDGET ----
+    const LOG_CHECK_COOLDOWNS = {}; // hfId → timestamp fin de cooldown
+    const FELLOWSHIP_API = 'https://www.fellowshiplogs.com/api/v2/client';
+    const FELLOWSHIP_TOKEN = ''; // à remplir si nécessaire (certaines requêtes sont publiques)
+
+    function renderLogCheckWidget(a) {
+      const btnLabel = currentLang === 'en' ? 'Verify via log' : 'Vérifier via log';
+      return `<div class="log-check-wrap" onclick="event.stopPropagation()">
+        <button class="log-check-btn" id="log-btn-${a.id}" onclick="openLogCheck(${a.id})">${btnLabel}</button>
+        <div class="log-check-input-row" id="log-row-${a.id}">
+          <input class="log-check-input" id="log-input-${a.id}" type="text"
+            placeholder="${currentLang === 'en' ? 'Report code (ex: AbCd1234)' : 'Code du report (ex: AbCd1234)'}"
+            onkeydown="if(event.key==='Enter') submitLogCheck(${a.id})">
+          <button class="log-check-submit" id="log-submit-${a.id}" onclick="submitLogCheck(${a.id})">
+            ${currentLang === 'en' ? 'Check' : 'Vérifier'}
+          </button>
+        </div>
+        <div class="log-check-result" id="log-result-${a.id}"></div>
+      </div>`;
+    }
+
+    function openLogCheck(hfId) {
+      const row = document.getElementById('log-row-' + hfId);
+      const result = document.getElementById('log-result-' + hfId);
+      row.classList.toggle('open');
+      result.classList.remove('show');
+    }
+
+    async function submitLogCheck(hfId) {
+      // Vérifier le cooldown
+      const now = Date.now();
+      if (LOG_CHECK_COOLDOWNS[hfId] && now < LOG_CHECK_COOLDOWNS[hfId]) {
+        const remaining = Math.ceil((LOG_CHECK_COOLDOWNS[hfId] - now) / 1000);
+        showLogResult(hfId, 'error', currentLang === 'en'
+          ? `Please wait ${remaining}s before trying again.`
+          : `Veuillez attendre ${remaining}s avant de réessayer.`);
+        return;
+      }
+
+      const input = document.getElementById('log-input-' + hfId);
+      const code = input.value.trim();
+      if (!code) {
+        showLogResult(hfId, 'error', currentLang === 'en' ? 'Enter a report code.' : 'Entrez un code de report.');
+        return;
+      }
+
+      // Trouver le logCheckable config pour ce HF
+      const allHFs = [...getSeasonData(currentSeason).allScorable];
+      const hf = allHFs.find(a => a.id === hfId);
+      if (!hf || !hf.logCheckable) return;
+
+      const btn = document.getElementById('log-submit-' + hfId);
+      btn.disabled = true;
+      btn.textContent = currentLang === 'en' ? 'Checking...' : 'Vérification...';
+      showLogResult(hfId, 'error', '');
+
+      try {
+        // Requête 1 : récupérer les fights du report
+        const fightsRes = await fellowshipQuery(`
+          query($code: String!) {
+            reportData { report(code: $code) { fights { id encounterID kill } } }
+          }`, { code });
+
+        const fights = fightsRes?.data?.reportData?.report?.fights || [];
+        const relevantFights = fights.filter(f => f.encounterID === hf.logCheckable.encounterID);
+
+        if (!relevantFights.length) {
+          showLogResult(hfId, 'error', currentLang === 'en'
+            ? 'No relevant fight found in this report.'
+            : 'Aucun combat correspondant trouvé dans ce report.');
+          return;
+        }
+
+        const fightIDs = relevantFights.map(f => f.id);
+
+        // Requête 2 : vérifier l'ability sur ces fights
+        const eventsRes = await fellowshipQuery(`
+          query($code: String!, $fightIDs: [Int]!) {
+            reportData { report(code: $code) {
+              events(fightIDs: $fightIDs, dataType: DamageDone, hostilityType: Enemies, abilityID: ${hf.logCheckable.abilityID}, limit: 1) { data }
+            }}
+          }`, { code, fightIDs });
+
+        const events = eventsRes?.data?.reportData?.report?.events?.data || [];
+
+        // Activer le cooldown (60 secondes)
+        LOG_CHECK_COOLDOWNS[hfId] = Date.now() + 60000;
+        startCooldownDisplay(hfId, 60);
+
+        if (events.length === 0) {
+          showLogResult(hfId, 'ok', currentLang === 'en'
+            ? '✓ Achievement validated — no forbidden damage taken!'
+            : '✓ Haut-fait validé — aucun dégât interdit reçu !');
+        } else {
+          showLogResult(hfId, 'fail', currentLang === 'en'
+            ? '✗ At least one player took forbidden damage.'
+            : '✗ Au moins un joueur a reçu des dégâts interdits.');
+        }
+
+      } catch (e) {
+        showLogResult(hfId, 'error', currentLang === 'en'
+          ? 'Error: ' + e.message
+          : 'Erreur : ' + e.message);
+        // Cooldown court en cas d'erreur (10s) pour éviter les boucles
+        LOG_CHECK_COOLDOWNS[hfId] = Date.now() + 10000;
+        startCooldownDisplay(hfId, 10);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = currentLang === 'en' ? 'Check' : 'Vérifier';
+      }
+    }
+
+    function showLogResult(hfId, type, msg) {
+      const el = document.getElementById('log-result-' + hfId);
+      if (!msg) { el.classList.remove('show'); return; }
+      el.className = 'log-check-result show ' + type;
+      el.innerHTML = msg + `<span class="log-check-cooldown" id="log-cd-${hfId}"></span>`;
+    }
+
+    function startCooldownDisplay(hfId, seconds) {
+      const btn = document.getElementById('log-btn-' + hfId);
+      if (btn) btn.disabled = true;
+      let remaining = seconds;
+      const tick = () => {
+        const cdEl = document.getElementById('log-cd-' + hfId);
+        if (cdEl) cdEl.textContent = remaining > 0 ? ` (${remaining}s)` : '';
+        if (remaining <= 0) {
+          const b = document.getElementById('log-btn-' + hfId);
+          if (b) b.disabled = false;
+          return;
+        }
+        remaining--;
+        setTimeout(tick, 1000);
+      };
+      tick();
+    }
+
+    async function fellowshipQuery(query, variables) {
+      const res = await fetch(FELLOWSHIP_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FELLOWSHIP_TOKEN },
+        body: JSON.stringify({ query: query.replace(/\s+/g, ' ').trim(), variables }),
+      });
+      if (!res.ok) throw new Error(`API ${res.status}`);
+      return res.json();
+    }
+
     function renderBadges(a) {
       if (a.comingSoon) return ''; // pas de points ni badges pour un HF pas encore défini
       let html = '';
