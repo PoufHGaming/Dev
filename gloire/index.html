@@ -2132,12 +2132,12 @@
       { id: 104, dungeon: "Saccage de Drakheim", title: "Glacial Shadows", title_en: "Glacial Shadows", desc: "Le groupe doit vaincre Auga Handhafi avec un ours polaire présent dans le combat (l'ours polaire ne doit pas mourir).", desc_en: "The group must defeat Auga Handhafi with a Polar Bear present in the fight (the Polar Bear must not die).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 105, dungeon: "Caveau de Lamespectre", title: "Waste of a Rat", title_en: "Waste of a Rat", desc: "Le groupe doit amener le même \"Gunpowder Rat\" sur chaque boss de zone.", desc_en: "The group must bring the same \"Gunpowder Rat\" to every zone boss.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 106, dungeon: "La chute Cithrel", title: "Just the minimum", title_en: "Just the minimum", desc: "Le groupe doit vaincre les 3 boss avec moins de 70% de complétion du donjon.", desc_en: "The group must defeat all 3 bosses with less than 70% dungeon completion.", points: 10, hard: false, personal: false, conditions: ['poulet', 'portal', 'shadow', 'dash', 'res', 'campfire'] },
-      { id: 115, dungeon: "Xul, the Blood Monolith", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
-      { id: 116, dungeon: "Xul, the Blood Monolith", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
-      { id: 117, dungeon: "Xul, the Blood Monolith", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
-      { id: 118, dungeon: "Xul, the Blood Monolith", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
-      { id: 119, dungeon: "Xul, the Blood Monolith", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
-      { id: 120, dungeon: "Xul, the Blood Monolith", title: "Coming Soon", title_en: "Coming Soon", desc: "Coming Soon", desc_en: "Coming Soon", points: 0, hard: false, personal: false, conditions: [], comingSoon: true },
+      { id: 115, dungeon: "Xul, the Blood Monolith", title: "Simon II", title_en: "Simon II", desc: "Le groupe doit détruire le conduit correspondant à son debuff : « Édit de Fragilité » → Conduit du Regard Saignant (rouge), « Édit de Fardeau » → Conduit du Cercle Ardent (jaune), « Édit d'Isolation » → Conduit des Ombres Frappantes (violet).", desc_en: "The group must destroy the conduit matching their debuff: \"Edict of Frailty\" → Conduit of the Bleeding Gaze (red), \"Edict of Burden\" → Conduit of the Burning Circle (yellow), \"Edict of Isolation\" → Conduit of Striking Shadows (purple).", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 116, dungeon: "Xul, the Blood Monolith", title: "So ok", title_en: "So ok", desc: "Le groupe doit vaincre Han-Eth sans absorber aucune des « Invocations de Créatures » (les petites).", desc_en: "The group must defeat Han-Eth without soaking any \"Summon Creations\" (the smaller ones).", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 117, dungeon: "Xul, the Blood Monolith", title: "Pur hasard", title_en: "Pure Luck", desc: "Le groupe ne doit pas subir de dégâts lors de 2 vagues consécutives sans qu'aucun membre n'ait récupéré la Truesight pendant le combat contre Vel'korath. (Pas besoin de tuer le boss.)", desc_en: "The group must not take damage from 2 consecutive waves without any member having gathered Truesight during the fight against Vel'korath. (No need to kill the boss.)", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 118, dungeon: "Xul, the Blood Monolith", title: "Wher'skyr ?", title_en: "Wher'skyr ?", desc: "Le groupe doit atteindre Xul'vorith, Sentinelle de la Porte du Sang, sans agro aucun Fanatique Heskyr.", desc_en: "The group must reach Xul'vorith, Sentinel of the Bloodbound Gate, without aggroing any Heskyr Zealot.", points: 10, hard: false, personal: false, conditions: ["portal", "poulet", "dash", "shadow"] },
+      { id: 119, dungeon: "Xul, the Blood Monolith", title: "Secoue-toi", title_en: "Shake it off", desc: "Le groupe doit tuer 15 Échos Sanguins dans le même pull.", desc_en: "The group must kill 15 Sanguine Echoes in the same pull.", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 120, dungeon: "Xul, the Blood Monolith", title: "Le calme avant la tempête", title_en: "The calm before the storm", desc: "Le groupe doit tuer 3 Mages Heskyr dans le même pull.", desc_en: "The group must kill 3 Heskyr Magi in the same pull.", points: 10, hard: false, personal: false, conditions: [] },
     ];
 
     // Affixes : catégorie séparée, PAS liée à un donjon, PAS de bonus "+5 donjon complet"
@@ -2871,8 +2871,8 @@
     // Images conditions dans images/conditions/portal.png, dispell.png, dice.png, res.png, shadow.png, drum.png, poulet.png, dash.png, mount.png, jump.png, campfire.png
     // ---- LOG CHECK WIDGET ----
     const LOG_CHECK_COOLDOWNS = {}; // hfId → timestamp fin de cooldown
-    const FELLOWSHIP_API = 'https://www.fellowshiplogs.com/api/v2/client';
-    const FELLOWSHIP_TOKEN = ''; // à remplir si nécessaire (certaines requêtes sont publiques)
+    const EDGE_CHECK_URL = 'https://ehsnzujkmtbzikdbqnjt.supabase.co/functions/v1/gloire-check-hf';
+    const SUPABASE_ANON_FOR_EDGE = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
 
     function renderLogCheckWidget(a) {
       const btnLabel = currentLang === 'en' ? 'Verify via log' : 'Vérifier via log';
@@ -2915,64 +2915,62 @@
         return;
       }
 
-      // Trouver le logCheckable config pour ce HF
-      const allHFs = [...getSeasonData(currentSeason).allScorable];
-      const hf = allHFs.find(a => a.id === hfId);
-      if (!hf || !hf.logCheckable) return;
-
       const btn = document.getElementById('log-submit-' + hfId);
       btn.disabled = true;
       btn.textContent = currentLang === 'en' ? 'Checking...' : 'Vérification...';
       showLogResult(hfId, 'error', '');
 
       try {
-        // Requête 1 : récupérer les fights du report
-        const fightsRes = await fellowshipQuery(`
-          query($code: String!) {
-            reportData { report(code: $code) { fights { id encounterID kill } } }
-          }`, { code });
+        // Appel à l'Edge Function — le token Fellowship est côté serveur, invisible ici
+        const res = await fetch(EDGE_CHECK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_FOR_EDGE,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_FOR_EDGE,
+          },
+          body: JSON.stringify({ report_code: code }),
+        });
 
-        const fights = fightsRes?.data?.reportData?.report?.fights || [];
-        const relevantFights = fights.filter(f => f.encounterID === hf.logCheckable.encounterID);
+        const data = await res.json();
 
-        if (!relevantFights.length) {
-          showLogResult(hfId, 'error', currentLang === 'en'
-            ? 'No relevant fight found in this report.'
-            : 'Aucun combat correspondant trouvé dans ce report.');
+        // Cooldown : 60s si succès, 10s si erreur serveur
+        const cooldown = data.ok ? 60000 : 10000;
+        LOG_CHECK_COOLDOWNS[hfId] = Date.now() + cooldown;
+        startCooldownDisplay(hfId, cooldown / 1000);
+
+        if (!data.ok) {
+          showLogResult(hfId, 'error', data.error || (currentLang === 'en' ? 'Server error.' : 'Erreur serveur.'));
           return;
         }
 
-        const fightIDs = relevantFights.map(f => f.id);
+        if (!data.players_found?.length) {
+          showLogResult(hfId, 'error', currentLang === 'en'
+            ? 'No registered player found in this report.'
+            : 'Aucun joueur inscrit trouvé dans ce report.');
+          return;
+        }
 
-        // Requête 2 : vérifier l'ability sur ces fights
-        const eventsRes = await fellowshipQuery(`
-          query($code: String!, $fightIDs: [Int]!) {
-            reportData { report(code: $code) {
-              events(fightIDs: $fightIDs, dataType: DamageDone, hostilityType: Enemies, abilityID: ${hf.logCheckable.abilityID}, limit: 1) { data }
-            }}
-          }`, { code, fightIDs });
-
-        const events = eventsRes?.data?.reportData?.report?.events?.data || [];
-
-        // Activer le cooldown (60 secondes)
-        LOG_CHECK_COOLDOWNS[hfId] = Date.now() + 60000;
-        startCooldownDisplay(hfId, 60);
-
-        if (events.length === 0) {
+        const hfResult = data.results?.[hfId];
+        if (hfResult === true) {
+          const playersStr = data.players_found.join(', ');
           showLogResult(hfId, 'ok', currentLang === 'en'
-            ? '✓ Achievement validated — no forbidden damage taken!'
-            : '✓ Haut-fait validé — aucun dégât interdit reçu !');
-        } else {
+            ? `✓ Validated for ${playersStr}!`
+            : `✓ Validé pour ${playersStr} !`);
+        } else if (hfResult === false) {
           showLogResult(hfId, 'fail', currentLang === 'en'
             ? '✗ At least one player took forbidden damage.'
             : '✗ Au moins un joueur a reçu des dégâts interdits.');
+        } else {
+          showLogResult(hfId, 'error', currentLang === 'en'
+            ? 'No matching fight found in this report.'
+            : 'Aucun combat correspondant trouvé dans ce report.');
         }
 
       } catch (e) {
         showLogResult(hfId, 'error', currentLang === 'en'
-          ? 'Error: ' + e.message
-          : 'Erreur : ' + e.message);
-        // Cooldown court en cas d'erreur (10s) pour éviter les boucles
+          ? 'Connection error: ' + e.message
+          : 'Erreur de connexion : ' + e.message);
         LOG_CHECK_COOLDOWNS[hfId] = Date.now() + 10000;
         startCooldownDisplay(hfId, 10);
       } finally {
@@ -2991,7 +2989,7 @@
     function startCooldownDisplay(hfId, seconds) {
       const btn = document.getElementById('log-btn-' + hfId);
       if (btn) btn.disabled = true;
-      let remaining = seconds;
+      let remaining = Math.ceil(seconds);
       const tick = () => {
         const cdEl = document.getElementById('log-cd-' + hfId);
         if (cdEl) cdEl.textContent = remaining > 0 ? ` (${remaining}s)` : '';
@@ -3004,16 +3002,6 @@
         setTimeout(tick, 1000);
       };
       tick();
-    }
-
-    async function fellowshipQuery(query, variables) {
-      const res = await fetch(FELLOWSHIP_API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FELLOWSHIP_TOKEN },
-        body: JSON.stringify({ query: query.replace(/\s+/g, ' ').trim(), variables }),
-      });
-      if (!res.ok) throw new Error(`API ${res.status}`);
-      return res.json();
     }
 
     function renderBadges(a) {
