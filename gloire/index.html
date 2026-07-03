@@ -767,6 +767,29 @@
       gap: 8px;
     }
 
+    /* Wrapper qui groupe la carte + le widget log check, pour que le widget
+       reste toujours visible sans être affecté par le toggle de la carte */
+    .hf-card-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .hf-card-wrap .log-check-wrap {
+      border-top: none;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      padding: 8px 14px 10px;
+      background: var(--bg2);
+      margin-top: -1px; /* colle visuellement sous la carte */
+    }
+
+    .hf-card-wrap .hf-card {
+      border-radius: 4px 4px 0 0;
+      border-bottom-color: transparent;
+    }
+
     .affix-subheader {
       display: flex;
       align-items: center;
@@ -831,9 +854,7 @@
 
     /* ── LOG CHECK WIDGET ─────────────────────────────────── */
     .log-check-wrap {
-      margin-top: 10px;
-      border-top: 1px solid var(--border);
-      padding-top: 10px;
+      padding: 8px 0 2px;
     }
     .log-check-btn {
       font-family: 'Cinzel', serif;
@@ -2689,14 +2710,16 @@
         <div class="hf-grid">`;
         hfs.forEach(a => {
           const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
-          html += `<div class="hf-card ${a.comingSoon ? 'coming-soon' : ''}" onclick="this.classList.toggle('open')">
+          const card = `<div class="hf-card ${a.comingSoon ? 'coming-soon' : ''}" onclick="this.classList.toggle('open')">
         <div class="hf-card-header">
           <span class="hf-card-title">${title}</span>
           <div class="hf-badges">${renderBadges(a)}</div>
         </div>
         <div class="hf-card-desc">${currentLang === 'en' && a.desc_en ? a.desc_en : a.desc}</div>
-        ${a.logCheckable ? renderLogCheckWidget(a) : ''}
       </div>`;
+          html += a.logCheckable
+            ? `<div class="hf-card-wrap">${card}${renderLogCheckWidget(a)}</div>`
+            : card;
         });
         html += `</div></div></div>`;
       });
@@ -2723,14 +2746,16 @@
         <div class="hf-grid">`;
           affHFs.forEach(a => {
             const title = (currentLang === 'en' && a.title_en) ? a.title_en : a.title;
-            html += `<div class="hf-card ${a.comingSoon ? 'coming-soon' : ''}" onclick="this.classList.toggle('open')">
+            const card = `<div class="hf-card ${a.comingSoon ? 'coming-soon' : ''}" onclick="this.classList.toggle('open')">
         <div class="hf-card-header">
           <span class="hf-card-title">${title}</span>
           <div class="hf-badges">${renderBadges(a)}</div>
         </div>
         <div class="hf-card-desc">${currentLang === 'en' && a.desc_en ? a.desc_en : a.desc}</div>
-        ${a.logCheckable ? renderLogCheckWidget(a) : ''}
       </div>`;
+            html += a.logCheckable
+              ? `<div class="hf-card-wrap">${card}${renderLogCheckWidget(a)}</div>`
+              : card;
           });
           html += `</div>`;
         });
