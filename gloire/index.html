@@ -316,11 +316,11 @@
     /* PAGE VERIFY ─────────────────────────────────────────── */
     .verify-hero {
       text-align: center;
-      padding: 32px 0 24px;
+      padding: 16px 0 14px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 32px;
+      margin-bottom: 20px;
     }
-    .verify-hero-icon { font-size: 36px; margin-bottom: 12px; }
+    .verify-hero-icon { font-size: 28px; margin-bottom: 6px; }
     .verify-hero h2 {
       font-family: 'Cinzel', serif;
       font-size: 22px; letter-spacing: 0.06em;
@@ -2273,7 +2273,7 @@
       <div class="verify-hero">
         <div class="verify-hero-icon">🔍</div>
         <h2 id="verify-title">Vérifier via log</h2>
-        <p id="verify-subtitle">Colle ton report code Fellowship Logs — on vérifie automatiquement tous tes hauts-faits éligibles en une seule passe.</p>
+        <p id="verify-subtitle">Colle ton report code Fellowship Logs, on vérifie automatiquement tous tes hauts-faits éligibles en une seule passe.</p>
       </div>
       <div class="verify-hf-list" id="verify-hf-list"></div>
       <div class="verify-help" id="verify-help">
@@ -2290,8 +2290,8 @@
             <li id="verify-help-5">Copie le code dans l'URL</li>
           </ol>
           <p id="verify-help-example" style="margin-top:8px;font-style:italic;">
-            Exemple : <code>https://www.fellowshiplogs.com/reports/<strong style="color:var(--gold-light)">LhW2zdPKxtH4cXrC</strong>?fight=15…</code><br>
-            → Le code est <code style="color:var(--gold-light)">LhW2zdPKxtH4cXrC</code>
+            <span id="verify-help-example-label">Exemple :</span> <code>https://www.fellowshiplogs.com/reports/<strong style="color:var(--gold-light)">LhW2zdPKxtH4cXrC</strong>?fight=15...</code><br>
+            <span id="verify-help-code-label">Le code est</span> <code style="color:var(--gold-light)">LhW2zdPKxtH4cXrC</code>
           </p>
         </div>
       </div>
@@ -2446,7 +2446,7 @@
       { id: 104, dungeon: "Saccage de Drakheim", title: "Glacial Shadows", title_en: "Glacial Shadows", desc: "Le groupe doit vaincre Auga Handhafi avec un ours polaire présent dans le combat (l'ours polaire ne doit pas mourir).", desc_en: "The group must defeat Auga Handhafi with a Polar Bear present in the fight (the Polar Bear must not die).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 105, dungeon: "Caveau de Lamespectre", title: "Waste of a Rat", title_en: "Waste of a Rat", desc: "Le groupe doit amener le même \"Gunpowder Rat\" sur chaque boss de zone.", desc_en: "The group must bring the same \"Gunpowder Rat\" to every zone boss.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 106, dungeon: "La chute Cithrel", title: "Just the minimum", title_en: "Just the minimum", desc: "Le groupe doit vaincre les 3 boss avec moins de 70% de complétion du donjon.", desc_en: "The group must defeat all 3 bosses with less than 70% dungeon completion.", points: 10, hard: false, personal: false, conditions: ['poulet', 'portal', 'shadow', 'dash', 'res', 'campfire'] },
-      { id: 115, dungeon: "Xul, the Blood Monolith", title: "Simon II", title_en: "Simon II", desc: "Le groupe doit détruire le conduit correspondant à son debuff : « Édit de Fragilité » → Conduit du Regard Saignant (rouge), « Édit de Fardeau » → Conduit du Cercle Ardent (jaune), « Édit d'Isolation » → Conduit des Ombres Frappantes (violet).", desc_en: "The group must destroy the conduit matching their debuff: \"Edict of Frailty\" → Conduit of the Bleeding Gaze (red), \"Edict of Burden\" → Conduit of the Burning Circle (yellow), \"Edict of Isolation\" → Conduit of Striking Shadows (purple).", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 115, dungeon: "Xul, the Blood Monolith", title: "Simon II", title_en: "Simon II", desc: "Le groupe doit détruire le conduit correspondant à son debuff : « Édit de Fragilité » : Conduit du Regard Saignant (rouge), « Édit de Fardeau » : Conduit du Cercle Ardent (jaune), « Édit d'Isolation » : Conduit des Ombres Frappantes (violet).", desc_en: "The group must destroy the conduit matching their debuff: \"Edict of Frailty\": Conduit of the Bleeding Gaze (red), \"Edict of Burden\": Conduit of the Burning Circle (yellow), \"Edict of Isolation\": Conduit of Striking Shadows (purple).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 116, dungeon: "Xul, the Blood Monolith", title: "So ok", title_en: "So ok", desc: "Le groupe doit vaincre Han-Eth sans absorber aucune des « Invocations de Créatures » (les petites).", desc_en: "The group must defeat Han-Eth without soaking any \"Summon Creations\" (the smaller ones).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 117, dungeon: "Xul, the Blood Monolith", title: "Pur hasard", title_en: "Pure Luck", desc: "Le groupe ne doit pas subir de dégâts lors de 2 vagues consécutives sans qu'aucun membre n'ait récupéré la Truesight pendant le combat contre Vel'korath. (Pas besoin de tuer le boss.)", desc_en: "The group must not take damage from 2 consecutive waves without any member having gathered Truesight during the fight against Vel'korath. (No need to kill the boss.)", points: 10, hard: false, personal: false, conditions: [] },
       { id: 118, dungeon: "Xul, the Blood Monolith", title: "Wher'skyr ?", title_en: "Wher'skyr ?", desc: "Le groupe doit atteindre Xul'vorith, Sentinelle de la Porte du Sang, sans agro aucun Fanatique Heskyr.", desc_en: "The group must reach Xul'vorith, Sentinel of the Bloodbound Gate, without aggroing any Heskyr Zealot.", points: 10, hard: false, personal: false, conditions: ["portal", "poulet", "dash", "shadow"] },
@@ -3348,7 +3348,7 @@
       'nav.join': { fr: 'Rejoindre', en: 'Join' },
       'nav.verify': { fr: 'Vérifier', en: 'Verify' },
       'verify.title': { fr: 'Vérifier via log', en: 'Verify via log' },
-      'verify.subtitle': { fr: 'Colle ton report code Fellowship Logs — on vérifie automatiquement tous tes hauts-faits éligibles en une seule passe.', en: 'Paste your Fellowship Logs report code — we automatically check all your eligible achievements in one go.' },
+      'verify.subtitle': { fr: 'Colle ton report code Fellowship Logs, on vérifie automatiquement tous tes hauts-faits éligibles en une seule passe.', en: 'Paste your Fellowship Logs report code, we automatically check all your eligible achievements in one go.' },
       'verify.label': { fr: 'Code du report', en: 'Report code' },
       'verify.btn': { fr: 'Analyser', en: 'Analyze' },
       'verify.checking': { fr: 'Analyse en cours...', en: 'Analyzing...' },
@@ -3429,7 +3429,7 @@
       'season.status.ongoing': { fr: 'En cours', en: 'Ongoing' },
       'season.status.coming': { fr: 'Coming Soon', en: 'Coming Soon' },
       'teaser.title': { fr: 'La Pre-Saison 3 arrive bientôt', en: 'Pre-Season 3 is coming soon' },
-      'teaser.desc': { fr: "Les hauts-faits de cette nouvelle saison sont en cours de préparation. Annonce officielle très prochainement — restez à l'écoute sur Twitch et Discord !", en: 'This new season\'s achievements are currently being prepared. Official announcement coming very soon — stay tuned on Twitch and Discord!' },
+      'teaser.desc': { fr: "Les hauts-faits de cette nouvelle saison sont en cours de préparation. Annonce officielle très prochainement. Restez à l'écoute sur Twitch et Discord !", en: "This new season's achievements are currently being prepared. Official announcement coming very soon. Stay tuned on Twitch and Discord!" },
       // Noms de donjons
       "Abime des marins": { fr: "Abime des marins", en: "Sailor's Abyss" },
       "Bois de L'aube": { fr: "Bois de L'aube", en: "Everdawn Grove" },
@@ -3534,6 +3534,10 @@
         const el = document.getElementById('verify-help-' + n);
         if (el) el.textContent = t('verify.help.' + n);
       });
+      const exLabel = document.getElementById('verify-help-example-label');
+      const codeLabel = document.getElementById('verify-help-code-label');
+      if (exLabel) exLabel.textContent = currentLang === 'en' ? 'Example:' : 'Exemple :';
+      if (codeLabel) codeLabel.textContent = currentLang === 'en' ? 'The code is' : 'Le code est';
       renderVerifyHFList(); // re-render la liste avec la nouvelle langue
       document.getElementById('event-title').textContent = t('header.event-title');
       // (nav.joiningform conservé pour compatibilité future)
@@ -3685,7 +3689,7 @@
       const seasonNav = document.getElementById('season-nav');
       if (seasonNav) {
         const showSeasonNav = id === 'leaderboard' || id === 'achievements';
-        seasonNav.style.display = showSeasonNav ? '' : 'none';
+        seasonNav.style.display = showSeasonNav ? 'flex' : 'none';
       }
     }
 
