@@ -194,6 +194,123 @@
       opacity: 1;
     }
 
+    /* TAB VERIFY VIA LOG — tab spéciale avec badge NEW */
+    .tab-verify {
+      position: relative;
+      color: var(--teal) !important;
+      opacity: 1 !important;
+    }
+    .tab-verify:hover {
+      border-color: rgba(76,168,168,0.4) !important;
+      box-shadow: 0 0 10px rgba(76,168,168,0.15);
+    }
+    .tab-verify.active {
+      color: var(--teal) !important;
+      border-color: rgba(76,168,168,0.6) !important;
+      background: rgba(76,168,168,0.08) !important;
+    }
+    .tab-verify .badge-new {
+      position: absolute;
+      top: -6px; right: -8px;
+      background: var(--teal);
+      color: var(--bg);
+      font-family: 'Cinzel', serif;
+      font-size: 8px; font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2px 5px;
+      border-radius: 10px;
+      animation: new-pulse 2.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes new-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(76,168,168,0.5); }
+      50% { box-shadow: 0 0 0 5px rgba(76,168,168,0); }
+    }
+
+    /* PAGE VERIFY ─────────────────────────────────────────── */
+    .verify-hero {
+      text-align: center;
+      padding: 32px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .verify-hero-icon { font-size: 36px; margin-bottom: 12px; }
+    .verify-hero h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 22px; letter-spacing: 0.06em;
+      color: var(--teal); margin-bottom: 8px;
+    }
+    .verify-hero p {
+      font-size: 16px; color: var(--text-dim);
+      font-style: italic; max-width: 520px; margin: 0 auto;
+    }
+    .verify-input-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 24px 28px;
+      max-width: 560px; margin: 0 auto 32px;
+    }
+    .verify-input-label {
+      font-family: 'Cinzel', serif; font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-muted); display: block; margin-bottom: 8px;
+    }
+    .verify-input-row { display: flex; gap: 8px; }
+    .verify-input {
+      flex: 1; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 4px;
+      color: var(--text); font-family: 'Crimson Pro', serif;
+      font-size: 16px; padding: 9px 12px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .verify-input:focus { border-color: rgba(76,168,168,0.6); }
+    .verify-btn {
+      font-family: 'Cinzel', serif; font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: rgba(76,168,168,0.12);
+      border: 1px solid rgba(76,168,168,0.5);
+      border-radius: 4px; color: var(--teal);
+      padding: 9px 18px; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .verify-btn:hover:not(:disabled) {
+      background: rgba(76,168,168,0.22);
+      box-shadow: 0 0 12px rgba(76,168,168,0.2);
+    }
+    .verify-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .verify-cd {
+      font-size: 12px; color: var(--text-muted);
+      margin-top: 6px; min-height: 18px;
+    }
+    .verify-results {
+      max-width: 560px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .verify-players-found {
+      font-size: 13px; color: var(--text-dim);
+      font-style: italic; text-align: center;
+      margin-bottom: 4px;
+    }
+    .verify-hf-result {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 12px 16px;
+    }
+    .verify-hf-result .status-icon {
+      font-size: 20px; flex-shrink: 0; width: 28px; text-align: center;
+    }
+    .verify-hf-result.ok  { border-color: rgba(125,223,125,0.3); }
+    .verify-hf-result.fail { border-color: rgba(201,76,76,0.3); }
+    .verify-hf-result .hf-name {
+      font-family: 'Cinzel', serif; font-size: 13px; color: var(--text);
+    }
+    .verify-hf-result .hf-dungeon {
+      font-size: 12px; color: var(--text-muted); font-style: italic;
+    }
+    .verify-error {
+      text-align: center; color: var(--text-muted);
+      font-style: italic; font-size: 14px; padding: 12px;
+    }
+
     /* SEASON TOGGLE — style isolé de .tab pour ne pas être affecté par showPage()/setLang() */
     .season-tab {
       font-family: 'Cinzel', serif;
@@ -1948,6 +2065,10 @@
       <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard', this)">Classement</button>
       <button class="tab" id="tab-achievements" onclick="showPage('achievements', this)">Hauts-faits</button>
       <button class="tab" id="tab-rules" onclick="showPage('rules', this)">Règles</button>
+      <button class="tab tab-verify" id="tab-verify" onclick="showPage('verify', this)">
+        <span id="tab-verify-label">Vérifier</span>
+        <span class="badge-new" id="badge-new">NEW</span>
+      </button>
       <div style="position:relative;">
         <button class="tab" id="join-btn" onclick="toggleJoinMenu()">Join</button>
 
@@ -2017,6 +2138,25 @@
     <!-- RULES -->
     <div id="page-rules" class="page">
       <div class="rules-page" id="rules-content"></div>
+    </div>
+
+    <div id="page-verify" class="page">
+      <div class="verify-hero">
+        <div class="verify-hero-icon">🔍</div>
+        <h2 id="verify-title">Vérifier via log</h2>
+        <p id="verify-subtitle">Colle ton report code Fellowship Logs — on vérifie automatiquement tous tes hauts-faits éligibles en une seule passe.</p>
+      </div>
+      <div class="verify-input-card">
+        <label class="verify-input-label" id="verify-label">Code du report</label>
+        <div class="verify-input-row">
+          <input class="verify-input" id="verify-code-input"
+            placeholder="Ex : AbCd1234"
+            onkeydown="if(event.key==='Enter') runVerify()">
+          <button class="verify-btn" id="verify-run-btn" onclick="runVerify()">Analyser</button>
+        </div>
+        <div class="verify-cd" id="verify-cd"></div>
+      </div>
+      <div class="verify-results" id="verify-results"></div>
     </div>
 
   </main>
@@ -3049,6 +3189,20 @@
     // Remplis les valeurs EN ci-dessous. Les FR sont les textes par défaut.
     const TRANSLATIONS = {
       'nav.join': { fr: 'Rejoindre', en: 'Join' },
+      'nav.verify': { fr: 'Vérifier', en: 'Verify' },
+      'verify.title': { fr: 'Vérifier via log', en: 'Verify via log' },
+      'verify.subtitle': { fr: 'Colle ton report code Fellowship Logs — on vérifie automatiquement tous tes hauts-faits éligibles en une seule passe.', en: 'Paste your Fellowship Logs report code — we automatically check all your eligible achievements in one go.' },
+      'verify.label': { fr: 'Code du report', en: 'Report code' },
+      'verify.btn': { fr: 'Analyser', en: 'Analyze' },
+      'verify.checking': { fr: 'Analyse en cours...', en: 'Analyzing...' },
+      'verify.no_player': { fr: 'Aucun joueur inscrit trouvé dans ce report.', en: 'No registered player found in this report.' },
+      'verify.no_fight': { fr: 'Aucun combat correspondant trouvé dans ce report.', en: 'No matching fight found in this report.' },
+      'verify.error': { fr: 'Erreur : ', en: 'Error: ' },
+      'verify.players': { fr: 'Joueurs détectés : ', en: 'Players found: ' },
+      'verify.ok': { fr: '✓ Validé', en: '✓ Validated' },
+      'verify.fail': { fr: '✗ Non validé', en: '✗ Not validated' },
+      'verify.wait': { fr: 'Veuillez attendre ', en: 'Please wait ' },
+      'verify.wait2': { fr: 's avant de réessayer.', en: 's before trying again.' },
       'header.event-title': { fr: 'Gloire à la Compagnie', en: 'Glory to the Fellowship' },
       'nav.joiningform': { fr: 'Rejoindre l\'événement', en: 'Join the event' },
       'nav.leaderboard': { fr: 'Classement', en: 'Leaderboard' },
@@ -3197,6 +3351,20 @@
       document.getElementById('tab-achievements').textContent = t('nav.achievements');
       document.getElementById('tab-rules').textContent = t('nav.rules');
       document.getElementById('join-btn').textContent = t('nav.join');
+      // tab verify — reconstruit avec le badge NEW
+      const verifyLabel = document.getElementById('tab-verify-label');
+      const badgeNew = document.getElementById('badge-new');
+      if (verifyLabel) verifyLabel.textContent = t('nav.verify');
+      if (badgeNew) badgeNew.style.display = verifyNewSeen ? 'none' : '';
+      // page verify
+      const vTitle = document.getElementById('verify-title');
+      const vSub = document.getElementById('verify-subtitle');
+      const vLabel = document.getElementById('verify-label');
+      const vBtn = document.getElementById('verify-run-btn');
+      if (vTitle) vTitle.textContent = t('verify.title');
+      if (vSub) vSub.textContent = t('verify.subtitle');
+      if (vLabel) vLabel.textContent = t('verify.label');
+      if (vBtn && !vBtn.disabled) vBtn.textContent = t('verify.btn');
       document.getElementById('event-title').textContent = t('header.event-title');
       document.getElementById('joiningform').textContent = t('nav.joiningform');
       document.getElementById('lang-btn-fr').classList.toggle('active', currentLang === 'fr');
@@ -3285,6 +3453,9 @@
   `;
     }
 
+    let verifyNewSeen = !!localStorage.getItem('gloire_verify_seen');
+    let verifyCooldownUntil = 0;
+
     function showPage(id, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -3293,6 +3464,116 @@
       if (id === 'leaderboard') loadLeaderboard();
       if (id === 'achievements') renderAchievements();
       if (id === 'rules') renderRules();
+      if (id === 'verify') {
+        // Masquer le badge NEW au premier clic
+        if (!verifyNewSeen) {
+          verifyNewSeen = true;
+          localStorage.setItem('gloire_verify_seen', '1');
+          const badge = document.getElementById('badge-new');
+          if (badge) badge.style.display = 'none';
+        }
+      }
+    }
+
+    // Metadata des HF logCheckables — miroir de l'Edge Function pour l'affichage
+    const VERIFY_HF_META = {
+      51: { title: 'Like a Pro I', title_en: 'Like a Pro I', dungeon: 'Sables Empyréens' },
+      // Ajouter ici les futurs HF logCheckables au fur et à mesure
+    };
+
+    async function runVerify() {
+      const now = Date.now();
+      if (now < verifyCooldownUntil) {
+        const remaining = Math.ceil((verifyCooldownUntil - now) / 1000);
+        document.getElementById('verify-cd').textContent =
+          t('verify.wait') + remaining + t('verify.wait2');
+        return;
+      }
+
+      const code = document.getElementById('verify-code-input').value.trim();
+      if (!code) return;
+
+      const btn = document.getElementById('verify-run-btn');
+      const results = document.getElementById('verify-results');
+      btn.disabled = true;
+      btn.textContent = t('verify.checking');
+      results.innerHTML = '';
+      document.getElementById('verify-cd').textContent = '';
+
+      try {
+        const res = await fetch(EDGE_CHECK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_FOR_EDGE,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_FOR_EDGE,
+          },
+          body: JSON.stringify({ report_code: code }),
+        });
+        const data = await res.json();
+
+        verifyCooldownUntil = Date.now() + (data.ok ? 60000 : 10000);
+        startVerifyCooldown(data.ok ? 60 : 10);
+
+        if (!data.ok) {
+          results.innerHTML = `<div class="verify-error">${t('verify.error')}${data.error || ''}</div>`;
+          return;
+        }
+        if (!data.players_found?.length) {
+          results.innerHTML = `<div class="verify-error">${t('verify.no_player')}</div>`;
+          return;
+        }
+
+        // Joueurs détectés
+        let html = `<div class="verify-players-found">${t('verify.players')}<strong>${data.players_found.join(', ')}</strong></div>`;
+
+        // Résultats par HF
+        const hfResults = data.results || {};
+        const hfIds = Object.keys(hfResults);
+        if (!hfIds.length) {
+          html += `<div class="verify-error">${t('verify.no_fight')}</div>`;
+        } else {
+          for (const hfId of hfIds) {
+            const meta = VERIFY_HF_META[hfId] || { title: 'HF #' + hfId, title_en: 'HF #' + hfId, dungeon: '' };
+            const passed = hfResults[hfId];
+            const name = currentLang === 'en' ? meta.title_en : meta.title;
+            html += `<div class="verify-hf-result ${passed ? 'ok' : 'fail'}">
+              <span class="status-icon">${passed ? '✓' : '✗'}</span>
+              <div>
+                <div class="hf-name">${name}</div>
+                <div class="hf-dungeon">${meta.dungeon} · ${passed ? t('verify.ok') : t('verify.fail')}</div>
+              </div>
+            </div>`;
+          }
+        }
+        results.innerHTML = html;
+
+      } catch (e) {
+        results.innerHTML = `<div class="verify-error">${t('verify.error')}${e.message}</div>`;
+        verifyCooldownUntil = Date.now() + 10000;
+        startVerifyCooldown(10);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = t('verify.btn');
+      }
+    }
+
+    function startVerifyCooldown(seconds) {
+      const cdEl = document.getElementById('verify-cd');
+      const btn  = document.getElementById('verify-run-btn');
+      if (btn) btn.disabled = true;
+      let remaining = Math.ceil(seconds);
+      const tick = () => {
+        if (!cdEl) return;
+        cdEl.textContent = remaining > 0 ? t('verify.wait') + remaining + t('verify.wait2') : '';
+        if (remaining <= 0) {
+          if (btn) btn.disabled = false;
+          return;
+        }
+        remaining--;
+        setTimeout(tick, 1000);
+      };
+      tick();
     }
 
     // ---- TOOLTIP FLOTTANT (badges/conditions des HF) ----
