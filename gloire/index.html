@@ -300,6 +300,7 @@
     }
     .verify-hf-result.ok  { border-color: rgba(125,223,125,0.3); }
     .verify-hf-result.fail { border-color: rgba(201,76,76,0.3); }
+    .verify-hf-result.na  { border-color: var(--border); opacity: 0.6; }
     .verify-hf-result .hf-name {
       font-family: 'Cinzel', serif; font-size: 13px; color: var(--text);
     }
@@ -2318,10 +2319,10 @@
       { id: 88, affix: "Gelée", title: "Les 2 font la paire", title_en: "The Two Make a Pair", desc: "Seulement 2 joueurs doivent être gelés à chaque fois.", desc_en: "Only 2 players must be frozen each time.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 89, affix: "Boss Boost", title: "Diablowlic", title_en: "Diablowlic", desc: "Le groupe doit compléter le donjon avec X ilvl en moins (retirer X pièce(s) d'équipement).", desc_en: "The group must complete the dungeon with X less ilvl (remove X item(s) from your gear).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 90, affix: "Sang", title: "Hématophobie", title_en: "Hematophobia", desc: "Le groupe doit compléter le donjon sans dépasser 6 stacks (avoir exactement 6 stacks est autorisé).", desc_en: "The group must complete the dungeon without exceeding 6 stacks (having exactly 6 is allowed).", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 91, affix: "Pierre", title: "D'une pierre 2 coup", title_en: "Two Birds, One Stone", desc: "Le groupe doit vaincre le boss du donjon avec une explosion causée par la mort d'un mob.", desc_en: "The group must defeat the dungeon boss with an explosion caused by a mob's death.", points: 10, hard: false, personal: false, conditions: [], logRequired: true },
+      { id: 91, affix: "Pierre", title: "D'une pierre 2 coup", title_en: "Two Birds, One Stone", desc: "Le groupe doit vaincre le boss du donjon avec une explosion causée par la mort d'un mob.", desc_en: "The group must defeat the dungeon boss with an explosion caused by a mob's death.", points: 10, hard: false, personal: false, conditions: [], logRequired: true, logCheckable: { abilityName: 'Stone Skin', dataType: 'Deaths' } },
       { id: 92, affix: "Eira", title: "Boule de neige", title_en: "Snowball", desc: "Le groupe doit vaincre Eira sans interrompre \"Winter Bolt\".", desc_en: "The group must defeat Eira without interrupting \"Winter Bolt\".", points: 10, hard: false, personal: false, conditions: [] },
       { id: 93, affix: "Ghorn", title: "Sans mort-teau", title_en: "No Harm-mer", desc: "Le groupe doit compléter le donjon en ayant vaincu Ghorn et en s'assurant qu'il n'inflige jamais de dégâts au boss.", desc_en: "The group must complete the dungeon having defeated Ghorn while making sure he never deals damage to the boss.", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 94, affix: "Meteor", title: "Like a Pro II", title_en: "Like a Pro II", desc: "Le groupe doit compléter le donjon sans qu'aucun membre ne se prenne de dégâts de météorite.", desc_en: "The group must complete the dungeon without any member taking meteor damage.", points: 10, hard: false, personal: false, conditions: [], logRequired: true },
+      { id: 94, affix: "Meteor", title: "Like a Pro II", title_en: "Like a Pro II", desc: "Le groupe doit compléter le donjon sans qu'aucun membre ne se prenne de dégâts de météorite.", desc_en: "The group must complete the dungeon without any member taking meteor damage.", points: 10, hard: false, personal: false, conditions: [], logRequired: true, logCheckable: { encounterID: null, abilityID: 143, type: 'DamageDone' } },
       { id: 95, affix: "Meteor", title: "As a Team", title_en: "As a Team", desc: "Tous les joueurs doivent se prendre les dégâts d'une même météorite pendant le combat contre le boss (la zone d'impact ne compte pas).", desc_en: "All players must take damage from the same meteor during the boss fight (the impact zone doesn't count).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 121, affix: "Truesight", title: "Vue sanglante", title_en: "Bloody Sight", desc: "Le groupe doit tuer 3 mobs boostés par les Heskyr en un seul pull.", desc_en: "The group must kill 3 mobs empowered by the Heskyr in a single pull.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 122, affix: "Truesight", title: "Wanted", title_en: "Wanted", desc: "Dès qu'une orbe tombe, le groupe doit impérativement tuer le mob désigné dans le temps imparti.", desc_en: "As soon as an orb drops, the group must kill the designated mob within the given time.", points: 10, hard: false, personal: false, conditions: [] },
@@ -3126,6 +3127,10 @@
           showLogResult(hfId, 'fail', currentLang === 'en'
             ? '✗ At least one player took forbidden damage.'
             : '✗ Au moins un joueur a reçu des dégâts interdits.');
+        } else if (hfResult === null) {
+          showLogResult(hfId, 'error', currentLang === 'en'
+            ? '— Affix not active in this report (wrong dungeon or level).'
+            : '— Affixe non actif dans ce report (donjon ou niveau incorrect).');
         } else {
           showLogResult(hfId, 'error', currentLang === 'en'
             ? 'No matching fight found in this report.'
@@ -3477,8 +3482,9 @@
 
     // Metadata des HF logCheckables — miroir de l'Edge Function pour l'affichage
     const VERIFY_HF_META = {
-      51: { title: 'Like a Pro I', title_en: 'Like a Pro I', dungeon: 'Sables Empyréens' },
-      // Ajouter ici les futurs HF logCheckables au fur et à mesure
+      51: { title: 'Like a Pro I',              title_en: 'Like a Pro I',              dungeon: 'Sables Empyréens' },
+      94: { title: 'Like a Pro II',             title_en: 'Like a Pro II',             dungeon: 'Affixe — Meteor Rain' },
+      91: { title: "D'une pierre 2 coups",      title_en: 'Two Birds One Stone',       dungeon: 'Affixe — Stone Skin' },
     };
 
     async function runVerify() {
@@ -3537,11 +3543,19 @@
             const meta = VERIFY_HF_META[hfId] || { title: 'HF #' + hfId, title_en: 'HF #' + hfId, dungeon: '' };
             const passed = hfResults[hfId];
             const name = currentLang === 'en' ? meta.title_en : meta.title;
-            html += `<div class="verify-hf-result ${passed ? 'ok' : 'fail'}">
-              <span class="status-icon">${passed ? '✓' : '✗'}</span>
+            // passed = true (validé) | false (raté) | null (affixe absent)
+            const statusClass = passed === true ? 'ok' : passed === false ? 'fail' : 'na';
+            const statusIcon  = passed === true ? '✓' : passed === false ? '✗' : '—';
+            const statusText  = passed === true
+              ? t('verify.ok')
+              : passed === false
+              ? t('verify.fail')
+              : (currentLang === 'en' ? 'Affix not active' : 'Affixe non actif');
+            html += `<div class="verify-hf-result ${statusClass}">
+              <span class="status-icon">${statusIcon}</span>
               <div>
                 <div class="hf-name">${name}</div>
-                <div class="hf-dungeon">${meta.dungeon} · ${passed ? t('verify.ok') : t('verify.fail')}</div>
+                <div class="hf-dungeon">${meta.dungeon} · ${statusText}</div>
               </div>
             </div>`;
           }
