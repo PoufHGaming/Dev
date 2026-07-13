@@ -2506,7 +2506,7 @@
       { id: 78, affix: "Shadow", title: "ULTIME ? Prêt !", title_en: "Ultimate? Ready!", desc: "Le groupe doit vaincre les 2 émissaires à 10 secondes d'intervalle.", desc_en: "The group must defeat both emissaries within a 10-second interval.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 79, affix: "Orbs", title: "Simon", title_en: "Simon", desc: "Le groupe doit vaincre les orbes dans cet ordre : Rouge > Violet > Jaune > Vert > Bleu > Blanc.", desc_en: "The group must defeat the orbs in this order: Red > Purple > Yellow > Green > Blue > White.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 80, affix: "Gelée", title: "Gèle-les", title_en: "Froz-Them", desc: "Tous les joueurs doivent être gelés à chaque fois.", desc_en: "All players must be frozen every time.", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 81, affix: "Boss Boost", title: "Tyranique", title_en: "Tyrannical", desc: "Le groupe doit compléter le donjon \"[DONJON]\" en Eternal X dans les temps avec un gear score de X.", desc_en: "The group must complete the dungeon \"[DUNGEON]\" at Eternal X within the timer with a gear score of X.", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 81, affix: "Boss Boost", title: "Tyranique", title_en: "Tyrannical", desc: "Le groupe doit compléter un donjon dans les temps avec l'affixe « Ultimatum » actif, avec tous les membres ayant 9 000 GS ou moins.", desc_en: "The group must complete a dungeon within the timer with the \"Ultimatum\" affix active, with all members at 9,000 GS or less.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 82, affix: "Sang", title: "Vampire", title_en: "Vampire", desc: "Dès que le 1er buff apparaît, le groupe doit obtenir un score de 100% du donjon sans perdre le buff (pas besoin de tuer le boss).", desc_en: "As soon as the 1st buff appears, the group must reach a 100% dungeon score without losing the buff (no need to kill the boss).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 83, affix: "Pierre", title: "Explosion en chaîne", title_en: "Chain Reaction", desc: "Les explosions causées par la mort d'une créature doivent toujours infliger des dégâts à d'autres créatures (sauf si la créature possède déjà ce dot).", desc_en: "Explosions caused by a creature's death must always deal damage to other creatures (unless that creature already has this dot).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 84, affix: "Enforcer", title: "Who's the boss ?", title_en: "Who's the boss ?", desc: "Le groupe doit vaincre 2 créatures renforcées et le boss du donjon dans un même pull.", desc_en: "The group must defeat 2 enforced creatures and the dungeon boss in the same pull.", points: 10, hard: false, personal: false, conditions: ['poulet'] },
@@ -2514,7 +2514,7 @@
       { id: 86, affix: "Shadow", title: "Où sont les pourcent ?!", title_en: "Where Are the Percentages?!", desc: "Le groupe doit vaincre le boss sans avoir pris plus de 3 orbes, puis compléter le donjon sans tuer aucune créature (hors émissaire).", desc_en: "The group must defeat the boss without taking more than 3 orbs, then complete the dungeon without killing any creature (except emissaries).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 87, affix: "Orbs", title: "Toi tu vies, toi tu vies, toi tu crèves !", title_en: "You Live, You Live, You Die!", desc: "Le joueur ne doit pas avoir plus de 2 buffs associés aux orbes en même temps (2 stacks d'un même buff comptent comme 2 buffs).", desc_en: "The player must not have more than 2 orb-related buffs at the same time (2 stacks of the same buff count as 2 buffs).", points: 10, hard: false, personal: true, conditions: [] },
       { id: 88, affix: "Gelée", title: "Les 2 font la paire", title_en: "The Two Make a Pair", desc: "Seulement 2 joueurs doivent être gelés à chaque fois.", desc_en: "Only 2 players must be frozen each time.", points: 10, hard: false, personal: false, conditions: [] },
-      { id: 89, affix: "Boss Boost", title: "Diablowlic", title_en: "Diablowlic", desc: "Le groupe doit compléter le donjon \"[DONJON]\" en Eternal X dans les temps avec un gear score de X.", desc_en: "The group must complete the dungeon \"[DUNGEON]\" at Eternal X within the timer with a gear score of X.", points: 10, hard: false, personal: false, conditions: [] },
+      { id: 89, affix: "Boss Boost", title: "Diablowlic", title_en: "Diablowlic", desc: "Le groupe doit compléter un donjon dans les temps avec l'affixe « Ultimatum » actif, avec tous les membres ayant 7 000 GS ou moins.", desc_en: "The group must complete a dungeon within the timer with the \"Ultimatum\" affix active, with all members at 7,000 GS or less.", points: 10, hard: false, personal: false, conditions: [] },
       { id: 90, affix: "Sang", title: "Hématophobie", title_en: "Hematophobia", desc: "Le groupe doit compléter le donjon sans dépasser 6 stacks (avoir exactement 6 stacks est autorisé).", desc_en: "The group must complete the dungeon without exceeding 6 stacks (having exactly 6 is allowed).", points: 10, hard: false, personal: false, conditions: [] },
       { id: 91, affix: "Pierre", title: "D'une pierre 2 coup", title_en: "Two Birds, One Stone", desc: "Le groupe doit vaincre le boss du donjon avec une explosion causée par la mort d'un mob.", desc_en: "The group must defeat the dungeon boss with an explosion caused by a mob's death.", points: 10, hard: false, personal: false, conditions: [], logRequired: true, logCheckable: { abilityName: 'Stone Skin', dataType: 'Deaths' } },
       { id: 92, affix: "Eira", title: "Boule de neige", title_en: "Snowball", desc: "Le groupe doit vaincre Eira sans interrompre \"Winter Bolt\".", desc_en: "The group must defeat Eira without interrupting \"Winter Bolt\".", points: 10, hard: false, personal: false, conditions: [] },
@@ -3698,8 +3698,8 @@
         <div class="rules-list">
           <div class="rules-item">
             🔍&nbsp; ${fr
-              ? 'Certains hauts-faits sont vérifiables automatiquement via vos logs Fellowship. Utilisez l\'onglet <strong>Vérifier</strong> pour les soumettre.'
-              : 'Some achievements can be verified automatically via your Fellowship logs. Use the <strong>Verify</strong> tab to submit them.'}
+              ? `Certains hauts-faits sont vérifiables automatiquement via vos logs Fellowship. Utilisez l'onglet Vérifier pour les soumettre.`
+              : `Some achievements can be verified automatically via your Fellowship logs. Use the Verify tab to submit them.`}
           </div>
           <div class="rules-item">
             🎬&nbsp; ${fr
@@ -3750,10 +3750,14 @@
 
     // Metadata des HF logCheckables — miroir de l'Edge Function pour l'affichage
     const VERIFY_HF_META = {
-      51: { title: 'Like a Pro I',         title_en: 'Like a Pro I',        dungeon: 'Sables Empyréens', affix: null },
-      94: { title: 'Like a Pro II',        title_en: 'Like a Pro II',       dungeon: null,               affix: 'Meteor' },
-      91: { title: "D'une pierre 2 coups", title_en: 'Two Birds One Stone', dungeon: null,               affix: 'Pierre' },
+      51: { title: 'Like a Pro I',         title_en: 'Like a Pro I',        dungeon_fr: 'Sables Empyréens', dungeon_en: 'Empyrean Sands', affix: null },
+      94: { title: 'Like a Pro II',        title_en: 'Like a Pro II',       dungeon_fr: null,               dungeon_en: null,             affix: 'Meteor' },
+      91: { title: "D'une pierre 2 coups", title_en: 'Two Birds One Stone', dungeon_fr: null,               dungeon_en: null,             affix: 'Pierre' },
     };
+
+    function getVerifyDungeon(meta) {
+      return currentLang === 'en' ? meta.dungeon_en : meta.dungeon_fr;
+    }
 
     function toggleVerifyHelp() {
       const title = document.getElementById('verify-help-title');
@@ -3784,9 +3788,12 @@
           leftContent = `<span class="affix-icon-wrap" style="border-color:${affMeta.color}66;flex-shrink:0;">
             <img src="${affMeta.icon}" alt="${affName}" onerror="this.style.display='none'">
           </span>`;
-        } else if (meta.dungeon) {
-          // HF donjon : nom du donjon en texte, pas d'icône
-          leftContent = `<span class="pill-dungeon" style="min-width:auto;">${meta.dungeon}</span>`;
+        } else {
+          // HF donjon : nom du donjon traduit, pas d'icône
+          const dungeonName = getVerifyDungeon(meta);
+          if (dungeonName) {
+            leftContent = `<span class="pill-dungeon" style="min-width:auto;">${dungeonName}</span>`;
+          }
         }
 
         html += `<div class="verify-hf-pill">
@@ -3861,15 +3868,18 @@
               ? t('verify.fail')
               : (currentLang === 'en' ? 'Affix not active' : 'Affixe non actif');
 
-            // Indicateur gauche : bulle affix ou nom donjon
+            // Indicateur gauche : bulle affix ou nom donjon traduit
             let indicator = '';
             if (meta.affix && AFFIX_META[meta.affix]) {
               const affMeta = AFFIX_META[meta.affix];
               indicator = `<span class="affix-icon-wrap" style="border-color:${affMeta.color}66;flex-shrink:0;">
                 <img src="${affMeta.icon}" alt="${meta.affix}" onerror="this.style.display='none'">
               </span>`;
-            } else if (meta.dungeon) {
-              indicator = `<span style="font-size:12px;color:var(--text-muted);font-style:italic;white-space:nowrap;">${meta.dungeon}</span>`;
+            } else {
+              const dungeonName = getVerifyDungeon(meta);
+              if (dungeonName) {
+                indicator = `<span style="font-size:12px;color:var(--text-muted);font-style:italic;white-space:nowrap;">${dungeonName}</span>`;
+              }
             }
 
             html += `<div class="verify-hf-result ${statusClass}">
