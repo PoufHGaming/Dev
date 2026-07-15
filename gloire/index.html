@@ -3776,30 +3776,40 @@
         ? 'Automatically verifiable achievements'
         : 'Hauts-faits vérifiables automatiquement';
       let html = `<div class="verify-hf-list-title">${label}</div>`;
+
       ids.forEach(hfId => {
         const meta = VERIFY_HF_META[hfId];
         const name = currentLang === 'en' ? meta.title_en : meta.title;
 
-        let leftContent = '';
         if (meta.affix && AFFIX_META[meta.affix]) {
-          // HF affixe : bulle avec icône
+          // HF affixe : style affix-subheader
           const affMeta = AFFIX_META[meta.affix];
           const affName = affixDisplayName(affMeta);
-          leftContent = `<span class="affix-icon-wrap" style="border-color:${affMeta.color}66;flex-shrink:0;">
-            <img src="${affMeta.icon}" alt="${affName}" onerror="this.style.display='none'">
-          </span>`;
+          html += `<div class="verify-hf-entry" style="
+            border:1px solid ${affMeta.color}33;
+            background:${affMeta.color}14;
+            border-radius:6px; padding:10px 14px;
+            display:flex; align-items:center; gap:10px;">
+            <span class="affix-icon-wrap" style="border-color:${affMeta.color}66;flex-shrink:0;">
+              <img src="${affMeta.icon}" alt="${affName}" onerror="this.style.display='none'">
+            </span>
+            <span style="font-family:'Cinzel',serif;font-size:13px;color:${affMeta.color};flex:1;">${name}</span>
+            <span style="font-size:12px;color:${affMeta.color}99;font-style:italic;">${affName}</span>
+          </div>`;
         } else {
-          // HF donjon : nom du donjon traduit, pas d'icône
+          // HF donjon : style dungeon-block miniature avec fond image
+          const dungeonKey = meta.dungeon_fr;
           const dungeonName = getVerifyDungeon(meta);
-          if (dungeonName) {
-            leftContent = `<span class="pill-dungeon" style="min-width:auto;">${dungeonName}</span>`;
-          }
+          const imgPath = dungeonKey ? (DUNGEON_IMAGES[dungeonKey] || '') : '';
+          const bgStyle = imgPath ? `background-image:url('${imgPath}');` : '';
+          html += `<div class="verify-hf-entry" style="position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--border);">
+            ${bgStyle ? `<div style="position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.35;${bgStyle}"></div>` : ''}
+            <div style="position:relative;z-index:1;display:flex;align-items:center;gap:10px;padding:10px 14px;">
+              <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--text);flex:1;">${name}</span>
+              <span style="font-size:12px;color:var(--text-muted);font-style:italic;">${dungeonName || ''}</span>
+            </div>
+          </div>`;
         }
-
-        html += `<div class="verify-hf-pill">
-          ${leftContent}
-          <span class="pill-name">${name}</span>
-        </div>`;
       });
       el.innerHTML = html;
     }
@@ -3868,26 +3878,31 @@
               ? t('verify.fail')
               : (currentLang === 'en' ? 'Affix not active' : 'Affixe non actif');
 
-            // Indicateur gauche : bulle affix ou nom donjon traduit
-            let indicator = '';
+            // Rendu avec DA cohérente avec Achievements
+            let entryStyle = '';
+            let leftBlock = '';
             if (meta.affix && AFFIX_META[meta.affix]) {
               const affMeta = AFFIX_META[meta.affix];
-              indicator = `<span class="affix-icon-wrap" style="border-color:${affMeta.color}66;flex-shrink:0;">
-                <img src="${affMeta.icon}" alt="${meta.affix}" onerror="this.style.display='none'">
+              const affName = affixDisplayName(affMeta);
+              entryStyle = `border-color:${affMeta.color}33;background:${affMeta.color}14;`;
+              leftBlock = `<span class="affix-icon-wrap" style="border-color:${affMeta.color}66;flex-shrink:0;">
+                <img src="${affMeta.icon}" alt="${affName}" onerror="this.style.display='none'">
               </span>`;
             } else {
-              const dungeonName = getVerifyDungeon(meta);
-              if (dungeonName) {
-                indicator = `<span style="font-size:12px;color:var(--text-muted);font-style:italic;white-space:nowrap;">${dungeonName}</span>`;
+              const dungeonKey = meta.dungeon_fr;
+              const imgPath = dungeonKey ? (DUNGEON_IMAGES[dungeonKey] || '') : '';
+              if (imgPath) {
+                leftBlock = `<div style="position:absolute;inset:0;background-image:url('${imgPath}');background-size:cover;background-position:center;opacity:0.25;border-radius:4px;"></div>`;
               }
             }
+            const dungeonName = getVerifyDungeon(meta);
 
-            html += `<div class="verify-hf-result ${statusClass}">
-              <span class="status-icon">${statusIcon}</span>
-              ${indicator}
-              <div>
+            html += `<div class="verify-hf-result ${statusClass}" style="position:relative;${entryStyle}">
+              ${leftBlock}
+              <span class="status-icon" style="position:relative;z-index:1;">${statusIcon}</span>
+              <div style="position:relative;z-index:1;flex:1;">
                 <div class="hf-name">${name}</div>
-                <div class="hf-dungeon">${statusText}</div>
+                <div class="hf-dungeon">${dungeonName ? dungeonName + ' · ' : ''}${statusText}</div>
               </div>
             </div>`;
           }
