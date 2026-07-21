@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glory to the Fellowship - Overlay</title>
+<title>Gloire à la Compagnie — Overlay</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -298,21 +298,19 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
   // ── CONFIG ────────────────────────────────────────
-  const SUPABASE_URL     = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
-  const SUPABASE_ANON    = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
+  const SUPABASE_URL  = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
 
-  // ── DONNÉES HF (reprises du site) ────────────────
-  // Coller ici les mêmes ACHIEVEMENTS_S2, ACHIEVEMENTS_S3, AFFIXES_S3
-  // que dans gloire/index.html pour que l'overlay puisse afficher les descriptions.
-  // Pour simplifier : l'overlay fetch les HF sélectionnés depuis overlay_state.hf_data
-  // (l'admin envoie déjà le titre + desc courts dans la table).
+  // Client Supabase JS v2
+  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
   // ── ÉTAT LOCAL ───────────────────────────────────
   let state = null;
 
-  // ── API SUPABASE ─────────────────────────────────
+  // ── API SUPABASE (REST fetch direct) ─────────────
   async function supaFetch(path, opts = {}) {
     const res = await fetch(SUPABASE_URL + path, {
       ...opts,
@@ -331,7 +329,7 @@
   async function loadState() {
     const [overlayRows, lbRows] = await Promise.all([
       supaFetch('/rest/v1/overlay_state?id=eq.1&select=*'),
-      supaFetch('/rest/v1/players?select=id,name,score_s2,score_s3,score_total&order=score_total.desc&limit=5'),
+      supaFetch(lbQuery('S3')),
     ]);
     state = overlayRows[0] || defaultState();
     render(state, lbRows);
@@ -339,37 +337,33 @@
 
   function defaultState() {
     return {
-      layout: 'vertical',
-      dungeon: '', hf_data: [],
+      layout: 'vertical', dungeon: '', hf_data: [],
       show_leaderboard: true, show_hfs: true, show_pub: false,
       pub_text: '', season: 'S3',
     };
   }
 
-  // ── REALTIME ─────────────────────────────────────
+  // ── REALTIME via SDK Supabase JS v2 ──────────────
   function connectRealtime() {
-    // Supabase Realtime via WebSocket natif
-    const wsUrl = SUPABASE_URL.replace('https://', 'wss://') + '/realtime/v1/websocket?vsn=1.0.0&apikey=' + SUPABASE_ANON;
-    const ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ topic: 'realtime:public:overlay_state', event: 'phx_join', payload: {}, ref: '1' }));
-    };
-
-    ws.onmessage = async (e) => {
-      const msg = JSON.parse(e.data);
-      if (msg.event === 'phx_reply' && msg.payload?.status === 'ok') return;
-      if (msg.event === 'INSERT' || msg.event === 'UPDATE') {
-        const newState = msg.payload?.data?.record || msg.payload?.record;
-        if (!newState) return;
-        state = newState;
-        const lbRows = await supaFetch(lbQuery(newState.season));
-        render(newState, lbRows);
-      }
-    };
-
-    ws.onclose = () => setTimeout(connectRealtime, 3000);
-    ws.onerror = () => ws.close();
+    supa
+      .channel('overlay_state_changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'overlay_state', filter: 'id=eq.1' },
+        async (payload) => {
+          const newState = payload.new;
+          if (!newState) return;
+          state = newState;
+          const lbRows = await supaFetch(lbQuery(newState.season));
+          render(newState, lbRows);
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          // Retry après 3s en cas d'erreur
+          setTimeout(connectRealtime, 3000);
+        }
+      });
   }
 
   function lbQuery(season) {
