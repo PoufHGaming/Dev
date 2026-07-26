@@ -612,7 +612,6 @@
   <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement" data-en="Leaderboard">Classement</button>
   <button class="tab" id="tab-events" onclick="showPage('events',this)" data-fr="Événements" data-en="Events">Événements</button>
   <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
-  <button class="tab" id="tab-register" onclick="showPage('register',this)" data-fr="S'inscrire" data-en="Register">S'inscrire</button>
   <button class="tab" id="tab-profile" onclick="showPage('profile',this)" data-fr="Mon Profil" data-en="My Profile">Mon Profil</button>
   <div class="nav-right">
     <div class="lang-toggle">
@@ -671,12 +670,7 @@
     <div id="rules-content"></div>
   </div>
 
-  <!-- ── REGISTER ── -->
-  <div id="page-register" class="page">
-    <div id="register-content"></div>
-  </div>
-
-  <!-- ── PROFILE ── -->
+  <!-- ── PROFILE (inclut inscription) ── -->
   <div id="page-profile" class="page">
     <div id="profile-content">
       <div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div>
@@ -776,7 +770,6 @@
     if (s) s.placeholder = fr() ? 'Rechercher un joueur…' : 'Search a player…';
     renderSyncInfo();
     renderRules();
-    renderRegister();
     if (_lbData) renderLbPage();
     if (_eventsData) renderEvents();
   }
@@ -799,7 +792,6 @@
     if (id === 'leaderboard') loadLeaderboard();
     if (id === 'events')      loadEvents();
     if (id === 'rules')       renderRules();
-    if (id === 'register')    renderRegister();
     if (id === 'profile')     renderProfilePage();
   }
 
@@ -1106,7 +1098,7 @@
     document.getElementById('events-content').innerHTML = `<div class="loading">${fr() ? 'Chargement…' : 'Loading…'}</div>`;
     try {
       const events = await sbFetch(
-        `/rest/v1/hm_events?season=eq.${SEASON}&event_type=neq.new_attempt&order=created_at.desc&limit=200` +
+        `/rest/v1/hm_events?season=eq.${SEASON}&event_type=neq.new_attempt&event_type=neq.run_invalidated&order=created_at.desc&limit=200` +
         `&select=id,event_type,player_id,character_name,character_class,capstone_id,metadata,attempt_number,created_at`
       );
       // Charger capstones pour le libellé
@@ -1139,26 +1131,39 @@
       const timeStr = d.toLocaleDateString(fr()?'fr-FR':'en-GB', { day:'2-digit', month:'short' })
         + ' ' + d.toLocaleTimeString(fr()?'fr-FR':'en-GB', { hour:'2-digit', minute:'2-digit' });
       let icon = '📜', titleHtml = '', metaHtml = '';
-      const cls = e.character_class ? `<span style="color:${classColor(e.character_class)}">${e.character_class}</span>` : '';
+      const heroCol = e.character_class ? classColor(e.character_class) : 'var(--text-dim)';
+      const charSpan = `<strong style="color:${heroCol}">${e.character_name}</strong>${e.character_class ? ` <span style="color:${heroCol};font-size:14px">(${e.character_class})</span>` : ''}`;
+
       if (e.event_type === 'death') {
         icon = '💀';
         const meta = e.metadata || {};
-        titleHtml = `<div class="evt-title"><strong>${e.character_name}</strong> ${cls ? `(${cls}) ` : ''}${fr() ? 'est mort(e)' : 'has died'}</div>`;
-        metaHtml  = meta.dungeon ? `<div class="evt-meta">${fr() ? 'Donjon' : 'Dungeon'} : ${meta.dungeon}${meta.ilvl_at_death ? ` · ilvl ${meta.ilvl_at_death}` : ''}</div>` : '';
+        // Rang du donjon où le joueur est mort
+        const dl    = meta.difficulty_level;
+        const rank  = dl ? diffLevelToRank(dl) : null;
+        const rankCol = rank ? tierColor(rank.tier) : 'var(--text-muted)';
+        const rankBadge = rank
+          ? `<span style="color:${rankCol};font-size:13px">${rank.label}</span>`
+          : '';
+        titleHtml = `<div class="evt-title">${charSpan} ${fr() ? 'est mort(e)' : 'has died'} ${rankBadge}</div>`;
+        metaHtml  = meta.dungeon
+          ? `<div class="evt-meta">${meta.dungeon}${meta.ilvl_at_death ? ` · ilvl ${meta.ilvl_at_death}` : ''}${meta.ps_at_death ? ` · PS ${Math.round(meta.ps_at_death)}` : ''}</div>`
+          : '';
       } else if (e.event_type === 'capstone') {
         icon = '👑';
-        const cap = capMap[e.capstone_id];
-        const capLabel = cap ? `${cap.tier_name} ${cap.difficulty_level_threshold}` : '';
-        titleHtml = `<div class="evt-title cap"><strong>${e.character_name}</strong> ${cls ? `(${cls}) ` : ''}${fr() ? 'atteint' : 'reached'} <strong>${capLabel}</strong></div>`;
-        const meta = e.metadata || {};
-        metaHtml  = meta.dungeon ? `<div class="evt-meta">${meta.dungeon}${meta.ilvl_reached ? ` · ilvl ${meta.ilvl_reached}` : ''}</div>` : '';
-      } else if (e.event_type === 'new_attempt') {
-        icon = '🔄';
-        const meta = e.metadata || {};
-        titleHtml = `<div class="evt-title"><strong>${e.character_name}</strong> ${fr() ? 'reprend le combat' : 'rises again'} <span style="color:var(--text-muted);font-size:14px">(${fr()?'tentative':'attempt'} #${meta.new_attempt || e.attempt_number})</span></div>`;
-        metaHtml  = '';
+        const meta  = e.metadata || {};
+        const dl    = meta.difficulty_level;
+        const rank  = dl ? diffLevelToRank(dl) : null;
+        const rankCol = rank ? tierColor(rank.tier) : 'var(--hc-eternal)';
+        const rankLabel = rank ? rank.label : (meta.rank_label || '');
+        const rankBadge = `<span style="font-family:'Cinzel',serif;font-size:12px;color:${rankCol};
+          border:1px solid ${rankCol}40;background:${rankCol}12;
+          padding:2px 8px;border-radius:20px">${rankLabel}</span>`;
+        titleHtml = `<div class="evt-title">${charSpan} ${fr() ? 'atteint' : 'reached'} ${rankBadge}</div>`;
+        metaHtml  = meta.dungeon
+          ? `<div class="evt-meta">${meta.dungeon}${meta.rating ? ` · ${Math.floor(meta.rating)} pts` : ''}</div>`
+          : '';
       } else {
-        titleHtml = `<div class="evt-title">${e.character_name} · ${e.event_type}</div>`;
+        titleHtml = `<div class="evt-title">${charSpan} · ${e.event_type}</div>`;
       }
       return `<div class="evt-item ${e.event_type}">
         <div class="evt-icon">${icon}</div>
@@ -1253,131 +1258,6 @@
           </div>
         </div>
       </div>`;
-  }
-
-  // ── REGISTER ────────────────────────────────────────────────────────────────
-  function renderRegister() {
-    const f = fr();
-    document.getElementById('register-content').innerHTML = `
-      <div class="register-card">
-        <div class="register-title">${f ? 'Inscription Fellowship Hardcore' : 'Fellowship Hardcore Registration'}</div>
-        <div class="register-desc">${f
-          ? 'Déclare ton personnage HM pour participer à l\'event. Ton personnage sera suivi automatiquement via les logs Fellowship.'
-          : 'Register your HM character to participate in the event. Your character will be tracked automatically via Fellowship logs.'}</div>
-        <div class="register-warning">
-          ☠️ ${f
-            ? 'En t\'inscrivant, tu acceptes les règles Hardcore : la mort est permanente. Réfléchis bien avant de valider.'
-            : 'By registering, you accept the Hardcore rules: death is permanent. Think carefully before confirming.'}
-        </div>
-        <div class="field">
-          <label>${f ? 'Ton nom de joueur (Fellowship)' : 'Your player name (Fellowship)'}</label>
-          <input type="text" id="reg-player-name" placeholder="${f ? 'Ton nom exact sur FellowshipLogs' : 'Your exact name on FellowshipLogs'}">
-          <div class="field-hint">${f ? 'Doit correspondre exactement à ton nom sur fellowshiplogs.com' : 'Must match exactly your name on fellowshiplogs.com'}</div>
-        </div>
-        <div class="field">
-          <label>${f ? 'Nom de ton personnage HM' : 'Your HM character name'}</label>
-          <input type="text" id="reg-char-name" placeholder="${f ? 'Nom du personnage dans les logs' : 'Character name as shown in logs'}">
-          <div class="field-hint">${f ? 'Tel qu\'il apparaît dans les logs de combat' : 'As it appears in combat logs'}</div>
-        </div>
-        <div class="field">
-          <label>${f ? 'Classe du personnage' : 'Character class'}</label>
-          <select id="reg-char-class">
-            <option value="">${f ? '— Sélectionner —' : '— Select —'}</option>
-            <option value="Helena">Helena</option>
-            <option value="Aeona">Aeona</option>
-            <option value="Elarion">Elarion</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>${f ? 'Fellowship Character ID (optionnel)' : 'Fellowship Character ID (optional)'}</label>
-          <input type="number" id="reg-char-id" placeholder="${f ? 'ID numérique (visible dans l\'URL)' : 'Numeric ID (visible in the URL)'}">
-          <div class="field-hint">${f ? 'Visible dans l\'URL de ton perso sur fellowshiplogs.com' : 'Visible in the URL of your character on fellowshiplogs.com'}</div>
-        </div>
-        <button class="btn-register" onclick="submitRegister()" id="btn-register">
-          ${f ? '⚔️ M\'inscrire en Hardcore' : '⚔️ Register for Hardcore'}
-        </button>
-        <div class="register-result" id="register-result"></div>
-      </div>`;
-  }
-
-  async function submitRegister() {
-    const playerName = document.getElementById('reg-player-name').value.trim();
-    const charName   = document.getElementById('reg-char-name').value.trim();
-    const charClass  = document.getElementById('reg-char-class').value;
-    const charIdRaw  = document.getElementById('reg-char-id').value.trim();
-    const result     = document.getElementById('register-result');
-    const btn        = document.getElementById('btn-register');
-    const f          = fr();
-
-    if (!playerName || !charName || !charClass) {
-      result.className = 'register-result show err';
-      result.textContent = f ? 'Remplis tous les champs obligatoires.' : 'Please fill in all required fields.';
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = f ? 'Envoi en cours…' : 'Submitting…';
-
-    try {
-      // 1. Trouver le player_id via son nom
-      const players = await sbFetch(`/rest/v1/players?name=eq.${encodeURIComponent(playerName)}&select=id,name`);
-      if (!players?.length) {
-        result.className = 'register-result show err';
-        result.textContent = f
-          ? `Joueur "${playerName}" introuvable. Vérifie ton nom exact ou contacte Pouf.`
-          : `Player "${playerName}" not found. Check your exact name or contact Pouf.`;
-        return;
-      }
-      const playerId = players[0].id;
-
-      // 2. Insérer hm_registrations
-      await sbFetch('/rest/v1/hm_registrations', {
-        method: 'POST',
-        prefer: 'return=minimal',
-        body: {
-          player_id:               playerId,
-          character_name:          charName,
-          character_class:         charClass,
-          fellowship_character_id: charIdRaw ? parseInt(charIdRaw) : null,
-          registered_by:           'form',
-          season:                  SEASON,
-          status:                  'pending',
-        }
-      });
-
-      // 3. Insérer hm_log_aliases
-      await sbFetch('/rest/v1/hm_log_aliases', {
-        method: 'POST',
-        prefer: 'return=minimal',
-        body: { player_id: playerId, log_name: charName }
-      }).catch(() => {}); // ignore si doublon
-
-      result.className = 'register-result show ok';
-      result.textContent = f
-        ? `✓ Inscription enregistrée ! Ton personnage "${charName}" sera confirmé au prochain sync (15 min).`
-        : `✓ Registration saved! Your character "${charName}" will be confirmed at the next sync (15 min).`;
-      toast(f ? 'Inscription envoyée !' : 'Registration sent!');
-
-      // Reset form
-      ['reg-player-name','reg-char-name','reg-char-id'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value = '';
-      });
-      document.getElementById('reg-char-class').value = '';
-
-    } catch(e) {
-      result.className = 'register-result show err';
-      const msg = e.message || '';
-      if (msg.includes('duplicate') || msg.includes('unique')) {
-        result.textContent = f
-          ? 'Ce personnage est déjà inscrit pour cette saison.'
-          : 'This character is already registered for this season.';
-      } else {
-        result.textContent = f ? `Erreur : ${msg}` : `Error: ${msg}`;
-      }
-    } finally {
-      btn.disabled = false;
-      btn.textContent = f ? '⚔️ M\'inscrire en Hardcore' : '⚔️ Register for Hardcore';
-    }
   }
 
   // ── PROFILE — AUTH SUPABASE ─────────────────────────────────────────────────
@@ -1535,12 +1415,15 @@
   function renderProfileVisitor(cont, f) {
     cont.innerHTML = `
       <div class="profile-visitor">
-        <div class="profile-visitor-title">☠️ ${f ? 'Espace Hardcore' : 'Hardcore Space'}</div>
+        <div class="profile-visitor-title">⚔️ ${f ? 'Mon Profil Hardcore' : 'My Hardcore Profile'}</div>
         <div class="profile-visitor-desc">${f
-          ? 'Connecte-toi pour gérer tes personnages Hardcore, activer ou désactiver le mode, et voir tes stats privées.'
-          : 'Sign in to manage your Hardcore characters, toggle modes, and view your private stats.'}</div>
+          ? 'Connecte-toi avec ton email pour t\'inscrire à l\'event, activer le mode Hardcore sur tes héros, et suivre ta progression en temps réel.'
+          : 'Sign in with your email to register for the event, enable Hardcore mode on your heroes, and track your progress in real time.'}</div>
         <div class="profile-magic-form">
-          <div class="profile-magic-title">${f ? 'Connexion sans mot de passe' : 'Passwordless Sign In'}</div>
+          <div class="profile-magic-title">${f ? 'Connexion / Inscription sans mot de passe' : 'Sign In / Register — passwordless'}</div>
+          <p style="font-size:14px;color:var(--text-muted);font-style:italic;text-align:center;margin-bottom:14px">${f
+            ? 'Entre ton email et reçois un lien magique. Première fois ? Tu configureras ton profil directement.'
+            : 'Enter your email and receive a magic link. First time? You\'ll set up your profile right after.'}</p>
           <div class="profile-magic-row">
             <input type="email" id="magic-email" placeholder="${f ? 'ton@email.com' : 'your@email.com'}">
             <button class="btn-magic" id="magic-btn" onclick="doMagicLink()">
@@ -1549,8 +1432,8 @@
           </div>
           <div class="profile-magic-sent" id="magic-sent">
             ✓ ${f
-              ? 'Lien envoyé ! Vérifie ta boîte mail et clique sur le lien.'
-              : 'Link sent! Check your inbox and click the link.'}
+              ? 'Lien envoyé ! Vérifie ta boîte mail et clique sur le lien pour accéder à ton profil.'
+              : 'Link sent! Check your inbox and click the link to access your profile.'}
           </div>
         </div>
       </div>`;
@@ -1602,14 +1485,20 @@
     let body = '';
     if (_onboardingStep === 1) {
       body = `
-        <div class="onboarding-title">${f ? 'Confirme ton profil Fellowship' : 'Confirm your Fellowship profile'}</div>
+        <div class="onboarding-title">${f ? 'Bienvenue — Configure ton profil' : 'Welcome — Set up your profile'}</div>
+        <p style="font-size:14px;color:var(--text-muted);font-style:italic;margin-bottom:20px;line-height:1.6">${f
+          ? 'Ton nom Fellowship sera utilisé pour identifier tes personnages dans les logs de combat.'
+          : 'Your Fellowship name will be used to identify your characters in combat logs.'}</p>
         <div class="field">
           <label>${f ? 'Ton nom Fellowship (exact)' : 'Your Fellowship name (exact)'}</label>
           <input type="text" id="ob-name" value="${_onboardingPlayerName}" placeholder="${f ? 'Ton nom exact sur FellowshipLogs' : 'Your exact name on FellowshipLogs'}">
+          <div class="field-hint">${f
+            ? 'Doit correspondre exactement à ton nom sur fellowshiplogs.com — c\'est aussi le nom de tes personnages en jeu.'
+            : 'Must match exactly your name on fellowshiplogs.com — this is also your in-game character name.'}</div>
         </div>
         <div class="field">
           <label>${f ? 'Fellowship Contact Code (optionnel)' : 'Fellowship Contact Code (optional)'}</label>
-          <input type="text" id="ob-code" value="${_onboardingCode}" placeholder="${f ? 'Code pour l\'invitation communauté' : 'Code for community invitation'}">
+          <input type="text" id="ob-code" value="${_onboardingCode}" placeholder="${f ? 'Ton code pour l\'invitation communauté' : 'Your code for community invitation'}">
           <div class="field-hint">${f ? 'Visible dans ton profil Fellowship' : 'Visible in your Fellowship profile'}</div>
         </div>
         <button class="btn-register" onclick="onboardingNext()" style="margin-top:8px">
@@ -1634,10 +1523,10 @@
         </div>`;
       }).join('');
       body = `
-        <div class="onboarding-title">${f ? 'Sélectionne tes héros Hardcore' : 'Select your Hardcore heroes'}</div>
+        <div class="onboarding-title">${f ? 'Active tes héros en Hardcore' : 'Enable your Hardcore heroes'}</div>
         <div style="font-size:14px;color:var(--text-muted);font-style:italic;margin-bottom:18px">${f
-          ? 'Sélectionne les héros que tu veux jouer en mode Hardcore. Tu pourras activer/désactiver à tout moment.'
-          : 'Select the heroes you want to play in Hardcore mode. You can toggle them at any time.'}</div>
+          ? 'Active les héros que tu souhaites jouer en mode Hardcore. Tu pourras les activer ou désactiver à tout moment depuis ton profil.'
+          : 'Enable the heroes you want to play in Hardcore mode. You can toggle them on or off at any time from your profile.'}</div>
         ${heroesHtml}
         <div style="display:flex;gap:10px;margin-top:8px">
           <button class="btn-register" onclick="_onboardingStep=1;renderOnboardingStep(document.getElementById('profile-content'),${f},'${session?.access_token}')" style="background:none;border-color:var(--border);color:var(--text-muted)">
@@ -1723,7 +1612,7 @@
         }),
       });
 
-      // Créer les hm_characters pour les héros sélectionnés
+      // Créer les hm_characters pour les héros sélectionnés (character_name = nom Fellowship)
       for (const heroClass of _onboardingSelectedHeroes) {
         await fetch(SUPABASE_URL + '/rest/v1/hm_characters', {
           method: 'POST',
@@ -1734,13 +1623,13 @@
             'Prefer': 'return=minimal',
           },
           body: JSON.stringify({
-            player_id: playerId,
-            character_name: _onboardingPlayerName,
+            player_id:      playerId,
+            character_name: _onboardingPlayerName,  // nom Fellowship = nom du perso en jeu
             character_class: heroClass,
             attempt_number: 1,
-            status: 'alive',
-            hm_enabled: false,
-            season: SEASON,
+            status:         'alive',
+            hm_enabled:     false,  // OFF par défaut, le joueur active manuellement
+            season:         SEASON,
           }),
         });
       }
@@ -1821,14 +1710,19 @@
           ${f ? 'Avertissements' : 'Warnings'}
           ${unread ? `<span style="color:var(--hc-red);margin-left:8px">(${unread})</span>` : ''}
         </div>
-        ${warnings.map(w => `
+        ${warnings.map(w => {
+          let icon = '⚠️';
+          if (w.warning_type === 'run_invalidated') icon = '🚫';
+          if (w.warning_type === 'nm_detected')     icon = '🔍';
+          return `
           <div class="profile-warning-item ${w.read ? 'read' : ''}" onclick="markWarningRead('${w.id}', this)">
-            <div class="profile-warning-icon">⚠️</div>
+            <div class="profile-warning-icon">${icon}</div>
             <div class="profile-warning-body">
               <div class="profile-warning-msg">${f ? w.message_fr : w.message_en}</div>
-              <div class="profile-warning-time">${new Date(w.created_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
+              <div class="profile-warning-time">${new Date(w.created_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short', year:'numeric' })} ${new Date(w.created_at).toLocaleTimeString(f ? 'fr-FR' : 'en-GB', { hour:'2-digit', minute:'2-digit' })}</div>
             </div>
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>` : '';
 
     const contactCode = profile?.fellowship_contact_code;
@@ -1910,9 +1804,8 @@
   // ── INIT ────────────────────────────────────────────────────────────────────
   setLang(currentLang);
   renderRules();
-  renderRegister();
   loadLeaderboard();
-  handleAuthCallback();   // Capture le magic link token si présent dans l'URL
+  handleAuthCallback();
 </script>
 
 </body>
