@@ -836,8 +836,8 @@
     try {
       // Charger la vue hm_summary + capstones + unlocks en parallèle
       const [summary, capstones, unlocks] = await Promise.all([
-        sbFetch(`/rest/v1/hm_summary?season=eq.${SEASON}&order=ilvl_best.desc`),
-        sbFetch('/rest/v1/hm_capstones?select=id,tier_name,ilvl_threshold&order=ilvl_threshold.asc'),
+        sbFetch(`/rest/v1/hm_summary?season=eq.${SEASON}&order=total_rating_score.desc`),
+        sbFetch('/rest/v1/hm_capstones?select=id,tier_name,difficulty_level_threshold&order=difficulty_level_threshold.asc'),
         sbFetch(`/rest/v1/hm_capstone_unlocks?select=player_id,character_id,capstone_id,attempt_number&season=eq.${SEASON}`),
       ]);
       _lbData = { summary: summary ?? [], capstones: capstones ?? [], unlocks: unlocks ?? [] };
@@ -867,7 +867,8 @@
     // Calculer best ilvl + total tentatives par joueur
     const players = [...playerMap.values()].map(p => {
       const aliveChars = p.chars.filter(c => c.status === 'alive');
-      const bestIlvl   = Math.max(...p.chars.map(c => c.character_all_time_best_ilvl || 0), 0);
+      const bestIlvl      = Math.max(...p.chars.map(c => c.ilvl_best || 0), 0);
+      const bestRating    = p.chars.reduce((s, c) => s + (c.total_rating_score || 0), 0);
       const totalAttempts = p.chars.reduce((s, c) => s + (c.character_total_attempts || 1), 0);
       // Capstone le plus haut toutes tentatives
       const playerUnlocks = data.unlocks.filter(u => u.player_id === p.player_id);
@@ -877,7 +878,7 @@
     });
 
     // Tri : bestIlvl desc, puis totalAttempts asc
-    players.sort((a, b) => b.bestIlvl - a.bestIlvl || a.totalAttempts - b.totalAttempts);
+    players.sort((a, b) => b.bestRating - a.bestRating || a.totalAttempts - b.totalAttempts);
 
     // Mise à jour compteur header
     const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
@@ -911,7 +912,7 @@
       const rank     = (_lbPage-1)*PAGE_SIZE + i + 1;
       const rankCls  = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
       const capHtml  = p.topCap
-        ? `<span class="capstone-badge ${capstoneCls(p.topCap.tier_name)}">${p.topCap.tier_name} ${p.topCap.ilvl_threshold}</span>`
+        ? `<span class="capstone-badge ${capstoneCls(p.topCap.tier_name)}">${p.topCap.tier_name} ${p.topCap.difficulty_level_threshold}</span>`
         : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
       const charTags = p.chars.map(c =>
         `<span class="lb-char-tag ${c.status}" style="${c.status==='alive'?`border-color:${classColor(c.character_class)}40;color:${classColor(c.character_class)}`:''}">
@@ -946,7 +947,7 @@
       const unlocks = data.unlocks.filter(u => u.character_id === c.character_id);
       const unlockedCaps = data.capstones.filter(cap => unlocks.some(u => u.capstone_id === cap.id));
       const capHtml = unlockedCaps.length
-        ? unlockedCaps.map(cap => `<span class="capstone-badge ${capstoneCls(cap.tier_name)}">${cap.tier_name} ${cap.ilvl_threshold}</span>`).join('')
+        ? unlockedCaps.map(cap => `<span class="capstone-badge ${capstoneCls(cap.tier_name)}">${cap.tier_name} ${cap.difficulty_level_threshold}</span>`).join('')
         : `<span style="color:var(--text-muted);font-size:13px;font-style:italic">${fr() ? 'Aucun capstone' : 'No capstone'}</span>`;
       const diedHtml = c.died_at
         ? `<div class="expand-death-info">💀 ${fr() ? 'Mort le' : 'Died on'} ${new Date(c.died_at).toLocaleDateString(fr()?'fr-FR':'en-GB')} — ${c.dungeon_name || ''}</div>`
@@ -968,7 +969,7 @@
           </div>
           <div class="expand-stat-row">
             <span class="expand-stat-label">${fr() ? 'meilleur ilvl' : 'best ilvl'}</span>
-            <span class="expand-stat-value">${c.character_all_time_best_ilvl || c.ilvl_best}</span>
+            <span class="expand-stat-value">${c.ilvl_best || '—'}</span>
           </div>
           <div class="expand-stat-row">
             <span class="expand-stat-label">${fr() ? 'tentative #' : 'attempt #'}</span>
@@ -1055,7 +1056,7 @@
         `&select=id,event_type,player_id,character_name,character_class,capstone_id,metadata,attempt_number,created_at`
       );
       // Charger capstones pour le libellé
-      const caps = _lbData?.capstones || await sbFetch('/rest/v1/hm_capstones?select=id,tier_name,ilvl_threshold');
+      const caps = _lbData?.capstones || await sbFetch('/rest/v1/hm_capstones?select=id,tier_name,difficulty_level_threshold');
       _eventsData = { events: events ?? [], capstones: caps ?? [] };
       renderEvents();
     } catch(e) {
@@ -1093,7 +1094,7 @@
       } else if (e.event_type === 'capstone') {
         icon = '👑';
         const cap = capMap[e.capstone_id];
-        const capLabel = cap ? `${cap.tier_name} ${cap.ilvl_threshold}` : '';
+        const capLabel = cap ? `${cap.tier_name} ${cap.difficulty_level_threshold}` : '';
         titleHtml = `<div class="evt-title cap"><strong>${e.character_name}</strong> ${cls ? `(${cls}) ` : ''}${fr() ? 'atteint' : 'reached'} <strong>${capLabel}</strong></div>`;
         const meta = e.metadata || {};
         metaHtml  = meta.dungeon ? `<div class="evt-meta">${meta.dungeon}${meta.ilvl_reached ? ` · ilvl ${meta.ilvl_reached}` : ''}</div>` : '';
