@@ -400,6 +400,180 @@
       .modal-stats-grid { grid-template-columns:1fr 1fr; }
       nav { padding:8px 10px; flex-wrap:wrap; gap:4px; }
     }
+
+    /* ── PROFILE PAGE ── */
+    .profile-visitor {
+      max-width:480px; margin:0 auto; text-align:center; padding:48px 0;
+    }
+    .profile-visitor-title {
+      font-family:'Cinzel',serif; font-size:18px; letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--text-dim); margin-bottom:10px;
+    }
+    .profile-visitor-desc { font-size:15px; color:var(--text-muted); font-style:italic; margin-bottom:28px; line-height:1.7; }
+    .profile-magic-form {
+      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+      padding:24px 28px; text-align:left;
+    }
+    .profile-magic-title {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:16px; text-align:center;
+    }
+    .profile-magic-row { display:flex; gap:8px; }
+    .profile-magic-row input {
+      flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:4px;
+      color:var(--text); font-family:'Crimson Pro',serif; font-size:16px;
+      padding:10px 14px; outline:none; transition:border-color 0.2s;
+    }
+    .profile-magic-row input:focus { border-color:rgba(255,68,68,0.5); }
+    .profile-magic-row input::placeholder { color:var(--text-muted); }
+    .btn-magic {
+      padding:10px 18px; font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.15em;
+      text-transform:uppercase; background:rgba(255,68,68,0.1); border:1px solid rgba(255,68,68,0.4);
+      color:var(--hc-red); border-radius:4px; cursor:pointer; transition:all 0.2s; white-space:nowrap;
+    }
+    .btn-magic:hover { background:rgba(255,68,68,0.18); }
+    .btn-magic:disabled { opacity:0.4; cursor:default; }
+    .profile-magic-sent {
+      margin-top:14px; padding:10px 14px; border-radius:4px; font-size:14px;
+      background:rgba(68,238,68,0.08); border:1px solid rgba(68,238,68,0.3); color:var(--tier1);
+      display:none;
+    }
+    .profile-magic-sent.show { display:block; }
+
+    /* Onboarding */
+    .onboarding-card {
+      max-width:560px; margin:0 auto;
+      background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:28px 32px;
+    }
+    .onboarding-step-indicator {
+      display:flex; gap:8px; margin-bottom:24px; align-items:center;
+    }
+    .onboarding-step-dot {
+      width:28px; height:28px; border-radius:50%; border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted);
+      transition:all 0.2s;
+    }
+    .onboarding-step-dot.active { border-color:rgba(255,68,68,0.6); color:var(--hc-red); background:rgba(255,68,68,0.08); }
+    .onboarding-step-dot.done   { border-color:rgba(68,238,68,0.4); color:var(--tier1); background:rgba(68,238,68,0.06); }
+    .onboarding-step-line { flex:1; height:1px; background:var(--border); }
+    .onboarding-title {
+      font-family:'Cinzel',serif; font-size:14px; letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--text-dim); margin-bottom:20px;
+    }
+
+    /* Heroes grid */
+    .heroes-section { margin-bottom:20px; }
+    .heroes-role-label {
+      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border);
+    }
+    .heroes-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .hero-toggle {
+      display:flex; align-items:center; gap:8px;
+      padding:8px 14px; border-radius:4px; border:1px solid var(--border);
+      background:var(--bg3); cursor:pointer; transition:all 0.2s;
+      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
+      color:var(--text-muted); user-select:none;
+    }
+    .hero-toggle:hover { border-color:rgba(255,255,255,0.2); color:var(--text-dim); }
+    .hero-toggle.selected { color:var(--text); }
+    .hero-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .hero-toggle-check { font-size:10px; opacity:0; transition:opacity 0.15s; }
+    .hero-toggle.selected .hero-toggle-check { opacity:1; }
+
+    /* Profile connected */
+    .profile-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border);
+    }
+    .profile-user { display:flex; flex-direction:column; gap:3px; }
+    .profile-username { font-family:'Cinzel',serif; font-size:18px; color:var(--text); }
+    .profile-email { font-size:14px; color:var(--text-muted); font-style:italic; }
+    .btn-logout {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+      padding:7px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:3px;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
+    }
+    .btn-logout:hover { border-color:rgba(255,68,68,0.4); color:var(--hc-red); }
+
+    /* Section persos */
+    .profile-section-title {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--border);
+    }
+    .profile-hero-card {
+      background:var(--bg2); border:1px solid var(--border); border-radius:6px;
+      padding:16px 18px; margin-bottom:10px; transition:border-color 0.2s;
+    }
+    .profile-hero-card.hm-on { border-color:rgba(255,68,68,0.35); }
+    .profile-hero-header {
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+    }
+    .profile-hero-name { font-family:'Cinzel',serif; font-size:15px; }
+    .profile-hero-role { font-size:13px; color:var(--text-muted); font-style:italic; margin-left:8px; }
+    .hm-toggle-pill {
+      display:flex; align-items:center; gap:8px;
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    }
+    .hm-toggle-switch {
+      position:relative; width:36px; height:20px; cursor:pointer;
+    }
+    .hm-toggle-switch input { display:none; }
+    .hm-toggle-track {
+      position:absolute; inset:0; border-radius:20px;
+      background:var(--bg3); border:1px solid var(--border); transition:all 0.25s;
+    }
+    .hm-toggle-thumb {
+      position:absolute; top:3px; left:3px; width:12px; height:12px;
+      border-radius:50%; background:var(--text-muted); transition:all 0.25s;
+    }
+    .hm-toggle-switch input:checked ~ .hm-toggle-track {
+      background:rgba(255,68,68,0.15); border-color:rgba(255,68,68,0.5);
+    }
+    .hm-toggle-switch input:checked ~ .hm-toggle-thumb {
+      background:var(--hc-red); transform:translateX(16px);
+    }
+    .profile-hero-stats {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px;
+    }
+    .profile-hero-stat { text-align:center; padding:6px; background:rgba(0,0,0,0.2); border-radius:4px; }
+    .profile-hero-stat-val { font-family:'Cinzel',serif; font-size:15px; color:var(--teal-light); }
+    .profile-hero-stat-val.dead { color:rgba(255,68,68,0.7); }
+    .profile-hero-stat-lbl { font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-top:2px; }
+    .profile-period {
+      font-size:13px; color:var(--text-muted); font-style:italic; margin-top:6px;
+    }
+
+    /* Warnings */
+    .profile-warnings { margin-top:28px; }
+    .profile-warning-item {
+      display:flex; align-items:flex-start; gap:12px;
+      padding:12px 16px; background:var(--bg2); border:1px solid rgba(255,68,68,0.25);
+      border-radius:5px; margin-bottom:8px; cursor:pointer; transition:opacity 0.2s;
+    }
+    .profile-warning-item.read { opacity:0.45; }
+    .profile-warning-icon { font-size:18px; flex-shrink:0; }
+    .profile-warning-body { flex:1; }
+    .profile-warning-msg { font-size:15px; color:var(--text-dim); }
+    .profile-warning-time { font-size:12px; color:var(--text-muted); font-style:italic; margin-top:3px; }
+
+    /* Code contact */
+    .profile-contact-box {
+      margin-top:28px; padding:16px 18px; background:var(--bg2); border:1px solid var(--border);
+      border-radius:6px;
+    }
+    .profile-contact-code {
+      font-family:'Cinzel',serif; font-size:20px; letter-spacing:0.2em; color:var(--teal-light);
+      text-align:center; margin:10px 0;
+    }
+    .btn-copy {
+      display:block; width:100%; margin-top:8px;
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
+      padding:8px; background:var(--bg3); border:1px solid var(--border); border-radius:3px;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s; text-align:center;
+    }
+    .btn-copy:hover { border-color:var(--border-bright); color:var(--text-dim); }
   </style>
 </head>
 <body>
@@ -439,6 +613,7 @@
   <button class="tab" id="tab-events" onclick="showPage('events',this)" data-fr="Événements" data-en="Events">Événements</button>
   <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
   <button class="tab" id="tab-register" onclick="showPage('register',this)" data-fr="S'inscrire" data-en="Register">S'inscrire</button>
+  <button class="tab" id="tab-profile" onclick="showPage('profile',this)" data-fr="Mon Profil" data-en="My Profile">Mon Profil</button>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" id="lang-btn-fr" onclick="setLang('fr')">FR</button>
@@ -499,6 +674,13 @@
   <!-- ── REGISTER ── -->
   <div id="page-register" class="page">
     <div id="register-content"></div>
+  </div>
+
+  <!-- ── PROFILE ── -->
+  <div id="page-profile" class="page">
+    <div id="profile-content">
+      <div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div>
+    </div>
   </div>
 
 </main>
@@ -582,6 +764,7 @@
     if (id === 'events')      loadEvents();
     if (id === 'rules')       renderRules();
     if (id === 'register')    renderRegister();
+    if (id === 'profile')     renderProfilePage();
   }
 
   // ── SUPABASE FETCH ───────────────────────────────────────────────────────────
@@ -1142,11 +1325,539 @@
     }
   }
 
+  // ── PROFILE — AUTH SUPABASE ─────────────────────────────────────────────────
+  // Supabase Auth via le SDK léger (fetch direct)
+  const SB_AUTH_URL = SUPABASE_URL + '/auth/v1';
+
+  async function authFetch(path, opts = {}) {
+    const res = await fetch(SB_AUTH_URL + path, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        ...(opts.token ? { 'Authorization': 'Bearer ' + opts.token } : {}),
+      },
+      method: opts.method || 'GET',
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+    });
+    if (!res.ok && res.status !== 204) throw new Error(await res.text());
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  // Session stockée localement
+  let _session = null;
+
+  async function getSession() {
+    if (_session) return _session;
+    const raw = localStorage.getItem('hm_session');
+    if (!raw) return null;
+    try {
+      const s = JSON.parse(raw);
+      // Vérifier expiry
+      if (s.expires_at && Date.now() / 1000 > s.expires_at - 60) {
+        localStorage.removeItem('hm_session');
+        return null;
+      }
+      _session = s;
+      return s;
+    } catch { return null; }
+  }
+
+  function saveSession(session) {
+    _session = session;
+    if (session) localStorage.setItem('hm_session', JSON.stringify(session));
+    else localStorage.removeItem('hm_session');
+  }
+
+  async function sendMagicLink(email) {
+    await authFetch('/magiclink', {
+      method: 'POST',
+      body: { email, redirect_to: window.location.href },
+    });
+  }
+
+  async function signOut() {
+    const session = await getSession();
+    if (session) {
+      await authFetch('/logout', { method: 'POST', token: session.access_token }).catch(() => {});
+    }
+    saveSession(null);
+    _profileData = null;
+    renderProfilePage();
+  }
+
+  // Capturer le token depuis l'URL après le clic sur le magic link
+  async function handleAuthCallback() {
+    const hash = window.location.hash;
+    if (!hash.includes('access_token')) return;
+    const params = new URLSearchParams(hash.replace('#', ''));
+    const accessToken  = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+    const expiresIn    = parseInt(params.get('expires_in') || '3600');
+    if (!accessToken) return;
+    const session = {
+      access_token:  accessToken,
+      refresh_token: refreshToken,
+      expires_at:    Math.floor(Date.now() / 1000) + expiresIn,
+    };
+    saveSession(session);
+    // Nettoyer l'URL
+    history.replaceState(null, '', window.location.pathname);
+    // Aller sur l'onglet profil
+    showPage('profile', document.getElementById('tab-profile'));
+  }
+
+  // ── PROFILE DATA ─────────────────────────────────────────────────────────────
+  let _profileData  = null;
+  let _heroClasses  = null;
+
+  async function loadHeroClasses() {
+    if (_heroClasses) return _heroClasses;
+    const data = await sbFetch('/rest/v1/hm_hero_classes?select=*&order=sort_order');
+    _heroClasses = data ?? [];
+    return _heroClasses;
+  }
+
+  async function loadProfileData(session) {
+    const headers = {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + session.access_token,
+    };
+    const base = SUPABASE_URL + '/rest/v1';
+
+    const [profile, warnings, characters, heroClasses] = await Promise.all([
+      fetch(`${base}/hm_profiles?select=*`, { headers }).then(r => r.json()),
+      fetch(`${base}/hm_player_warnings?select=*&order=created_at.desc&limit=20&season=eq.${SEASON}`, { headers }).then(r => r.json()),
+      fetch(`${base}/hm_characters?select=*&season=eq.${SEASON}&order=character_name`, { headers }).then(r => r.json()),
+      loadHeroClasses(),
+    ]);
+
+    // Périodes actives
+    const charIds = (characters ?? []).map(c => c.id).join(',');
+    let periods = [];
+    if (charIds) {
+      periods = await fetch(`${base}/hm_active_periods?character_id=in.(${charIds})&order=active_from.desc`, { headers }).then(r => r.json()).catch(() => []);
+    }
+
+    return {
+      profile: profile?.[0] ?? null,
+      warnings: warnings ?? [],
+      characters: characters ?? [],
+      periods: periods ?? [],
+      heroClasses,
+    };
+  }
+
+  // ── PROFILE RENDER ────────────────────────────────────────────────────────────
+
+  async function renderProfilePage() {
+    const cont = document.getElementById('profile-content');
+    if (!cont) return;
+    const f = fr();
+    const session = await getSession();
+
+    if (!session) {
+      renderProfileVisitor(cont, f);
+      return;
+    }
+
+    cont.innerHTML = `<div class="loading">${f ? 'Chargement de ton profil…' : 'Loading your profile…'}</div>`;
+
+    try {
+      _profileData = await loadProfileData(session);
+    } catch (e) {
+      cont.innerHTML = `<div class="empty">${f ? 'Erreur de chargement.' : 'Loading error.'}</div>`;
+      return;
+    }
+
+    if (!_profileData.profile || !_profileData.profile.onboarding_complete) {
+      renderProfileOnboarding(cont, f, session);
+    } else {
+      renderProfileConnected(cont, f, session);
+    }
+  }
+
+  function renderProfileVisitor(cont, f) {
+    cont.innerHTML = `
+      <div class="profile-visitor">
+        <div class="profile-visitor-title">☠️ ${f ? 'Espace Hardcore' : 'Hardcore Space'}</div>
+        <div class="profile-visitor-desc">${f
+          ? 'Connecte-toi pour gérer tes personnages Hardcore, activer ou désactiver le mode, et voir tes stats privées.'
+          : 'Sign in to manage your Hardcore characters, toggle modes, and view your private stats.'}</div>
+        <div class="profile-magic-form">
+          <div class="profile-magic-title">${f ? 'Connexion sans mot de passe' : 'Passwordless Sign In'}</div>
+          <div class="profile-magic-row">
+            <input type="email" id="magic-email" placeholder="${f ? 'ton@email.com' : 'your@email.com'}">
+            <button class="btn-magic" id="magic-btn" onclick="doMagicLink()">
+              ${f ? 'Recevoir le lien' : 'Send link'}
+            </button>
+          </div>
+          <div class="profile-magic-sent" id="magic-sent">
+            ✓ ${f
+              ? 'Lien envoyé ! Vérifie ta boîte mail et clique sur le lien.'
+              : 'Link sent! Check your inbox and click the link.'}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  async function doMagicLink() {
+    const email = document.getElementById('magic-email')?.value?.trim();
+    const f = fr();
+    if (!email) return;
+    const btn = document.getElementById('magic-btn');
+    btn.disabled = true;
+    btn.textContent = f ? 'Envoi…' : 'Sending…';
+    try {
+      await sendMagicLink(email);
+      document.getElementById('magic-sent').classList.add('show');
+      btn.textContent = f ? 'Envoyé ✓' : 'Sent ✓';
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = f ? 'Réessayer' : 'Retry';
+      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+    }
+  }
+
+  // État B — Onboarding
+  let _onboardingStep = 1;
+  let _onboardingSelectedHeroes = new Set();
+  let _onboardingPlayerName = '';
+  let _onboardingCode = '';
+
+  function renderProfileOnboarding(cont, f, session) {
+    _onboardingStep = 1;
+    _onboardingSelectedHeroes = new Set();
+    renderOnboardingStep(cont, f, session);
+  }
+
+  function renderOnboardingStep(cont, f, session) {
+    const steps = [
+      f ? 'Profil' : 'Profile',
+      f ? 'Mes héros' : 'My heroes',
+      f ? 'Communauté' : 'Community',
+    ];
+    const dotsHtml = steps.map((s, i) => {
+      const n = i + 1;
+      const cls = n < _onboardingStep ? 'done' : n === _onboardingStep ? 'active' : '';
+      return `${n > 1 ? '<div class="onboarding-step-line"></div>' : ''}
+              <div class="onboarding-step-dot ${cls}">${n < _onboardingStep ? '✓' : n}</div>`;
+    }).join('');
+
+    let body = '';
+    if (_onboardingStep === 1) {
+      body = `
+        <div class="onboarding-title">${f ? 'Confirme ton profil Fellowship' : 'Confirm your Fellowship profile'}</div>
+        <div class="field">
+          <label>${f ? 'Ton nom Fellowship (exact)' : 'Your Fellowship name (exact)'}</label>
+          <input type="text" id="ob-name" value="${_onboardingPlayerName}" placeholder="${f ? 'Ton nom exact sur FellowshipLogs' : 'Your exact name on FellowshipLogs'}">
+        </div>
+        <div class="field">
+          <label>${f ? 'Fellowship Contact Code (optionnel)' : 'Fellowship Contact Code (optional)'}</label>
+          <input type="text" id="ob-code" value="${_onboardingCode}" placeholder="${f ? 'Code pour l\'invitation communauté' : 'Code for community invitation'}">
+          <div class="field-hint">${f ? 'Visible dans ton profil Fellowship' : 'Visible in your Fellowship profile'}</div>
+        </div>
+        <button class="btn-register" onclick="onboardingNext()" style="margin-top:8px">
+          ${f ? 'Continuer →' : 'Continue →'}
+        </button>`;
+    } else if (_onboardingStep === 2) {
+      const heroes = _heroClasses || [];
+      const roles  = ['Tank', 'Healer', 'DPS'];
+      const heroesHtml = roles.map(role => {
+        const roleHeroes = heroes.filter(h => h.role === role);
+        if (!roleHeroes.length) return '';
+        const items = roleHeroes.map(h => `
+          <div class="hero-toggle ${_onboardingSelectedHeroes.has(h.class_name) ? 'selected' : ''}"
+               onclick="toggleHeroSelect('${h.class_name}')" id="htoggle-${h.class_name}">
+            <div class="hero-dot" style="background:${h.color_hex}"></div>
+            ${h.class_name}
+            <span class="hero-toggle-check">✓</span>
+          </div>`).join('');
+        return `<div class="heroes-section">
+          <div class="heroes-role-label">${role}</div>
+          <div class="heroes-grid">${items}</div>
+        </div>`;
+      }).join('');
+      body = `
+        <div class="onboarding-title">${f ? 'Sélectionne tes héros Hardcore' : 'Select your Hardcore heroes'}</div>
+        <div style="font-size:14px;color:var(--text-muted);font-style:italic;margin-bottom:18px">${f
+          ? 'Sélectionne les héros que tu veux jouer en mode Hardcore. Tu pourras activer/désactiver à tout moment.'
+          : 'Select the heroes you want to play in Hardcore mode. You can toggle them at any time.'}</div>
+        ${heroesHtml}
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn-register" onclick="_onboardingStep=1;renderOnboardingStep(document.getElementById('profile-content'),${f},'${session?.access_token}')" style="background:none;border-color:var(--border);color:var(--text-muted)">
+            ← ${f ? 'Retour' : 'Back'}
+          </button>
+          <button class="btn-register" onclick="onboardingNext()">
+            ${f ? 'Valider mes héros →' : 'Confirm heroes →'}
+          </button>
+        </div>`;
+    } else if (_onboardingStep === 3) {
+      const code = _onboardingCode || (session?.access_token?.slice(-8)?.toUpperCase() ?? '—');
+      body = `
+        <div class="onboarding-title">${f ? 'Invitation communauté' : 'Community Invitation'}</div>
+        <div style="font-size:15px;color:var(--text-muted);font-style:italic;margin-bottom:20px;line-height:1.7">${f
+          ? 'Pour participer à l\'event, tu dois rejoindre la communauté in-game. Envoie un message privé à Pouf sur Discord avec ton code de contact Fellowship.'
+          : 'To participate in the event, you need to join the in-game community. Send a private message to Pouf on Discord with your Fellowship contact code.'}</div>
+        <div class="profile-contact-box">
+          <div class="profile-magic-title">${f ? 'Ton code Fellowship' : 'Your Fellowship Code'}</div>
+          <div class="profile-contact-code">${_onboardingCode || '—'}</div>
+          <button class="btn-copy" onclick="copyCode('${_onboardingCode}')">${f ? '📋 Copier le code' : '📋 Copy code'}</button>
+        </div>
+        <div style="margin-top:16px;padding:12px 16px;background:rgba(64,212,212,0.04);border:1px solid var(--border);border-radius:4px;font-size:14px;color:var(--text-muted)">
+          💬 ${f ? 'Retrouve Pouf sur Discord : <strong style="color:var(--text-dim)">pouf_hgaming</strong>' : 'Find Pouf on Discord: <strong style="color:var(--text-dim)">pouf_hgaming</strong>'}
+        </div>
+        <button class="btn-register" onclick="completeOnboarding()" style="margin-top:16px">
+          ${f ? '✓ J\'ai envoyé le message — Terminer' : '✓ Message sent — Finish'}
+        </button>`;
+    }
+
+    cont.innerHTML = `
+      <div class="onboarding-card">
+        <div class="onboarding-step-indicator">${dotsHtml}</div>
+        ${body}
+      </div>`;
+  }
+
+  function toggleHeroSelect(className) {
+    if (_onboardingSelectedHeroes.has(className)) _onboardingSelectedHeroes.delete(className);
+    else _onboardingSelectedHeroes.add(className);
+    const el = document.getElementById('htoggle-' + className);
+    if (el) el.classList.toggle('selected', _onboardingSelectedHeroes.has(className));
+  }
+
+  async function onboardingNext() {
+    const f = fr();
+    if (_onboardingStep === 1) {
+      _onboardingPlayerName = document.getElementById('ob-name')?.value?.trim() || '';
+      _onboardingCode       = document.getElementById('ob-code')?.value?.trim() || '';
+      if (!_onboardingPlayerName) { toast(f ? 'Remplis ton nom Fellowship.' : 'Enter your Fellowship name.', true); return; }
+      _onboardingStep = 2;
+    } else if (_onboardingStep === 2) {
+      _onboardingStep = 3;
+    }
+    const session = await getSession();
+    renderOnboardingStep(document.getElementById('profile-content'), f, session);
+  }
+
+  async function completeOnboarding() {
+    const f = fr();
+    const session = await getSession();
+    if (!session) return;
+
+    try {
+      // Trouver le player_id
+      const players = await sbFetch(`/rest/v1/players?name=eq.${encodeURIComponent(_onboardingPlayerName)}&select=id`);
+      const playerId = players?.[0]?.id;
+      if (!playerId) { toast(f ? `Joueur "${_onboardingPlayerName}" introuvable.` : `Player not found.`, true); return; }
+
+      // Upsert profil
+      await fetch(SUPABASE_URL + '/rest/v1/hm_profiles', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + session.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates',
+        },
+        body: JSON.stringify({
+          id: (await authFetch('/user', { token: session.access_token })).id,
+          player_id: playerId,
+          fellowship_contact_code: _onboardingCode || null,
+          onboarding_complete: true,
+        }),
+      });
+
+      // Créer les hm_characters pour les héros sélectionnés
+      for (const heroClass of _onboardingSelectedHeroes) {
+        await fetch(SUPABASE_URL + '/rest/v1/hm_characters', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + session.access_token,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal',
+          },
+          body: JSON.stringify({
+            player_id: playerId,
+            character_name: _onboardingPlayerName,
+            character_class: heroClass,
+            attempt_number: 1,
+            status: 'alive',
+            hm_enabled: false,
+            season: SEASON,
+          }),
+        });
+      }
+
+      toast(f ? 'Profil créé !' : 'Profile created!');
+      _profileData = null;
+      await renderProfilePage();
+    } catch (e) {
+      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+    }
+  }
+
+  // État C — Profil complet
+  function renderProfileConnected(cont, f, session) {
+    const { profile, warnings, characters, periods, heroClasses } = _profileData;
+    const unread = warnings.filter(w => !w.read).length;
+
+    // Grouper les persos par classe
+    const heroesByClass = {};
+    for (const h of heroClasses) heroesByClass[h.class_name] = { ...h, chars: [] };
+    for (const c of characters) {
+      if (heroesByClass[c.character_class]) heroesByClass[c.character_class].chars.push(c);
+    }
+
+    const roles = ['Tank', 'Healer', 'DPS'];
+    const heroSections = roles.map(role => {
+      const items = heroClasses.filter(h => h.role === role).map(h => {
+        const chars = heroesByClass[h.class_name]?.chars ?? [];
+        const aliveChar = chars.find(c => c.status === 'alive');
+        const bestChar  = chars.reduce((best, c) => (!best || c.best_difficulty_level > best.best_difficulty_level) ? c : best, null);
+        const isOn      = aliveChar?.hm_enabled ?? false;
+        const period    = aliveChar ? periods.find(p => p.character_id === aliveChar.id && !p.active_until) : null;
+
+        return `<div class="profile-hero-card ${isOn ? 'hm-on' : ''}" id="hcard-${h.class_name}">
+          <div class="profile-hero-header">
+            <div style="display:flex;align-items:baseline;gap:6px">
+              <div class="profile-hero-name" style="color:${h.color_hex}">${h.class_name}</div>
+              <div class="profile-hero-role">${h.role}</div>
+            </div>
+            <div class="hm-toggle-pill">
+              <span style="color:var(--text-muted);font-size:10px">${isOn ? 'HM ON' : 'HM OFF'}</span>
+              <label class="hm-toggle-switch">
+                <input type="checkbox" ${isOn ? 'checked' : ''} onchange="toggleHm('${h.class_name}', this.checked)">
+                <div class="hm-toggle-track"></div>
+                <div class="hm-toggle-thumb"></div>
+              </label>
+            </div>
+          </div>
+          ${aliveChar ? `
+          <div class="profile-hero-stats">
+            <div class="profile-hero-stat">
+              <div class="profile-hero-stat-val">${aliveChar.best_rank_label || '—'}</div>
+              <div class="profile-hero-stat-lbl">${f ? 'Meilleur rang' : 'Best rank'}</div>
+            </div>
+            <div class="profile-hero-stat">
+              <div class="profile-hero-stat-val">${aliveChar.ilvl_current || '—'}</div>
+              <div class="profile-hero-stat-lbl">ilvl</div>
+            </div>
+            <div class="profile-hero-stat">
+              <div class="profile-hero-stat-val">${aliveChar.power_score_current ? aliveChar.power_score_current.toFixed(0) : '—'}</div>
+              <div class="profile-hero-stat-lbl">Power Score</div>
+            </div>
+          </div>
+          ${period ? `<div class="profile-period">⚔️ HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</div>` : ''}
+          ` : `<div style="font-size:14px;color:var(--text-muted);font-style:italic;margin-top:6px">${f ? 'Pas de personnage actif' : 'No active character'}</div>`}
+        </div>`;
+      }).join('');
+      return `<div style="margin-bottom:20px">
+        <div class="profile-section-title">${role}</div>
+        ${items}
+      </div>`;
+    }).join('');
+
+    // Avertissements
+    const warningsHtml = warnings.length ? `
+      <div class="profile-warnings">
+        <div class="profile-section-title">
+          ${f ? 'Avertissements' : 'Warnings'}
+          ${unread ? `<span style="color:var(--hc-red);margin-left:8px">(${unread})</span>` : ''}
+        </div>
+        ${warnings.map(w => `
+          <div class="profile-warning-item ${w.read ? 'read' : ''}" onclick="markWarningRead('${w.id}', this)">
+            <div class="profile-warning-icon">⚠️</div>
+            <div class="profile-warning-body">
+              <div class="profile-warning-msg">${f ? w.message_fr : w.message_en}</div>
+              <div class="profile-warning-time">${new Date(w.created_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
+            </div>
+          </div>`).join('')}
+      </div>` : '';
+
+    const contactCode = profile?.fellowship_contact_code;
+    const contactHtml = contactCode ? `
+      <div class="profile-contact-box" style="margin-top:28px">
+        <div class="profile-magic-title">${f ? 'Ton code Fellowship' : 'Your Fellowship Code'}</div>
+        <div class="profile-contact-code">${contactCode}</div>
+        <button class="btn-copy" onclick="copyCode('${contactCode}')">${f ? '📋 Copier le code' : '📋 Copy code'}</button>
+        ${profile?.community_invited ? `<div style="text-align:center;margin-top:8px;font-size:13px;color:var(--tier1)">✓ ${f ? 'Invitation communauté envoyée' : 'Community invitation sent'}</div>` : ''}
+      </div>` : '';
+
+    cont.innerHTML = `
+      <div class="profile-header">
+        <div class="profile-user">
+          <div class="profile-username">${_onboardingPlayerName || profile?.player_id || '—'}</div>
+          <div class="profile-email">${f ? 'Profil Hardcore' : 'Hardcore Profile'} · ${f ? 'Saison' : 'Season'} 1</div>
+        </div>
+        <button class="btn-logout" onclick="signOut()">${f ? 'Déconnexion' : 'Sign out'}</button>
+      </div>
+      <div class="profile-section-title" style="margin-bottom:18px">${f ? 'Mes héros' : 'My heroes'}</div>
+      ${heroSections}
+      ${warningsHtml}
+      ${contactHtml}`;
+  }
+
+  async function toggleHm(heroClass, enabled) {
+    const f = fr();
+    const session = await getSession();
+    if (!session) return;
+    const chars = _profileData?.characters ?? [];
+    const char  = chars.find(c => c.character_class === heroClass && c.status === 'alive');
+    if (!char) { toast(f ? 'Personnage introuvable.' : 'Character not found.', true); return; }
+
+    try {
+      const fn = enabled ? 'activate_hm_character' : 'deactivate_hm_character';
+      await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + session.access_token,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(enabled
+          ? { p_character_id: char.id, p_user_id: session.user?.id, p_player_id: char.player_id }
+          : { p_character_id: char.id }),
+      });
+      toast(enabled
+        ? (f ? `HM activé pour ${heroClass}` : `HM enabled for ${heroClass}`)
+        : (f ? `HM désactivé pour ${heroClass}` : `HM disabled for ${heroClass}`));
+      _profileData = null;
+      await renderProfilePage();
+    } catch (e) {
+      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+    }
+  }
+
+  async function markWarningRead(warningId, el) {
+    const session = await getSession();
+    if (!session || el.classList.contains('read')) return;
+    el.classList.add('read');
+    await fetch(SUPABASE_URL + '/rest/v1/hm_player_warnings?id=eq.' + warningId, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + session.access_token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ read: true }),
+    }).catch(() => {});
+  }
+
+  function copyCode(code) {
+    if (!code || code === '—') return;
+    navigator.clipboard.writeText(code).then(() => {
+      toast(fr() ? 'Code copié !' : 'Code copied!');
+    });
+  }
+
   // ── INIT ────────────────────────────────────────────────────────────────────
   setLang(currentLang);
   renderRules();
   renderRegister();
   loadLeaderboard();
+  handleAuthCallback();   // Capture le magic link token si présent dans l'URL
 </script>
 
 </body>
