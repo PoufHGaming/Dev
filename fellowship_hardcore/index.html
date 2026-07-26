@@ -649,7 +649,7 @@
       <div data-fr="Joueur / Personnage(s)" data-en="Player / Character(s)">Joueur / Personnage(s)</div>
       <div style="text-align:right" data-fr="Meilleur ilvl" data-en="Best ilvl">Meilleur ilvl</div>
       <div class="col-attempts" style="text-align:right" data-fr="Tentatives" data-en="Attempts">Tentatives</div>
-      <div style="text-align:right" data-fr="Capstone" data-en="Capstone">Capstone</div>
+      <div style="text-align:right" data-fr="Highest Dungeon" data-en="Highest Dungeon">Highest Dungeon</div>
     </div>
     <div id="lb-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
     <div id="lb-pagination"></div>
@@ -706,22 +706,58 @@
   const PAGE_SIZE         = 20;
   const CACHE_MS          = 60_000;
 
-  // Mapping classe → couleur
+  // Mapping classe → couleur (couleurs officielles des héros)
   const CLASS_COLORS = {
-    'Helena':  '#c4a0ff',
-    'Aeona':   '#72e8e8',
-    'Elarion': '#44ee44',
+    'Helena':  '#b26731',
+    'Meiko':   '#29dd5c',
+    'Xavian':  '#097265',
+    'Aeona':   '#f99de9',
+    'Sylvie':  '#e74f82',
+    'Vigour':  '#dbd9c3',
+    'Rime':    '#1ca2ec',
+    'Ardeos':  '#e96326',
+    'Elarion': '#925dfc',
+    'Tariq':   '#5179f3',
+    'Mara':    '#94598e',
+    'Gunde':   '#933637',
   };
   function classColor(cls) { return CLASS_COLORS[cls] || 'var(--text-muted)'; }
 
-  // Capstone tier → classe CSS
-  function capstoneCls(tierName) {
-    if (!tierName) return '';
-    const t = tierName.toLowerCase();
-    if (t === 'champion') return 'champion';
-    if (t === 'paragon')  return 'paragon';
-    if (t.startsWith('eternal')) return 'eternal';
-    return '';
+  // Couleurs par tier de donjon
+  const TIER_COLORS = {
+    'Recrue':   '#00c700',
+    'Adepte':   '#006fe6',
+    'Champion': '#a920fd',
+    'Parangon': '#b79f00',
+    'Eternal':  '#b60000',
+  };
+  function tierColor(tierName) {
+    if (!tierName) return 'var(--text-muted)';
+    for (const [tier, color] of Object.entries(TIER_COLORS)) {
+      if (tierName.startsWith(tier)) return color;
+    }
+    return 'var(--text-muted)';
+  }
+
+  // Convertit un difficultyLevel en { tier, level, label }
+  // Recrue 1-4, Adepte 1-4, Champion 1-4, Parangon 1-4, Eternal 1+
+  function diffLevelToRank(dl) {
+    if (!dl || dl <= 0) return { tier: '', level: 0, label: '—' };
+    if (dl <= 4)  return { tier: 'Recrue',   level: dl,      label: `Recrue ${dl}` };
+    if (dl <= 12) return { tier: 'Adepte',   level: dl - 8,  label: `Adepte ${dl - 8}` };
+    if (dl <= 20) return { tier: 'Champion', level: dl - 16, label: `Champion ${dl - 16}` };
+    if (dl <= 28) return { tier: 'Parangon', level: dl - 24, label: `Parangon ${dl - 24}` };
+    return { tier: 'Eternal', level: dl - 32, label: `Eternal ${dl - 32}` };
+  }
+
+  // Clé de tri numérique : Recrue1=1 … Recrue4=4, Adepte1=5 … Parangon4=16, Eternal1=17 …
+  function rankSortKey(dl) {
+    if (!dl || dl <= 0) return 0;
+    if (dl <= 4)  return dl;           // Recrue 1-4 → 1-4
+    if (dl <= 12) return dl - 4;       // Adepte 1-4 → 5-8  (dl 9-12 → 5-8)
+    if (dl <= 20) return dl - 8;       // Champion 1-4 → 9-12
+    if (dl <= 28) return dl - 12;      // Parangon 1-4 → 13-16
+    return dl - 16;                    // Eternal 1+ → 17+
   }
 
   // ── LANG ────────────────────────────────────────────────────────────────────
@@ -864,21 +900,20 @@
       playerMap.get(row.player_id).chars.push(row);
     }
 
-    // Calculer best ilvl + total tentatives par joueur
+    // Calculer best rank + total tentatives par joueur
     const players = [...playerMap.values()].map(p => {
-      const aliveChars = p.chars.filter(c => c.status === 'alive');
+      const aliveChars    = p.chars.filter(c => c.status === 'alive');
       const bestIlvl      = Math.max(...p.chars.map(c => c.ilvl_best || 0), 0);
-      const bestRating    = p.chars.reduce((s, c) => s + (c.total_rating_score || 0), 0);
       const totalAttempts = p.chars.reduce((s, c) => s + (c.character_total_attempts || 1), 0);
-      // Capstone le plus haut toutes tentatives
-      const playerUnlocks = data.unlocks.filter(u => u.player_id === p.player_id);
-      const unlockedIds   = new Set(playerUnlocks.map(u => u.capstone_id));
-      const topCap = data.capstones.filter(c => unlockedIds.has(c.id)).at(-1);
-      return { ...p, aliveChars, bestIlvl, totalAttempts, topCap };
+      // Meilleur difficultyLevel toutes tentatives confondues
+      const bestDl = Math.max(...p.chars.map(c => c.best_difficulty_level || 0), 0);
+      const bestRank = diffLevelToRank(bestDl);
+      const sortKey  = rankSortKey(bestDl);
+      return { ...p, aliveChars, bestIlvl, totalAttempts, bestDl, bestRank, sortKey };
     });
 
-    // Tri : bestIlvl desc, puis totalAttempts asc
-    players.sort((a, b) => b.bestRating - a.bestRating || a.totalAttempts - b.totalAttempts);
+    // Tri : highest dungeon desc (sortKey), à égalité tentatives asc
+    players.sort((a, b) => b.sortKey - a.sortKey || a.totalAttempts - b.totalAttempts);
 
     // Mise à jour compteur header
     const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
@@ -887,7 +922,10 @@
 
     // Filtre search
     const q = (document.getElementById('lb-search')?.value || '').toLowerCase().trim();
-    _lbFiltered = q ? players.filter(p => p.player_name.toLowerCase().includes(q) || p.chars.some(c => c.character_name.toLowerCase().includes(q))) : players;
+    _lbFiltered = q ? players.filter(p =>
+      p.player_name.toLowerCase().includes(q) ||
+      p.chars.some(c => c.character_name.toLowerCase().includes(q) || (c.character_class || '').toLowerCase().includes(q))
+    ) : players;
 
     const countEl2 = document.getElementById('lb-count');
     if (countEl2) countEl2.textContent = q ? `${_lbFiltered.length} / ${players.length}` : `${players.length} ${fr() ? 'joueur(s)' : 'player(s)'}`;
@@ -907,20 +945,29 @@
     const cont = document.getElementById('lb-content');
     if (!slice.length) { cont.innerHTML = `<div class="empty">${fr() ? 'Aucun joueur inscrit.' : 'No registered players.'}</div>`; return; }
 
-    // Trouver le rang réel (dans filtered, pas dans slice)
     cont.innerHTML = slice.map((p, i) => {
-      const rank     = (_lbPage-1)*PAGE_SIZE + i + 1;
-      const rankCls  = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-      const capHtml  = p.topCap
-        ? `<span class="capstone-badge ${capstoneCls(p.topCap.tier_name)}">${p.topCap.tier_name} ${p.topCap.difficulty_level_threshold}</span>`
+      const rank    = (_lbPage-1)*PAGE_SIZE + i + 1;
+      const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+
+      // Highest dungeon badge coloré
+      const rankColor = tierColor(p.bestRank.tier);
+      const rankHtml  = p.bestDl > 0
+        ? `<span style="font-family:'Cinzel',serif;font-size:12px;color:${rankColor};
+                        border:1px solid ${rankColor}40;background:${rankColor}12;
+                        padding:3px 9px;border-radius:20px;white-space:nowrap">${p.bestRank.label}</span>`
         : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
-      const charTags = p.chars.map(c =>
-        `<span class="lb-char-tag ${c.status}" style="${c.status==='alive'?`border-color:${classColor(c.character_class)}40;color:${classColor(c.character_class)}`:''}">
-          ${c.status === 'dead' ? '<span class="lb-char-skull">💀</span>' : ''}
-          ${c.character_name}${c.character_class ? ` · ${c.character_class}` : ''}
-        </span>`
-      ).join('');
-      const ilvlColor = p.bestIlvl >= 15 ? 'var(--hc-eternal)' : p.bestIlvl >= 10 ? 'var(--hc-paragon)' : p.bestIlvl >= 5 ? 'var(--hc-champion)' : 'var(--teal-light)';
+
+      // Tags héros : affiche seulement la classe colorée (pas le nom du joueur)
+      const charTags = p.chars.map(c => {
+        const col = classColor(c.character_class);
+        const dead = c.status === 'dead';
+        return `<span class="lb-char-tag ${c.status}"
+          style="${dead ? '' : `border-color:${col}40;color:${col};background:${col}0d`}">
+          ${dead ? '<span class="lb-char-skull">💀</span>' : ''}
+          <span style="${dead ? '' : `color:${col}`}">${c.character_class || c.character_name}</span>
+        </span>`;
+      }).join('');
+
       return `
         <div class="lb-row" id="lbrow-${p.player_id}" onclick="toggleExpand(${p.player_id})">
           <div class="lb-rank ${rankCls}">${rank}</div>
@@ -928,9 +975,9 @@
             <div class="lb-player-name">${p.player_name}</div>
             <div class="lb-char-list">${charTags}</div>
           </div>
-          <div class="lb-ilvl" style="color:${ilvlColor}">${p.bestIlvl || '—'}</div>
+          <div class="lb-ilvl">${p.bestIlvl || '—'}</div>
           <div class="lb-attempts col-attempts">${p.totalAttempts}</div>
-          <div class="lb-capstone">${capHtml}</div>
+          <div class="lb-capstone">${rankHtml}</div>
         </div>
         <div class="lb-expand" id="lbexpand-${p.player_id}">
           ${renderExpandedPlayer(p, data)}
@@ -944,39 +991,46 @@
   function renderExpandedPlayer(p, data) {
     if (!p.chars.length) return '';
     const cards = p.chars.map(c => {
-      const unlocks = data.unlocks.filter(u => u.character_id === c.character_id);
-      const unlockedCaps = data.capstones.filter(cap => unlocks.some(u => u.capstone_id === cap.id));
-      const capHtml = unlockedCaps.length
-        ? unlockedCaps.map(cap => `<span class="capstone-badge ${capstoneCls(cap.tier_name)}">${cap.tier_name} ${cap.difficulty_level_threshold}</span>`).join('')
-        : `<span style="color:var(--text-muted);font-size:13px;font-style:italic">${fr() ? 'Aucun capstone' : 'No capstone'}</span>`;
+      // Highest dungeon de ce perso
+      const charRank  = diffLevelToRank(c.best_difficulty_level || 0);
+      const charColor = tierColor(charRank.tier);
+      const rankBadge = c.best_difficulty_level > 0
+        ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${charColor};
+                        border:1px solid ${charColor}40;background:${charColor}10;
+                        padding:2px 8px;border-radius:20px">${charRank.label}</span>`
+        : `<span style="color:var(--text-muted);font-size:12px;font-style:italic">${fr() ? 'Aucun run' : 'No run'}</span>`;
       const diedHtml = c.died_at
-        ? `<div class="expand-death-info">💀 ${fr() ? 'Mort le' : 'Died on'} ${new Date(c.died_at).toLocaleDateString(fr()?'fr-FR':'en-GB')} — ${c.dungeon_name || ''}</div>`
+        ? `<div class="expand-death-info">💀 ${fr() ? 'Mort le' : 'Died on'} ${new Date(c.died_at).toLocaleDateString(fr()?'fr-FR':'en-GB')}</div>`
         : '';
+      const heroColor = classColor(c.character_class);
       return `
         <div class="expand-char-card ${c.status === 'dead' ? 'dead-card' : ''}">
           <div class="expand-char-header">
             <div>
-              <div class="expand-char-name">${c.character_name}</div>
-              <div class="expand-char-class" style="color:${classColor(c.character_class)}">${c.character_class || '—'}</div>
+              <div class="expand-char-name" style="color:${heroColor}">${c.character_class || c.character_name}</div>
+              <div class="expand-char-class" style="color:var(--text-muted)">${c.status === 'alive' ? (fr() ? 'En vie' : 'Alive') : (fr() ? 'Mort' : 'Dead')} · ${fr() ? 'Tentative' : 'Attempt'} #${c.current_attempt_number}</div>
             </div>
             ${c.status === 'dead'
               ? `<span style="color:rgba(255,68,68,0.6);font-size:20px">💀</span>`
               : `<span style="color:var(--teal-dim);font-size:20px">⚔️</span>`}
           </div>
           <div class="expand-stat-row">
-            <span class="expand-stat-label">${fr() ? 'ilvl actuel' : 'current ilvl'}</span>
-            <span class="expand-stat-value ${c.status==='dead'?'red':''}">${c.ilvl_current}</span>
+            <span class="expand-stat-label">${fr() ? 'Highest dungeon' : 'Highest dungeon'}</span>
+            <span>${rankBadge}</span>
+          </div>
+          <div class="expand-stat-row">
+            <span class="expand-stat-label">ilvl</span>
+            <span class="expand-stat-value ${c.status==='dead'?'red':''}">${c.ilvl_current || '—'}</span>
           </div>
           <div class="expand-stat-row">
             <span class="expand-stat-label">${fr() ? 'meilleur ilvl' : 'best ilvl'}</span>
             <span class="expand-stat-value">${c.ilvl_best || '—'}</span>
           </div>
           <div class="expand-stat-row">
-            <span class="expand-stat-label">${fr() ? 'tentative #' : 'attempt #'}</span>
-            <span class="expand-stat-value">${c.current_attempt_number}</span>
+            <span class="expand-stat-label">Power Score</span>
+            <span class="expand-stat-value">${c.power_score_current ? c.power_score_current.toFixed(0) : '—'}</span>
           </div>
           ${diedHtml}
-          <div class="expand-capstones">${capHtml}</div>
         </div>`;
     }).join('');
     return `<div class="expand-grid">${cards}</div>`;
