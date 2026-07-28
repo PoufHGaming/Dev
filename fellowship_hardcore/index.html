@@ -1325,8 +1325,7 @@
   }
 
   async function sendMagicLink(email) {
-    // redirect_to doit pointer vers la page sans hash ni query string
-    const redirectTo = window.location.origin + window.location.pathname;
+    const redirectTo = 'https://poufhgaming.github.io/Dev/fellowship_hardcore/index.html';
     await authFetch('/magiclink', {
       method: 'POST',
       body: { email, redirect_to: redirectTo },
