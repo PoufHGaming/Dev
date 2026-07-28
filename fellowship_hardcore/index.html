@@ -216,7 +216,7 @@
     /* ── EXPAND PANEL ── */
     .lb-expand {
       background:rgba(7,11,11,0.8); border-bottom:1px solid var(--border);
-      padding:18px 14px 22px 58px;
+      padding:14px 14px 18px 14px;
       display:none;
     }
     .lb-expand.open { display:block; }
@@ -391,6 +391,30 @@
     .modal-stat-lbl { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-top:2px; }
     .modal-capstones { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
     .modal-death-info { margin-top:10px; padding:8px 12px; background:rgba(255,68,68,0.06); border-radius:4px; border-left:2px solid rgba(255,68,68,0.4); font-size:14px; color:rgba(255,68,68,0.65); font-style:italic; }
+
+    /* ── EXPAND HERO TABLE ── */
+    .hero-table { width:100%; border-collapse:collapse; }
+    .hero-table th { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); padding:6px 10px; text-align:left; border-bottom:1px solid var(--border); }
+    .hero-table th:not(:first-child) { text-align:right; }
+    .hero-table td { padding:8px 10px; border-bottom:1px solid rgba(64,212,212,0.05); font-size:14px; vertical-align:middle; }
+    .hero-table td:not(:first-child) { text-align:right; }
+    .hero-table tr:last-child td { border-bottom:none; }
+    .hero-table tr.hero-row { cursor:pointer; transition:background 0.15s; }
+    .hero-table tr.hero-row:hover { background:rgba(255,68,68,0.04); }
+    .hero-table tr.hero-row.expanded-hero { background:rgba(255,68,68,0.06); }
+    .hero-table tr.hero-runs-row td { padding:0; background:var(--bg3); }
+    .hero-table tr.hero-runs-row.open { display:table-row; }
+    .hero-runs-inner { padding:12px 14px; display:none; }
+    .hero-runs-inner.open { display:block; }
+    .hero-run-item { display:grid; grid-template-columns:1fr 120px 80px 80px 90px; gap:8px; align-items:center; padding:6px 0; border-bottom:1px solid rgba(64,212,212,0.06); font-size:13px; }
+    .hero-run-item:last-child { border-bottom:none; }
+    .hero-run-dungeon { color:var(--text-dim); }
+    .hero-run-rank { text-align:right; }
+    .hero-run-rating { font-family:'Cinzel',serif; font-size:12px; color:var(--teal-light); text-align:right; }
+    .hero-run-date { color:var(--text-muted); font-size:12px; text-align:right; }
+    .hero-run-timed { text-align:center; }
+    .hero-name-cell { display:flex; align-items:center; gap:8px; }
+    .hero-status-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 
     /* ── JOIN STEPS (logs section) ── */
     .join-step { display:flex; gap:18px; margin-bottom:24px; align-items:flex-start; }
@@ -611,7 +635,7 @@
   <div class="event-season">
     <span data-fr="Saison 1" data-en="Season 1">Saison 1</span>
     <span style="color:var(--hc-red);opacity:0.7;margin:0 4px">·</span>
-    <span id="active-count">— <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">aventuriers actifs</span></span>
+    <span id="active-count">— <span data-fr="héros actifs" data-en="active heroes" style="font-size:12px">héros actifs</span></span>
   </div>
   <div class="social-links">
     <a href="https://twitch.tv/pouf_hgaming" target="_blank" class="social-link twitch">
@@ -966,7 +990,7 @@
     // Mise à jour compteur header
     const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
     const countEl = document.getElementById('active-count');
-    if (countEl) countEl.innerHTML = `${activeCount} <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">${fr() ? 'aventuriers actifs' : 'active adventurers'}</span>`;
+    if (countEl) countEl.innerHTML = `${activeCount} <span style="font-size:12px">${fr() ? 'héros actifs' : 'active heroes'}</span>`;
 
     // Filtre search
     const q = (document.getElementById('lb-search')?.value || '').toLowerCase().trim();
@@ -1036,52 +1060,138 @@
     renderPagination(pages, filtered, data);
   }
 
+  // Cache des runs par character_id
+  const _runsCache = new Map();
+
+  async function fetchHeroRuns(characterId) {
+    if (_runsCache.has(characterId)) return _runsCache.get(characterId);
+    try {
+      const runs = await sbFetch(
+        `/rest/v1/hm_runs?character_id=eq.${characterId}&season=eq.${SEASON}&order=completed_at.desc&limit=5` +
+        `&select=dungeon_name,difficulty_level,in_time,rating,completed_at,completed,hm_death,valid`
+      );
+      _runsCache.set(characterId, runs ?? []);
+      return runs ?? [];
+    } catch { return []; }
+  }
+
   function renderExpandedPlayer(p, data) {
     if (!p.chars.length) return '';
-    const cards = p.chars.map(c => {
-      // Highest dungeon de ce perso
+    const f = fr();
+
+    // Trier les héros : best_difficulty_level desc, alive avant dead
+    const sorted = [...p.chars].sort((a, b) => {
+      const dlDiff = (b.best_difficulty_level || 0) - (a.best_difficulty_level || 0);
+      if (dlDiff !== 0) return dlDiff;
+      if (a.status === 'alive' && b.status !== 'alive') return -1;
+      if (b.status === 'alive' && a.status !== 'alive') return 1;
+      return (a.character_class || '').localeCompare(b.character_class || '');
+    });
+
+    const rows = sorted.map(c => {
+      const heroColor = classColor(c.character_class);
       const charRank  = diffLevelToRank(c.best_difficulty_level || 0);
       const charColor = tierColor(charRank.tier);
+      const isAlive   = c.status === 'alive';
+      const dotColor  = isAlive ? 'var(--tier1)' : 'rgba(255,68,68,0.6)';
       const rankBadge = c.best_difficulty_level > 0
-        ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${charColor};
-                        border:1px solid ${charColor}40;background:${charColor}10;
-                        padding:2px 8px;border-radius:20px">${charRank.label}</span>`
-        : `<span style="color:var(--text-muted);font-size:12px;font-style:italic">${fr() ? 'Aucun run' : 'No run'}</span>`;
-      const diedHtml = c.died_at
-        ? `<div class="expand-death-info">💀 ${fr() ? 'Mort le' : 'Died on'} ${new Date(c.died_at).toLocaleDateString(fr()?'fr-FR':'en-GB')}</div>`
-        : '';
-      const heroColor = classColor(c.character_class);
+        ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${charColor};border:1px solid ${charColor}40;background:${charColor}10;padding:2px 7px;border-radius:20px;white-space:nowrap">${charRank.label}</span>`
+        : `<span style="color:var(--text-muted);font-size:12px;font-style:italic">${f ? 'Aucun run' : 'No run'}</span>`;
+
+      // Score de ce perso = best_rating (meilleur rating toutes tentatives)
+      const score = c.best_rating ? Math.floor(c.best_rating) : '—';
+
       return `
-        <div class="expand-char-card ${c.status === 'dead' ? 'dead-card' : ''}">
-          <div class="expand-char-header">
-            <div>
-              <div class="expand-char-name" style="color:${heroColor}">${c.character_class || c.character_name}</div>
-              <div class="expand-char-class" style="color:var(--text-muted)">${c.status === 'alive' ? (fr() ? 'En vie' : 'Alive') : (fr() ? 'Mort' : 'Dead')} · ${fr() ? 'Tentative' : 'Attempt'} #${c.current_attempt_number}</div>
+        <tr class="hero-row" id="herorow-${c.character_id}" onclick="toggleHeroRuns('${c.character_id}')">
+          <td>
+            <div class="hero-name-cell">
+              <div class="hero-status-dot" style="background:${dotColor};${isAlive ? `box-shadow:0 0 5px ${dotColor}` : ''}"></div>
+              <span style="font-family:'Cinzel',serif;color:${heroColor};font-size:13px">${c.character_class || c.character_name}</span>
+              <span style="font-size:11px;color:var(--text-muted)">${isAlive ? (f ? 'En vie' : 'Alive') : (f ? 'Mort' : 'Dead')} · #${c.current_attempt_number}</span>
+              ${c.died_at ? `<span style="font-size:11px;color:rgba(255,68,68,0.5)">· 💀 ${new Date(c.died_at).toLocaleDateString(f?'fr-FR':'en-GB')}</span>` : ''}
             </div>
-            ${c.status === 'dead'
-              ? `<span style="color:rgba(255,68,68,0.6);font-size:20px">💀</span>`
-              : `<span style="color:var(--teal-dim);font-size:20px">⚔️</span>`}
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">${fr() ? 'Highest dungeon' : 'Highest dungeon'}</span>
-            <span>${rankBadge}</span>
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">ilvl</span>
-            <span class="expand-stat-value ${c.status==='dead'?'red':''}">${c.ilvl_current || '—'}</span>
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">${fr() ? 'meilleur ilvl' : 'best ilvl'}</span>
-            <span class="expand-stat-value">${c.ilvl_best || '—'}</span>
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">Power Score</span>
-            <span class="expand-stat-value">${c.power_score_current ? c.power_score_current.toFixed(0) : '—'}</span>
-          </div>
-          ${diedHtml}
-        </div>`;
+          </td>
+          <td>${rankBadge}</td>
+          <td><span style="font-family:'Cinzel',serif;font-size:13px;color:var(--teal-light)">${c.ilvl_best || '—'}</span></td>
+          <td><span style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-dim)">${c.power_score_best ? Math.round(c.power_score_best) : '—'}</span></td>
+          <td style="text-align:right"><span style="font-family:'Cinzel',serif;font-size:12px;color:var(--teal-dim)">${score}</span></td>
+        </tr>
+        <tr class="hero-runs-row" id="herorunrow-${c.character_id}" style="display:none">
+          <td colspan="5">
+            <div class="hero-runs-inner" id="heroruninner-${c.character_id}">
+              <div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:6px 0">${f ? 'Chargement…' : 'Loading…'}</div>
+            </div>
+          </td>
+        </tr>`;
     }).join('');
-    return `<div class="expand-grid">${cards}</div>`;
+
+    return `
+      <table class="hero-table">
+        <thead>
+          <tr>
+            <th>${f ? 'Héros' : 'Hero'}</th>
+            <th style="text-align:right">${f ? 'Meilleur donjon' : 'Best dungeon'}</th>
+            <th style="text-align:right">ilvl</th>
+            <th style="text-align:right">PS</th>
+            <th style="text-align:right">${f ? 'Score' : 'Score'}</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  let _expandedHero = null;
+
+  async function toggleHeroRuns(characterId) {
+    const row   = document.getElementById(`herorow-${characterId}`);
+    const runRow = document.getElementById(`herorunrow-${characterId}`);
+    const inner  = document.getElementById(`heroruninner-${characterId}`);
+    if (!row || !runRow || !inner) return;
+
+    const isOpen = runRow.style.display !== 'none';
+
+    // Fermer tous les héros ouverts dans ce panel
+    document.querySelectorAll('.hero-runs-row').forEach(r => { r.style.display = 'none'; });
+    document.querySelectorAll('.hero-runs-inner').forEach(r => r.classList.remove('open'));
+    document.querySelectorAll('.hero-row.expanded-hero').forEach(r => r.classList.remove('expanded-hero'));
+
+    if (isOpen) return;
+
+    row.classList.add('expanded-hero');
+    runRow.style.display = 'table-row';
+    inner.classList.add('open');
+
+    // Charger les runs
+    const runs = await fetchHeroRuns(characterId);
+    const f = fr();
+
+    if (!runs.length) {
+      inner.innerHTML = `<div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:6px 0">${f ? 'Aucun run enregistré.' : 'No runs recorded.'}</div>`;
+      return;
+    }
+
+    inner.innerHTML = `
+      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">${f ? '5 derniers runs' : 'Last 5 runs'}</div>
+      ${runs.map(r => {
+        const dl     = r.difficulty_level;
+        const rank   = dl ? diffLevelToRank(dl) : null;
+        const rColor = rank ? tierColor(rank.tier) : 'var(--text-muted)';
+        const rankSpan = rank
+          ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${rColor}">${rank.label}</span>`
+          : `<span style="color:var(--text-muted);font-size:11px">—</span>`;
+        const timedIcon = r.in_time ? `<span style="color:var(--tier1)">✓</span>` : `<span style="color:var(--text-muted)">✗</span>`;
+        const deathIcon = r.hm_death ? ` <span style="color:rgba(255,68,68,0.7)">💀</span>` : '';
+        const validIcon = !r.valid ? ` <span style="color:rgba(255,68,68,0.5);font-size:11px">${f ? '(annulé)' : '(cancelled)'}</span>` : '';
+        const ratingStr = r.rating ? Math.floor(r.rating) + ' pts' : '—';
+        const dateStr   = new Date(r.completed_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short' });
+        return `<div class="hero-run-item">
+          <div class="hero-run-dungeon">${r.dungeon_name}${deathIcon}${validIcon}</div>
+          <div class="hero-run-rank">${rankSpan}</div>
+          <div class="hero-run-rating">${ratingStr}</div>
+          <div class="hero-run-timed">${timedIcon}</div>
+          <div class="hero-run-date">${dateStr}</div>
+        </div>`;
+      }).join('')}`;
   }
 
   function toggleExpand(playerId) {
@@ -1089,9 +1199,12 @@
     const exp = document.getElementById(`lbexpand-${playerId}`);
     if (!row || !exp) return;
     const isOpen = exp.classList.contains('open');
-    // Fermer tous
-    document.querySelectorAll('.lb-expand.open').forEach(e => { e.classList.remove('open'); });
-    document.querySelectorAll('.lb-row.expanded').forEach(r => { r.classList.remove('expanded'); });
+    document.querySelectorAll('.lb-expand.open').forEach(e => e.classList.remove('open'));
+    document.querySelectorAll('.lb-row.expanded').forEach(r => r.classList.remove('expanded'));
+    // Reset hero sub-panels when closing
+    document.querySelectorAll('.hero-runs-row').forEach(r => { r.style.display = 'none'; });
+    document.querySelectorAll('.hero-runs-inner').forEach(r => r.classList.remove('open'));
+    document.querySelectorAll('.hero-row.expanded-hero').forEach(r => r.classList.remove('expanded-hero'));
     if (!isOpen) { exp.classList.add('open'); row.classList.add('expanded'); }
   }
 
