@@ -585,7 +585,7 @@
   <div class="event-subtitle" data-fr="Mourir, c'est recommencer." data-en="Death is just the beginning.">Mourir, c'est recommencer.</div>
   <div class="event-season">
     <span data-fr="Saison 1" data-en="Season 1">Saison 1</span>
-    <span style="color:var(--border)">·</span>
+    <span style="color:var(--hc-red);opacity:0.7;margin:0 4px">·</span>
     <span id="active-count">— <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">aventuriers actifs</span></span>
   </div>
   <div class="social-links">
@@ -648,7 +648,7 @@
       <div data-fr="Joueur / Personnage(s)" data-en="Player / Character(s)">Joueur / Personnage(s)</div>
       <div style="text-align:right" data-fr="Meilleur ilvl" data-en="Best ilvl">Meilleur ilvl</div>
       <div class="col-attempts" style="text-align:right" data-fr="Tentatives" data-en="Attempts">Tentatives</div>
-      <div style="text-align:right" data-fr="Highest Dungeon" data-en="Highest Dungeon">Highest Dungeon</div>
+      <div style="text-align:right" data-fr="Meilleur Donjon" data-en="Highest Dungeon">Meilleur Donjon</div>
     </div>
     <div id="lb-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
     <div id="lb-pagination"></div>
@@ -1182,82 +1182,103 @@
         <div class="rules-list">
           <div class="rules-item warning">
             ☠️ <strong>${f ? 'Mort permanente' : 'Permanent Death'}</strong> — ${f
-              ? 'Si ton personnage meurt, il repart de zéro. Pas de résurrection via le grimoire.'
-              : 'If your character dies, they start over from scratch. No resurrection via grimoire.'}
+              ? 'Si ton personnage meurt dans un donjon, il repart de zéro. Nouvelle tentative, ilvl 0, tout recommence.'
+              : 'If your character dies in a dungeon, they start over from scratch. New attempt, ilvl 0, everything resets.'}
+          </div>
+          <div class="rules-item">
+            👥 <strong>${f ? 'Groupe 100% Hardcore' : '100% Hardcore Group'}</strong> — ${f
+              ? 'Tu ne peux jouer qu\'avec d\'autres joueurs inscrits en mode Hardcore. Un joueur non-HM dans le groupe annule le run pour tout le monde.'
+              : 'You can only play with other players registered in Hardcore mode. A non-HM player in the group invalidates the run for everyone.'}
           </div>
           <div class="rules-item">
             ⚔️ ${f
-              ? 'Chaque joueur peut avoir <strong>plusieurs personnages HM actifs</strong> simultanément, à condition que ce soient des personnages Fellowship différents.'
-              : 'Each player can have <strong>multiple active HM characters</strong> simultaneously, as long as they are different Fellowship characters.'}
+              ? 'Chaque joueur peut avoir <strong>plusieurs héros actifs</strong> simultanément — un par classe de personnage.'
+              : 'Each player can have <strong>multiple active heroes</strong> simultaneously — one per character class.'}
           </div>
           <div class="rules-item">
-            🚫 ${f
-              ? 'Un même personnage ne peut pas être joué en <strong>HM et Normal simultanément</strong>.'
-              : 'The same character cannot be played in <strong>HM and Normal mode simultaneously</strong>.'}
+            🔴 ${f
+              ? 'Le même héros ne peut pas être joué en <strong>HM et Normal simultanément</strong>. Active/désactive le mode depuis ton profil.'
+              : 'The same hero cannot be played in <strong>HM and Normal simultaneously</strong>. Toggle the mode from your profile.'}
           </div>
           <div class="rules-item">
-            👥 ${f
-              ? 'On peut jouer avec des joueurs <strong>non-HM</strong> dans le groupe — la mort n\'affecte que les joueurs HM.'
-              : 'You can play with <strong>non-HM players</strong> in the group — death only affects HM players.'}
+            📋 <strong>${f ? 'Live Logs obligatoires' : 'Live Logs mandatory'}</strong> — ${f
+              ? 'Les logs Fellowship doivent être actifs pendant chaque donjon. Un donjon sans logs ne sera pas comptabilisé. Le risque d\'un upload de fichier : perte de la progression.'
+              : 'Fellowship logs must be active during each dungeon. A dungeon without logs will not be counted. Risk of file upload: loss of progression.'}
           </div>
           <div class="rules-item">
             📊 ${f
-              ? 'Départ à <strong>ilvl 0</strong>. L\'ilvl progresse via les donjons. Un personnage tué repart à ilvl 0 sur une nouvelle tentative.'
-              : 'Start at <strong>ilvl 0</strong>. ilvl progresses through dungeons. A killed character restarts at ilvl 0 on a new attempt.'}
-          </div>
-          <div class="rules-item">
-            📋 ${f
-              ? 'Les <strong>logs Fellowship actifs</strong> sont obligatoires. Tout donjon sans logs ne sera pas comptabilisé.'
-              : '<strong>Active Fellowship logs</strong> are mandatory. Any dungeon without logs will not be counted.'}
+              ? 'Le classement est basé sur le <strong>meilleur donjon timé</strong> réalisé, pas sur l\'ilvl.'
+              : 'Rankings are based on the <strong>best timed dungeon</strong> completed, not ilvl.'}
           </div>
         </div>
       </div>
 
       <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Système de reset' : 'Reset System'}</div>
+        <div class="rules-section-title">${f ? 'Progression & Rangs' : 'Progression & Ranks'}</div>
+        <div class="rules-list">
+          <div class="rules-item">
+            ${f
+              ? 'Les rangs progressent du plus bas au plus haut : <strong style="color:#00c700">Recrue 1→4</strong> · <strong style="color:#006fe6">Adepte 1→4</strong> · <strong style="color:#a920fd">Champion 1→4</strong> · <strong style="color:#b79f00">Parangon 1→4</strong> · <strong style="color:#b60000">Eternal 1→∞</strong>'
+              : 'Ranks progress from lowest to highest: <strong style="color:#00c700">Recruit 1→4</strong> · <strong style="color:#006fe6">Adept 1→4</strong> · <strong style="color:#a920fd">Champion 1→4</strong> · <strong style="color:#b79f00">Paragon 1→4</strong> · <strong style="color:#b60000">Eternal 1→∞</strong>'}
+          </div>
+          <div class="rules-item">
+            ${f
+              ? 'Chaque niveau de rang correspond à un <strong>niveau de donjon timé</strong> dans les logs Fellowship. Seuls les donjons complétés dans le temps imparti comptent.'
+              : 'Each rank level corresponds to a <strong>timed dungeon level</strong> in Fellowship logs. Only dungeons completed within the time limit count.'}
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-section">
+        <div class="rules-section-title">${f ? 'Mort & Reset' : 'Death & Reset'}</div>
         <div class="rules-list">
           <div class="rules-item">
             🔄 <strong>${f ? 'Reset automatique' : 'Automatic Reset'}</strong> — ${f
-              ? 'Détecté via les logs Fellowship (sync toutes les 15 min). L\'ancien personnage passe en statut "mort" et une nouvelle tentative est créée automatiquement.'
-              : 'Detected via Fellowship logs (sync every 15 min). The old character moves to "dead" status and a new attempt is created automatically.'}
+              ? 'La mort est détectée automatiquement via les logs (sync toutes les 15 min). Le personnage passe en statut "mort" et une nouvelle tentative démarre depuis ilvl 0.'
+              : 'Death is detected automatically via logs (sync every 15 min). The character moves to "dead" status and a new attempt starts from ilvl 0.'}
           </div>
           <div class="rules-item">
             📝 <strong>${f ? 'Reset manuel' : 'Manual Reset'}</strong> — ${f
               ? 'Pour les cas particuliers (bug, situation imprévue), contacte Pouf sur Discord. Un admin peut déclencher le reset manuellement.'
               : 'For special cases (bug, unexpected situation), contact Pouf on Discord. An admin can trigger the reset manually.'}
           </div>
+          <div class="rules-item warning">
+            🚫 ${f
+              ? 'Si un joueur non-HM est détecté dans ton groupe, le run est <strong>annulé pour tout le groupe</strong>. Tu seras notifié dans ton profil et tu devras repartir de ton équipement précédent.'
+              : 'If a non-HM player is detected in your group, the run is <strong>cancelled for the whole group</strong>. You will be notified in your profile and must resume from your previous gear.'}
+          </div>
         </div>
       </div>
 
       <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Capstones — Paliers de progression' : 'Capstones — Progression Milestones'}</div>
+        <div class="rules-section-title">${f ? 'Achievements' : 'Achievements'}</div>
         <table class="capstone-table">
-          <thead><tr>
-            <th>${f ? 'Achievement' : 'Achievement'}</th>
-          </tr></thead>
+          <thead><tr><th>Achievement</th></tr></thead>
           <tbody>
-            <tr><td class="ct-champion">🛡️ ${f ? 'Atteindre le Capstone Champion dans les temps' : 'Achieve Capstone Champion in Time'}</td></tr>
-            <tr><td class="ct-paragon" >⚔️ ${f ? 'Atteindre le Capstone Paragon dans les temps' : 'Achieve Capstone Paragon in Time'}</td></tr>
-            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 5 dans les temps'           : 'Achieve Eternal 5 in Time'}</td></tr>
-            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 10 dans les temps'          : 'Achieve Eternal 10 in Time'}</td></tr>
-            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 15 dans les temps'          : 'Achieve Eternal 15 in Time'}</td></tr>
-            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 20 dans les temps'          : 'Achieve Eternal 20 in Time'}</td></tr>
-            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 25 dans les temps'          : 'Achieve Eternal 25 in Time'}</td></tr>
-            <tr><td class="ct-eternal" >👑 ${f ? 'Atteindre Eternal 30 dans les temps'          : 'Achieve Eternal 30 in Time'}</td></tr>
+            <tr><td style="color:#a920fd">🛡️ ${f ? 'Atteindre Champion 4 dans les temps' : 'Achieve Champion 4 in Time'}</td></tr>
+            <tr><td style="color:#b79f00">🏆 ${f ? 'Atteindre Parangon 4 dans les temps' : 'Achieve Paragon 4 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 1 dans les temps'  : 'Achieve Eternal 1 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 5 dans les temps'  : 'Achieve Eternal 5 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 10 dans les temps' : 'Achieve Eternal 10 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 15 dans les temps' : 'Achieve Eternal 15 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 20 dans les temps' : 'Achieve Eternal 20 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 25 dans les temps' : 'Achieve Eternal 25 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 30 dans les temps' : 'Achieve Eternal 30 in Time'}</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Power Leveling' : 'Power Leveling'}</div>
+        <div class="rules-section-title">${f ? 'Communauté in-game' : 'In-game Community'}</div>
         <div class="rules-list">
-          <div class="rules-item warning">
-            ⚠️ ${f
-              ? 'Si l\'écart d\'ilvl entre un joueur HM et la moyenne de l\'équipe dépasse le seuil autorisé, un <strong>warning PL</strong> est enregistré. Les cas répétés peuvent entraîner un reset.'
-              : 'If the ilvl gap between an HM player and the team average exceeds the allowed threshold, a <strong>PL warning</strong> is logged. Repeated cases may result in a reset.'}
+          <div class="rules-item">
+            💬 ${f
+              ? 'Une communauté Fellowship est disponible pour l\'event. Envoie ton <strong>Fellowship Contact Code</strong> à Pouf sur Discord (<strong>pouf_hgaming</strong>) pour recevoir l\'invitation.'
+              : 'A Fellowship community is available for the event. Send your <strong>Fellowship Contact Code</strong> to Pouf on Discord (<strong>pouf_hgaming</strong>) to receive the invitation.'}
           </div>
         </div>
       </div>`;
+  }
   }
 
   // ── PROFILE — AUTH SUPABASE ─────────────────────────────────────────────────
@@ -1305,9 +1326,11 @@
   }
 
   async function sendMagicLink(email) {
+    // redirect_to doit pointer vers la page sans hash ni query string
+    const redirectTo = window.location.origin + window.location.pathname;
     await authFetch('/magiclink', {
       method: 'POST',
-      body: { email, redirect_to: window.location.href },
+      body: { email, redirect_to: redirectTo },
     });
   }
 
@@ -1322,23 +1345,28 @@
   }
 
   // Capturer le token depuis l'URL après le clic sur le magic link
+  // ⚠️  Dans Supabase Dashboard → Auth → URL Configuration :
+  //     Site URL = https://poufhgaming.github.io/hardcore/index.html
+  //     Redirect URLs = https://poufhgaming.github.io/hardcore/index.html
   async function handleAuthCallback() {
     const hash = window.location.hash;
     if (!hash.includes('access_token')) return;
-    const params = new URLSearchParams(hash.replace('#', ''));
+    const params       = new URLSearchParams(hash.replace('#', ''));
+    const type         = params.get('type');
     const accessToken  = params.get('access_token');
     const refreshToken = params.get('refresh_token');
-    const expiresIn    = parseInt(params.get('expires_in') || '3600');
+    const expiresAt    = parseInt(params.get('expires_at')  || '0');
+    const expiresIn    = parseInt(params.get('expires_in')  || '3600');
     if (!accessToken) return;
+    // Accepter magiclink et recovery
+    if (type && !['magiclink','recovery','signup'].includes(type)) return;
     const session = {
       access_token:  accessToken,
       refresh_token: refreshToken,
-      expires_at:    Math.floor(Date.now() / 1000) + expiresIn,
+      expires_at:    expiresAt || Math.floor(Date.now() / 1000) + expiresIn,
     };
     saveSession(session);
-    // Nettoyer l'URL
     history.replaceState(null, '', window.location.pathname);
-    // Aller sur l'onglet profil
     showPage('profile', document.getElementById('tab-profile'));
   }
 
