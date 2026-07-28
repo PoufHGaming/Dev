@@ -717,6 +717,37 @@
   </div>
 </div>
 
+<!-- ── RESET MODAL ── -->
+<div class="modal-overlay" id="reset-modal" onclick="if(event.target===this)closeResetModal()">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-player-name" style="color:var(--hc-red)">⚠️ <span id="reset-modal-title">Reset</span></div>
+      <button class="modal-close" onclick="closeResetModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:15px;color:var(--text-dim);line-height:1.7;margin-bottom:16px" id="reset-modal-desc"></p>
+      <div style="padding:12px 14px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-radius:4px;margin-bottom:20px;font-size:14px;color:rgba(255,68,68,0.8)" id="reset-modal-warning"></div>
+      <div class="field">
+        <label id="reset-modal-label"></label>
+        <input type="text" id="reset-confirm-input" placeholder="CONFIRMER" autocomplete="off"
+          style="text-transform:uppercase;letter-spacing:0.1em"
+          oninput="const ok=this.value.toUpperCase()==='CONFIRMER';const btn=document.getElementById('reset-confirm-btn');btn.disabled=!ok;btn.style.opacity=ok?'0.8':'0.4'">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button onclick="closeResetModal()" style="flex:1;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.15em;padding:10px;background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:4px;cursor:pointer">
+          <span id="reset-cancel-label">Annuler</span>
+        </button>
+        <button id="reset-confirm-btn" disabled onclick="executeReset()"
+          style="flex:1;font-family:'Cinzel',serif;font-size:12px;letter-spacing:0.15em;padding:10px;background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.4);color:var(--hc-red);border-radius:4px;cursor:pointer;transition:all 0.2s;opacity:0.4"
+          onmouseover="if(!this.disabled)this.style.opacity='1'"
+          onmouseout="if(!this.disabled)this.style.opacity='0.8'">
+          🔄 <span id="reset-action-label">Reset</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   // ── CONFIG ──────────────────────────────────────────────────────────────────
   const SUPABASE_URL      = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
@@ -1113,7 +1144,6 @@
     document.getElementById('player-modal').classList.remove('open');
     document.body.style.overflow = '';
   }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
   // ── EVENTS CATALOGUE ────────────────────────────────────────────────────────
   let _eventsData = null, _evtFilter = 'all';
@@ -1201,39 +1231,40 @@
   // ── RULES ───────────────────────────────────────────────────────────────────
   function renderRules() {
     const f = fr();
+    const XUL_COLOR = '#c4732a';
     document.getElementById('rules-content').innerHTML = `
       <div class="rules-section">
         <div class="rules-section-title">${f ? 'Règles Hardcore' : 'Hardcore Rules'}</div>
         <div class="rules-list">
           <div class="rules-item warning">
-            ☠️ <strong>${f ? 'Mort permanente' : 'Permanent Death'}</strong> — ${f
+            ☠️ <strong>${f ? 'Mort permanente' : 'Permanent Death'}</strong> ${f
               ? 'Si ton personnage meurt dans un donjon, il repart de zéro. Nouvelle tentative, ilvl 0, tout recommence.'
               : 'If your character dies in a dungeon, they start over from scratch. New attempt, ilvl 0, everything resets.'}
           </div>
           <div class="rules-item">
-            👥 <strong>${f ? 'Groupe 100% Hardcore' : '100% Hardcore Group'}</strong> — ${f
+            👥 <strong>${f ? 'Groupe 100% Hardcore' : '100% Hardcore Group'}</strong> ${f
               ? 'Tu ne peux jouer qu\'avec d\'autres joueurs inscrits en mode Hardcore. Un joueur non-HM dans le groupe annule le run pour tout le monde.'
               : 'You can only play with other players registered in Hardcore mode. A non-HM player in the group invalidates the run for everyone.'}
           </div>
           <div class="rules-item">
             ⚔️ ${f
-              ? 'Chaque joueur peut avoir <strong>plusieurs héros actifs</strong> simultanément — un par classe de personnage.'
-              : 'Each player can have <strong>multiple active heroes</strong> simultaneously — one per character class.'}
+              ? 'Chaque joueur peut avoir <strong>plusieurs héros actifs</strong> simultanément, un par héros.'
+              : 'Each player can have <strong>multiple active heroes</strong> simultaneously, one per hero.'}
           </div>
-          <div class="rules-item">
+          <div class="rules-item warning">
             🔴 ${f
-              ? 'Le même héros ne peut pas être joué en <strong>HM et Normal simultanément</strong>. Active/désactive le mode depuis ton profil.'
-              : 'The same hero cannot be played in <strong>HM and Normal simultaneously</strong>. Toggle the mode from your profile.'}
+              ? 'Le même héros <strong>peut</strong> être joué en HM et Normal simultanément. <strong>ATTENTION</strong> : active/désactive le mode depuis ton profil selon le mode de jeu souhaité.'
+              : 'The same hero <strong>can</strong> be played in HM and Normal simultaneously. <strong>WARNING</strong>: enable/disable the mode from your profile depending on the desired game mode.'}
           </div>
           <div class="rules-item">
-            📋 <strong>${f ? 'Live Logs obligatoires' : 'Live Logs mandatory'}</strong> — ${f
-              ? 'Les logs Fellowship doivent être actifs pendant chaque donjon. Un donjon sans logs ne sera pas comptabilisé. Le risque d\'un upload de fichier : perte de la progression.'
-              : 'Fellowship logs must be active during each dungeon. A dungeon without logs will not be counted. Risk of file upload: loss of progression.'}
+            📋 <strong>${f ? 'Live Logs obligatoires' : 'Live Logs mandatory'}</strong> ${f
+              ? 'Les logs Fellowship doivent être actifs pendant chaque donjon. Un donjon sans logs ne sera pas comptabilisé. Privilégie le live log plutôt qu\'un upload de fichier si tu ne veux pas risquer de perdre ta progression.'
+              : 'Fellowship logs must be active during each dungeon. A dungeon without logs will not be counted. Prefer live logging over file upload to avoid risking your progression.'}
           </div>
           <div class="rules-item">
             📊 ${f
-              ? 'Le classement est basé sur le <strong>meilleur donjon timé</strong> réalisé, pas sur l\'ilvl.'
-              : 'Rankings are based on the <strong>best timed dungeon</strong> completed, not ilvl.'}
+              ? 'Le classement est basé sur le <strong>meilleur donjon timé</strong> réalisé.'
+              : 'Rankings are based on the <strong>best timed dungeon</strong> completed.'}
           </div>
         </div>
       </div>
@@ -1243,8 +1274,8 @@
         <div class="rules-list">
           <div class="rules-item">
             ${f
-              ? 'Les rangs progressent du plus bas au plus haut : <strong style="color:#00c700">Recrue 1→4</strong> · <strong style="color:#006fe6">Adepte 1→4</strong> · <strong style="color:#a920fd">Champion 1→4</strong> · <strong style="color:#b79f00">Parangon 1→4</strong> · <strong style="color:#b60000">Eternal 1→∞</strong>'
-              : 'Ranks progress from lowest to highest: <strong style="color:#00c700">Recruit 1→4</strong> · <strong style="color:#006fe6">Adept 1→4</strong> · <strong style="color:#a920fd">Champion 1→4</strong> · <strong style="color:#b79f00">Paragon 1→4</strong> · <strong style="color:#b60000">Eternal 1→∞</strong>'}
+              ? 'Les rangs progressent du plus bas au plus haut : <strong style="color:#00c700">Recrue 1→4</strong>, <strong style="color:#006fe6">Adepte 1→4</strong>, <strong style="color:#a920fd">Champion 1→4</strong>, <strong style="color:#b79f00">Parangon 1→4</strong>, <strong style="color:#b60000">Eternal 1→∞</strong>'
+              : 'Ranks progress from lowest to highest: <strong style="color:#00c700">Recruit 1→4</strong>, <strong style="color:#006fe6">Adept 1→4</strong>, <strong style="color:#a920fd">Champion 1→4</strong>, <strong style="color:#b79f00">Paragon 1→4</strong>, <strong style="color:#b60000">Eternal 1→∞</strong>'}
           </div>
           <div class="rules-item">
             ${f
@@ -1258,14 +1289,14 @@
         <div class="rules-section-title">${f ? 'Mort & Reset' : 'Death & Reset'}</div>
         <div class="rules-list">
           <div class="rules-item">
-            🔄 <strong>${f ? 'Reset automatique' : 'Automatic Reset'}</strong> — ${f
+            🔄 <strong>${f ? 'Reset automatique' : 'Automatic Reset'}</strong> ${f
               ? 'La mort est détectée automatiquement via les logs (sync toutes les 15 min). Le personnage passe en statut "mort" et une nouvelle tentative démarre depuis ilvl 0.'
               : 'Death is detected automatically via logs (sync every 15 min). The character moves to "dead" status and a new attempt starts from ilvl 0.'}
           </div>
           <div class="rules-item">
-            📝 <strong>${f ? 'Reset manuel' : 'Manual Reset'}</strong> — ${f
-              ? 'Pour les cas particuliers (bug, situation imprévue), contacte Pouf sur Discord. Un admin peut déclencher le reset manuellement.'
-              : 'For special cases (bug, unexpected situation), contact Pouf on Discord. An admin can trigger the reset manually.'}
+            📝 <strong>${f ? 'Reset manuel' : 'Manual Reset'}</strong> ${f
+              ? 'Pour les cas particuliers (bug, situation imprévue), le reset peut être demandé depuis ton profil ou en contactant Pouf directement.'
+              : 'For special cases (bug, unexpected situation), a reset can be requested from your profile or by contacting Pouf directly.'}
           </div>
           <div class="rules-item warning">
             🚫 ${f
@@ -1282,13 +1313,11 @@
           <tbody>
             <tr><td style="color:#a920fd">🛡️ ${f ? 'Atteindre Champion 4 dans les temps' : 'Achieve Champion 4 in Time'}</td></tr>
             <tr><td style="color:#b79f00">🏆 ${f ? 'Atteindre Parangon 4 dans les temps' : 'Achieve Paragon 4 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 1 dans les temps'  : 'Achieve Eternal 1 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 5 dans les temps'  : 'Achieve Eternal 5 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 10 dans les temps' : 'Achieve Eternal 10 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 15 dans les temps' : 'Achieve Eternal 15 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 20 dans les temps' : 'Achieve Eternal 20 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 25 dans les temps' : 'Achieve Eternal 25 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 30 dans les temps' : 'Achieve Eternal 30 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 5 dans les temps' : 'Achieve Eternal 5 in Time'}</td></tr>
+            <tr><td style="color:#b60000">👑 ${f ? 'Progresser tous les 5 niveaux en Eternal (Eternal 10, 15, 20, 25... jusqu\'à l\'infini théorique)' : 'Progress every 5 Eternal levels (Eternal 10, 15, 20, 25... up to theoretical infinity)'}</td></tr>
+            <tr><td style="color:${XUL_COLOR}">🏜️ ${f ? 'Compléter Xul en Normal' : 'Complete Xul in Normal'}</td></tr>
+            <tr><td style="color:${XUL_COLOR}">🏜️ ${f ? 'Compléter Xul en Héroïque' : 'Complete Xul in Heroic'}</td></tr>
+            <tr><td style="color:${XUL_COLOR}">🏜️ ${f ? 'Compléter Xul en Nightmare' : 'Complete Xul in Nightmare'}</td></tr>
           </tbody>
         </table>
       </div>
@@ -1298,8 +1327,8 @@
         <div class="rules-list">
           <div class="rules-item">
             💬 ${f
-              ? 'Une communauté Fellowship est disponible pour l\'event. Envoie ton <strong>Fellowship Contact Code</strong> à Pouf sur Discord (<strong>pouf_hgaming</strong>) pour recevoir l\'invitation.'
-              : 'A Fellowship community is available for the event. Send your <strong>Fellowship Contact Code</strong> to Pouf on Discord (<strong>pouf_hgaming</strong>) to receive the invitation.'}
+              ? 'Après complétion de ton profil, tu recevras une invitation à la communauté in-game afin de pouvoir créer des groupes avec d\'autres joueurs Hardcore. N\'hésite pas à contacter Pouf sur <strong>Discord (pouf_hgaming)</strong> ou par <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a> si tu as des difficultés.'
+              : 'After completing your profile, you will receive an invitation to the in-game community so you can create groups with other Hardcore players. Feel free to contact Pouf on <strong>Discord (pouf_hgaming)</strong> or by <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a> if you have any issues.'}
           </div>
         </div>
       </div>`;
@@ -1818,8 +1847,21 @@
               <div class="profile-hero-stat-lbl">Power Score</div>
             </div>
           </div>
-          ${period ? `<div class="profile-period">⚔️ HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</div>` : ''}
-          ` : `<div style="font-size:13px;color:var(--text-muted);font-style:italic;margin-top:6px">${f ? 'Non sélectionné — clique "Ajouter" pour l\'activer.' : 'Not selected — click "Add" to enable it.'}</div>`}
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px">
+            <div>
+              ${aliveChar.status === 'alive'
+                ? `<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;color:var(--tier1);padding:2px 8px;border:1px solid rgba(68,238,68,0.3);border-radius:20px">⚔️ ${f ? 'En vie' : 'Alive'}</span>`
+                : `<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;color:rgba(255,68,68,0.7);padding:2px 8px;border:1px solid rgba(255,68,68,0.3);border-radius:20px">💀 ${f ? 'Mort' : 'Dead'}</span>`}
+              ${period ? `<span style="font-size:12px;color:var(--text-muted);margin-left:8px;font-style:italic">HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</span>` : ''}
+            </div>
+            <button onclick="openResetModal('${aliveChar.id}','${h.class_name}')"
+              style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;padding:4px 10px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.25);color:rgba(255,68,68,0.6);border-radius:3px;cursor:pointer;transition:all 0.2s"
+              onmouseover="this.style.borderColor='rgba(255,68,68,0.5)';this.style.color='var(--hc-red)'"
+              onmouseout="this.style.borderColor='rgba(255,68,68,0.25)';this.style.color='rgba(255,68,68,0.6)'">
+              🔄 ${f ? 'Reset' : 'Reset'}
+            </button>
+          </div>
+          ` : `<div style="font-size:13px;color:var(--text-muted);font-style:italic;margin-top:6px">${f ? 'Non sélectionné, clique "Ajouter" pour l\'activer.' : 'Not selected, click "Add" to enable it.'}</div>`}
         </div>`;
       }).join('');
       return `<div style="margin-bottom:20px">
@@ -1864,8 +1906,8 @@
       ${warningsHtml}
       <div style="margin-top:28px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--text-muted);line-height:1.7">
         💬 ${f
-          ? 'Un problème ? Contacte Pouf sur <strong style="color:var(--text-dim)">Discord : pouf_hgaming</strong> ou par email.'
-          : 'A problem? Contact Pouf on <strong style="color:var(--text-dim)">Discord: pouf_hgaming</strong> or by email.'}
+          ? `Un problème ? Contacte Pouf directement sur <strong style="color:var(--text-dim)">Discord : pouf_hgaming</strong> ou par <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.`
+          : `A problem? Contact Pouf on <strong style="color:var(--text-dim)">Discord: pouf_hgaming</strong> or by <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.`}
       </div>`;
   }
 
@@ -1954,6 +1996,108 @@
       toast(fr() ? 'Code copié !' : 'Code copied!');
     });
   }
+
+  // ── RESET MODAL ─────────────────────────────────────────────────────────────
+  let _resetCharId = null;
+  let _resetHeroClass = '';
+
+  function openResetModal(charId, heroClass) {
+    const f = fr();
+    _resetCharId   = charId;
+    _resetHeroClass = heroClass;
+    document.getElementById('reset-modal-title').textContent = `Reset ${heroClass}`;
+    document.getElementById('reset-modal-desc').textContent = f
+      ? `Tu es sur le point de réinitialiser ton personnage ${heroClass}. Cette action est irréversible : le personnage sera marqué comme mort et une nouvelle tentative démarrera depuis ilvl 0.`
+      : `You are about to reset your ${heroClass} character. This action is irreversible: the character will be marked as dead and a new attempt will start from ilvl 0.`;
+    document.getElementById('reset-modal-warning').textContent = f
+      ? '☠️ Toute progression sur cette tentative sera perdue définitivement.'
+      : '☠️ All progress on this attempt will be permanently lost.';
+    document.getElementById('reset-modal-label').textContent = f
+      ? 'Tape CONFIRMER pour valider le reset'
+      : 'Type CONFIRMER to confirm the reset';
+    document.getElementById('reset-cancel-label').textContent = f ? 'Annuler' : 'Cancel';
+    document.getElementById('reset-action-label').textContent = f ? 'Confirmer le reset' : 'Confirm reset';
+    document.getElementById('reset-confirm-input').value = '';
+    document.getElementById('reset-confirm-btn').disabled = true;
+    document.getElementById('reset-confirm-btn').style.opacity = '0.4';
+    document.getElementById('reset-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('reset-confirm-input').focus(), 100);
+  }
+
+  function closeResetModal() {
+    document.getElementById('reset-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    _resetCharId = null;
+  }
+
+  async function executeReset() {
+    if (!_resetCharId) return;
+    const f = fr();
+    const session = await getSession();
+    if (!session) return;
+
+    const btn = document.getElementById('reset-confirm-btn');
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+
+    try {
+      const now = new Date().toISOString();
+      const headers = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + session.access_token,
+        'Content-Type': 'application/json',
+      };
+
+      // Marquer le perso comme mort
+      await fetch(SUPABASE_URL + `/rest/v1/hm_characters?id=eq.${_resetCharId}`, {
+        method: 'PATCH', headers,
+        body: JSON.stringify({ status: 'dead', died_at: now, hm_enabled: false }),
+      });
+
+      // Fermer la période active
+      await fetch(SUPABASE_URL + `/rest/v1/hm_active_periods?character_id=eq.${_resetCharId}&active_until=is.null`, {
+        method: 'PATCH', headers,
+        body: JSON.stringify({ active_until: now, deactivated_by: 'user' }),
+      });
+
+      // Trouver les infos du perso pour créer la nouvelle tentative
+      const chars = _profileData?.characters ?? [];
+      const deadChar = chars.find(c => c.id === _resetCharId);
+      const newAttempt = (deadChar?.attempt_number ?? 0) + 1;
+
+      // Créer nouveau perso
+      await fetch(SUPABASE_URL + '/rest/v1/hm_characters', {
+        method: 'POST',
+        headers: { ...headers, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+          player_id:               deadChar?.player_id,
+          user_id:                 (await authFetch('/user', { token: session.access_token })).id,
+          fellowship_character_id: deadChar?.fellowship_character_id,
+          character_name:          deadChar?.character_name,
+          character_class:         _resetHeroClass,
+          attempt_number:          newAttempt,
+          status:                  'alive',
+          hm_enabled:              false,
+          season:                  SEASON,
+        }),
+      });
+
+      closeResetModal();
+      toast(f ? `${_resetHeroClass} réinitialisé. Tentative #${newAttempt} créée.` : `${_resetHeroClass} reset. Attempt #${newAttempt} created.`);
+      _profileData = null;
+      await renderProfilePage();
+    } catch (e) {
+      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+      btn.disabled = false;
+      btn.style.opacity = '0.8';
+    }
+  }
+
+  // Fermer reset modal avec Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeResetModal(); }
+  });
 
   // ── INIT ────────────────────────────────────────────────────────────────────
   setLang(currentLang);
