@@ -1459,8 +1459,13 @@
           </div>
           <div class="profile-magic-sent" id="magic-sent">
             ✓ ${f
-              ? 'Lien envoyé ! Vérifie ta boîte mail et clique sur le lien pour accéder à ton profil.'
-              : 'Link sent! Check your inbox and click the link to access your profile.'}
+              ? 'Lien envoyé ! Vérifie ta boîte mail — et pense à regarder les <strong>spams</strong> si tu ne le vois pas.'
+              : 'Link sent! Check your inbox — and don\'t forget to check your <strong>spam folder</strong> if you don\'t see it.'}
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:var(--text-muted);text-align:center;font-style:italic;display:none" id="magic-spam-hint">
+            📬 ${f
+              ? 'L\'email vient de <strong style="color:var(--text-dim)">onboarding@resend.dev</strong> — si tu ne le trouves pas, vérifie tes spams et marque-le comme "non spam".'
+              : 'The email comes from <strong style="color:var(--text-dim)">onboarding@resend.dev</strong> — if you can\'t find it, check your spam and mark it as "not spam".'}
           </div>
         </div>
       </div>`;
@@ -1476,6 +1481,7 @@
     try {
       await sendMagicLink(email);
       document.getElementById('magic-sent').classList.add('show');
+      document.getElementById('magic-spam-hint').style.display = 'block';
       btn.textContent = f ? 'Envoyé ✓' : 'Sent ✓';
     } catch (e) {
       btn.disabled = false;
