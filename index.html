@@ -1,1844 +1,1358 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fellowship Hardcore</title>
-  <link rel="icon" type="image/png" href="../images/pouf.png">
+  <title>Pouf — Événements Communautaires</title>
+  <script>
+    // Capture le token Supabase magic link et redirige vers la page HM
+    if (window.location.hash.includes('access_token')) {
+      window.location.replace(
+        'https://dev.poufhgaming.com/fellowship_hardcore/index.html'
+        + window.location.hash
+      );
+    }
+  </script>
+  <link rel="icon" type="image/png" href="images/pouf.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap"
+    rel="stylesheet">
   <style>
     :root {
-      --teal: #40d4d4;
-      --teal-light: #72e8e8;
-      --teal-dim: #2a9898;
-      --bg: #070b0b;
-      --bg2: #0d1a1a;
-      --bg3: #122424;
-      --border: rgba(64,212,212,0.22);
-      --border-bright: rgba(64,212,212,0.65);
-      --text: #f0fafa;
-      --text-dim: #9fd8d8;
-      --text-muted: #4d8080;
-      --tier1: #44ee44;
-      --tier2: #40d4d4;
-      --tier3: #c4a0ff;
-      --hc-red: #ff4444;
-      --hc-red-dim: rgba(255,68,68,0.18);
-      --hc-gold: #f0c040;
-      --hc-champion: #af4bef;
-      --hc-paragon: #f4dd40;
-      --hc-eternal: #d44448;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --gold-dim: #9a7a3a;
+      --gold-glow: rgba(201, 168, 76, 0.15);
+      --bg: #0a0a0e;
+      --bg2: #12121a;
+      --bg3: #1c1c28;
+      --bg4: #0e0e16;
+      --border: rgba(201, 168, 76, 0.18);
+      --border-bright: rgba(201, 168, 76, 0.45);
+      --text: #e8e0d0;
+      --text-dim: #b0a898;
+      --text-muted: #706860;
+      --teal: #4ca8a8;
+      --purple: #9b7fea;
       --twitch: #9147ff;
       --discord: #5865f2;
       --youtube: #ff0000;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Crimson Pro', Georgia, serif;
       font-weight: 300;
       min-height: 100vh;
-      font-size: 19px;
+      font-size: 17px;
+      overflow-x: hidden;
     }
+
+    /* ─── BACKGROUND TEXTURE ─── */
     body::before {
       content: '';
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -5%, rgba(64,212,212,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 40% at 5% 85%, rgba(255,68,68,0.04) 0%, transparent 50%),
-        radial-gradient(ellipse 30% 30% at 95% 15%, rgba(196,160,255,0.05) 0%, transparent 50%);
-      pointer-events: none; z-index: 0;
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201, 168, 76, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 10% 80%, rgba(76, 168, 168, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 40% at 90% 20%, rgba(155, 127, 234, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
     }
 
+    /* ─── TOP BANNER ─── */
     .top-line {
       height: 2px;
-      background: linear-gradient(90deg, transparent, #882222 15%, var(--hc-red) 40%, #882222 60%, rgba(196,160,255,0.6) 80%, transparent);
+      background: linear-gradient(90deg, transparent 0%, var(--gold-dim) 20%, var(--gold) 50%, var(--gold-dim) 80%, transparent 100%);
     }
 
-    /* ── SOCIAL ── */
-    .social-links { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:10px; }
-    .social-link {
-      display:inline-flex; align-items:center; gap:7px;
-      padding:6px 14px; border:1px solid var(--border); border-radius:3px;
-      text-decoration:none; color:var(--text-dim); font-size:12px;
-      font-family:'Cinzel',serif; letter-spacing:0.1em; text-transform:uppercase;
-      transition:all 0.25s; background:rgba(255,255,255,0.02); white-space:nowrap;
-    }
-    .social-link svg { flex-shrink:0; width:14px; height:14px; }
-    .social-link:hover { color:var(--text); background:rgba(255,255,255,0.04); }
-    .social-link.twitch:hover  { border-color:var(--twitch); color:var(--twitch); box-shadow:0 0 12px rgba(145,71,255,0.15); }
-    .social-link.discord:hover { border-color:var(--discord); color:var(--discord); box-shadow:0 0 12px rgba(88,101,242,0.15); }
-    .social-link.youtube:hover { border-color:var(--youtube); color:var(--youtube); box-shadow:0 0 12px rgba(255,0,0,0.12); }
-
-    /* ── HEADER ── */
+    /* ─── HEADER ─── */
     header {
-      text-align:center; padding:44px 24px 28px;
-      border-bottom:1px solid var(--border);
-      position:relative; z-index:1;
+      position: relative;
+      z-index: 1;
+      padding: 52px 24px 40px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
     }
-    .event-skull { font-size:32px; margin-bottom:8px; filter:drop-shadow(0 0 12px rgba(255,68,68,0.5)); }
-    .event-title {
-      font-family:'Cinzel',serif; font-size:clamp(24px,5vw,44px); font-weight:700;
-      color:var(--hc-red); letter-spacing:0.12em; text-transform:uppercase;
-      text-shadow:0 0 40px rgba(255,68,68,0.5), 0 0 80px rgba(255,68,68,0.2);
-    }
-    .event-subtitle { font-size:15px; color:var(--text-dim); margin-top:8px; letter-spacing:0.18em; text-transform:uppercase; font-weight:300; }
-    .event-season { display:inline-flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:var(--text-muted); font-family:'Cinzel',serif; letter-spacing:0.12em; }
 
-    /* ── NAV ── */
-    nav {
-      display:flex; align-items:center; gap:2px;
-      padding:10px 24px;
-      border-bottom:1px solid var(--border);
-      position:sticky; top:0; z-index:100;
-      background:rgba(7,11,11,0.95);
-      backdrop-filter:blur(12px);
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
     }
-    .tab {
-      font-family:'Cinzel',serif; font-size:13px; letter-spacing:0.12em;
-      text-transform:uppercase; padding:8px 16px;
-      background:none; border:1px solid transparent;
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s; border-radius:3px;
-    }
-    .tab:hover { border-color:var(--border); color:var(--text-dim); }
-    .tab.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.06); }
-    .home-btn { opacity:0.65; color:var(--text-dim); }
-    .home-btn:hover { opacity:1; color:var(--teal-light); }
-    .nav-sep { width:1px; height:20px; background:var(--border); margin:0 4px; align-self:center; }
-    .nav-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
-    .lang-toggle { display:flex; gap:2px; }
-    .lang-btn {
-      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
-      padding:6px 11px; background:var(--bg2); border:1px solid var(--border);
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-    }
-    .lang-btn:first-child { border-radius:3px 0 0 3px; }
-    .lang-btn:last-child  { border-radius:0 3px 3px 0; }
-    .lang-btn.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.08); font-weight:600; }
 
-    /* ── MAIN ── */
-    main { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:36px 24px 80px; }
-    .page { display:none; }
-    .page.active { display:block; }
+    /* Avatar */
+    .avatar-wrap {
+      position: relative;
+      width: 108px;
+      height: 108px;
+      flex-shrink: 0;
+    }
 
-    /* ── SECTION TITLE ── */
+    .avatar-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(var(--gold), var(--gold-dim), var(--gold), var(--gold-dim), var(--gold));
+      animation: spin 8s linear infinite;
+      opacity: 0.6;
+    }
+
+    .avatar-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .avatar {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--bg);
+    }
+
+    .avatar-placeholder {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--bg3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 36px;
+      color: var(--gold-dim);
+      border: 2px solid var(--bg);
+    }
+
+    /* Identity */
+    .identity {
+      text-align: center;
+    }
+
+    .site-name {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(26px, 5vw, 46px);
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      line-height: 1;
+      text-shadow: 0 0 40px rgba(201, 168, 76, 0.3);
+    }
+
+    .site-tagline {
+      font-size: 14px;
+      color: var(--text-dim);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-top: 8px;
+      font-weight: 300;
+    }
+
+    .bio {
+      font-size: 17px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 14px;
+      line-height: 1.6;
+      max-width: 520px;
+    }
+
+    /* Social links */
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 12px;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.25s;
+      background: rgba(255, 255, 255, 0.02);
+      white-space: nowrap;
+    }
+
+    .social-link svg {
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+    }
+
+    .social-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .social-link.twitch:hover {
+      border-color: var(--twitch);
+      color: var(--twitch);
+      box-shadow: 0 0 12px rgba(145, 71, 255, 0.15);
+    }
+
+    .social-link.discord:hover {
+      border-color: var(--discord);
+      color: var(--discord);
+      box-shadow: 0 0 12px rgba(88, 101, 242, 0.15);
+    }
+
+    .social-link.youtube:hover {
+      border-color: var(--youtube);
+      color: var(--youtube);
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.12);
+    }
+
+    /* ─── MAIN ─── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 72px;
+    }
+
+    /* ─── SECTION TITLES ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .section-header::before,
+    .section-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+
+    .section-header::before {
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+
+    .section-header::after {
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
     .section-title {
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.28em; text-transform:uppercase;
-      color:var(--text-muted); margin-bottom:20px; padding-bottom:10px;
-      border-bottom:1px solid var(--border);
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
     }
 
-    /* ── SYNC BAR ── */
-    .lb-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:12px; }
-    .sync-info { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-muted); font-style:italic; }
-    .sync-dot { width:8px; height:8px; border-radius:50%; background:var(--text-muted); flex-shrink:0; }
-    .sync-dot.ok   { background:var(--tier1); box-shadow:0 0 7px var(--tier1); }
-    .sync-dot.error { background:var(--hc-red); box-shadow:0 0 7px var(--hc-red); }
-    .sync-dot.live { background:var(--teal); box-shadow:0 0 7px var(--teal); animation:sdot 1s ease-in-out infinite; }
-    @keyframes sdot { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .refresh-btn {
-      display:inline-flex; align-items:center; gap:6px;
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-      padding:7px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:3px;
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-    }
-    .refresh-btn:hover { border-color:var(--border-bright); color:var(--text-dim); }
-    .refresh-btn.spinning svg { animation:spin 0.8s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-
-    /* ── SEARCH ── */
-    .lb-search-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-    .lb-search-wrap {
-      flex:1; display:flex; align-items:center; gap:8px;
-      background:var(--bg2); border:1px solid var(--border); border-radius:4px;
-      padding:0 12px; transition:border-color 0.2s;
-    }
-    .lb-search-wrap:focus-within { border-color:rgba(255,68,68,0.5); }
-    .lb-search-wrap input {
-      flex:1; background:none; border:none; outline:none;
-      color:var(--text); font-family:'Crimson Pro',serif; font-size:16px;
-      padding:9px 0; caret-color:var(--hc-red);
-    }
-    .lb-search-wrap input::placeholder { color:var(--text-muted); }
-    .lb-search-clear { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; padding:4px; transition:color 0.2s; }
-    .lb-search-clear:hover { color:var(--text); }
-    .lb-count { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; color:var(--text-muted); white-space:nowrap; }
-
-    /* ── LEADERBOARD TABLE ── */
-    .lb-header {
-      display:grid; grid-template-columns:44px 1fr 100px 100px 110px;
-      padding:0 14px 10px; gap:8px;
-      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.18em;
-      text-transform:uppercase; color:var(--text-muted);
-      border-bottom:1px solid var(--border);
-    }
-    .lb-row {
-      display:grid; grid-template-columns:44px 1fr 100px 100px 110px;
-      padding:0 14px; gap:8px; align-items:center;
-      border-bottom:1px solid rgba(64,212,212,0.07);
-      cursor:pointer; transition:background 0.15s; min-height:52px;
-    }
-    .lb-row:hover { background:rgba(255,68,68,0.04); }
-    .lb-row.expanded { background:rgba(255,68,68,0.06); border-bottom:none; }
-    .lb-rank {
-      font-family:'Cinzel',serif; font-size:13px; font-weight:700;
-      color:var(--text-muted); text-align:center;
-    }
-    .lb-rank.r1 { color:var(--hc-gold); text-shadow:0 0 14px rgba(240,192,64,0.5); }
-    .lb-rank.r2 { color:#c0c0c0; }
-    .lb-rank.r3 { color:#cd7f32; }
-    .lb-player { display:flex; flex-direction:column; gap:2px; }
-    .lb-player-name { font-size:17px; color:var(--text); }
-    .lb-char-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
-    .lb-char-tag {
-      display:inline-flex; align-items:center; gap:5px;
-      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.1em;
-      padding:2px 8px; border-radius:20px; border:1px solid;
-    }
-    .lb-char-tag.alive  { border-color:rgba(64,212,212,0.3); color:var(--teal-dim); background:rgba(64,212,212,0.06); }
-    .lb-char-tag.dead   { border-color:rgba(255,68,68,0.3); color:rgba(255,68,68,0.6); background:rgba(255,68,68,0.05); text-decoration:line-through; }
-    .lb-char-skull { font-size:10px; }
-    .lb-ilvl { font-family:'Cinzel',serif; font-size:14px; color:var(--teal-light); text-align:right; }
-    .lb-ilvl.dead { color:var(--text-muted); }
-    .lb-attempts { font-family:'Cinzel',serif; font-size:13px; color:var(--text-muted); text-align:right; }
-    .lb-capstone { text-align:right; }
-    .capstone-badge {
-      display:inline-block; font-family:'Cinzel',serif; font-size:10px;
-      letter-spacing:0.12em; padding:3px 9px; border-radius:20px; border:1px solid;
-      white-space:nowrap;
-    }
-    .capstone-badge.champion { color:var(--hc-champion); border-color:rgba(175,75,239,0.4); background:rgba(175,75,239,0.08); }
-    .capstone-badge.paragon  { color:var(--hc-paragon);  border-color:rgba(244,221,64,0.4); background:rgba(244,221,64,0.08); }
-    .capstone-badge.eternal  { color:var(--hc-eternal);  border-color:rgba(212,68,72,0.4);  background:rgba(212,68,72,0.08); }
-
-    /* ── EXPAND PANEL ── */
-    .lb-expand {
-      background:rgba(7,11,11,0.8); border-bottom:1px solid var(--border);
-      padding:18px 14px 22px 58px;
-      display:none;
-    }
-    .lb-expand.open { display:block; }
-    .expand-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-    .expand-char-card {
-      background:var(--bg2); border:1px solid var(--border); border-radius:6px;
-      padding:16px 18px;
-    }
-    .expand-char-card.dead-card { border-color:rgba(255,68,68,0.25); background:rgba(255,68,68,0.03); }
-    .expand-char-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .expand-char-name { font-family:'Cinzel',serif; font-size:14px; color:var(--text); }
-    .expand-char-class { font-size:13px; color:var(--text-muted); font-style:italic; }
-    .expand-stat-row { display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid rgba(64,212,212,0.07); font-size:15px; }
-    .expand-stat-row:last-child { border-bottom:none; }
-    .expand-stat-label { color:var(--text-muted); font-size:13px; }
-    .expand-stat-value { color:var(--teal-light); font-family:'Cinzel',serif; font-size:13px; }
-    .expand-stat-value.red { color:rgba(255,68,68,0.8); }
-    .expand-death-info { margin-top:10px; padding:8px 10px; background:rgba(255,68,68,0.06); border-radius:4px; border-left:2px solid rgba(255,68,68,0.4); font-size:14px; color:rgba(255,68,68,0.7); }
-    .expand-capstones { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
-
-    /* ── PAGINATION ── */
-    #lb-pagination { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:16px; flex-wrap:wrap; }
-    .pg-btn {
-      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.08em;
-      min-width:36px; height:36px; padding:0 10px;
-      background:var(--bg2); border:1px solid var(--border); border-radius:3px;
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .pg-btn:hover:not(:disabled) { border-color:var(--border-bright); color:var(--text-dim); }
-    .pg-btn.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.07); }
-    .pg-btn:disabled { opacity:0.3; cursor:default; }
-
-    /* ── EVENTS CATALOGUE ── */
-    .events-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
-    .evt-filter {
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
-      padding:6px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:3px;
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-    }
-    .evt-filter:hover { border-color:var(--border-bright); color:var(--text-dim); }
-    .evt-filter.active { color:var(--hc-red); border-color:rgba(255,68,68,0.5); background:rgba(255,68,68,0.07); }
-    .evt-list { display:flex; flex-direction:column; gap:8px; }
-    .evt-item {
-      display:flex; align-items:center; gap:14px;
-      padding:12px 16px; background:var(--bg2); border:1px solid var(--border);
-      border-radius:5px; transition:border-color 0.15s;
-    }
-    .evt-item.death    { border-left:3px solid rgba(255,68,68,0.6); }
-    .evt-item.capstone { border-left:3px solid rgba(196,160,255,0.6); }
-    .evt-item.new_attempt { border-left:3px solid rgba(64,212,212,0.4); }
-    .evt-icon { font-size:20px; flex-shrink:0; width:28px; text-align:center; }
-    .evt-body { flex:1; }
-    .evt-title { font-size:16px; color:var(--text); }
-    .evt-title strong { color:var(--hc-red); }
-    .evt-title.cap strong { color:var(--hc-eternal); }
-    .evt-meta { font-size:13px; color:var(--text-muted); margin-top:2px; font-style:italic; }
-    .evt-time { font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted); white-space:nowrap; flex-shrink:0; }
-
-    /* ── RULES PAGE ── */
-    .rules-section { margin-bottom:36px; }
-    .rules-section-title {
-      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--text-dim); margin-bottom:16px; padding-bottom:10px;
-      border-bottom:1px solid var(--border);
-    }
-    .rules-list { display:flex; flex-direction:column; gap:10px; }
-    .rules-item {
-      padding:12px 16px; background:var(--bg2); border:1px solid var(--border);
-      border-radius:4px; font-size:16px; line-height:1.6; color:var(--text-dim);
-    }
-    .rules-item strong { color:var(--text); }
-    .rules-item.warning { border-color:rgba(255,68,68,0.3); background:rgba(255,68,68,0.04); }
-    .rules-item.warning strong { color:var(--hc-red); }
-    .capstone-table { width:100%; border-collapse:collapse; margin-top:8px; }
-    .capstone-table th {
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
-      padding:8px 12px; text-align:left; color:var(--text-muted);
-      border-bottom:1px solid var(--border);
-    }
-    .capstone-table td { padding:10px 12px; font-size:15px; border-bottom:1px solid rgba(64,212,212,0.07); }
-    .capstone-table tr:last-child td { border-bottom:none; }
-    .ct-champion { color:var(--hc-champion); font-family:'Cinzel',serif; font-size:13px; }
-    .ct-paragon  { color:var(--hc-paragon);  font-family:'Cinzel',serif; font-size:13px; }
-    .ct-eternal  { color:var(--hc-eternal);  font-family:'Cinzel',serif; font-size:13px; }
-
-    /* ── REGISTER PAGE ── */
-    .register-card {
-      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
-      padding:28px 32px; max-width:540px; margin:0 auto;
-    }
-    .register-title {
-      font-family:'Cinzel',serif; font-size:14px; letter-spacing:0.2em; text-transform:uppercase;
-      color:var(--text-dim); margin-bottom:8px;
-    }
-    .register-desc { font-size:15px; color:var(--text-muted); margin-bottom:28px; line-height:1.6; font-style:italic; }
-    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
-    .field label { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); }
-    .field input, .field select {
-      background:var(--bg3); border:1px solid var(--border); border-radius:4px;
-      color:var(--text); font-family:'Crimson Pro',serif; font-size:16px;
-      padding:10px 14px; outline:none; transition:border-color 0.2s;
-    }
-    .field input:focus, .field select:focus { border-color:rgba(255,68,68,0.5); }
-    .field input::placeholder { color:var(--text-muted); }
-    .field select option { background:var(--bg3); }
-    .field-hint { font-size:13px; color:var(--text-muted); font-style:italic; margin-top:2px; }
-    .btn-register {
-      width:100%; padding:12px; font-family:'Cinzel',serif; font-size:13px; letter-spacing:0.2em;
-      text-transform:uppercase; background:rgba(255,68,68,0.1); border:1px solid rgba(255,68,68,0.4);
-      color:var(--hc-red); border-radius:4px; cursor:pointer; transition:all 0.2s; margin-top:8px;
-    }
-    .btn-register:hover { background:rgba(255,68,68,0.18); border-color:rgba(255,68,68,0.7); }
-    .btn-register:disabled { opacity:0.4; cursor:default; }
-    .register-result { margin-top:16px; padding:12px 16px; border-radius:4px; font-size:15px; display:none; }
-    .register-result.ok  { background:rgba(68,238,68,0.08); border:1px solid rgba(68,238,68,0.3); color:var(--tier1); }
-    .register-result.err { background:rgba(255,68,68,0.08); border:1px solid rgba(255,68,68,0.3); color:var(--hc-red); }
-    .register-result.show { display:block; }
-    .register-warning {
-      padding:12px 16px; background:rgba(255,68,68,0.06); border:1px solid rgba(255,68,68,0.25);
-      border-radius:4px; font-size:14px; color:rgba(255,68,68,0.8); margin-bottom:22px; line-height:1.6;
+    .section-ornament {
+      color: var(--gold);
+      font-size: 18px;
+      opacity: 0.7;
     }
 
-    /* ── LOADING / EMPTY ── */
-    .loading { text-align:center; padding:48px 0; color:var(--text-muted); font-style:italic; font-size:16px; }
-    .empty   { text-align:center; padding:48px 0; color:var(--text-muted); font-style:italic; font-size:16px; }
-
-    /* ── TOAST ── */
-    .toast {
-      position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
-      background:var(--bg3); border:1px solid var(--border); border-radius:4px;
-      padding:10px 20px; font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
-      color:var(--text-dim); pointer-events:none; transition:transform 0.3s; z-index:999;
-      white-space:nowrap;
+    /* ─── EVENTS ─── */
+    .events-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
     }
-    .toast.show { transform:translateX(-50%) translateY(0); }
-    .toast.error { border-color:rgba(255,68,68,0.4); color:var(--hc-red); }
 
-    /* ── MODAL ── */
+    .events-grid .event-card {
+      width: 300px;
+      flex-shrink: 0;
+    }
+
+    .event-card {
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .event-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(201, 168, 76, 0.06);
+    }
+
+    .event-card.inactive {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .event-card.inactive:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .event-banner {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .event-banner-gloire {
+      background: linear-gradient(135deg, #0e0c06 0%, #1a1508 40%, #0e0c06 100%);
+    }
+
+    .event-banner-gloire::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(201, 168, 76, 0.12) 0%, transparent 70%);
+    }
+
+    .event-banner-pagaille {
+      background: linear-gradient(135deg, #080d12 0%, #0d1520 40%, #080d12 100%);
+      background-image: url('images/event/dungeonmayhem.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .event-banner-pagaille::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8,13,18,0.35) 0%, rgba(8,13,18,0.75) 100%),
+                  radial-gradient(ellipse at 50% 50%, rgba(76, 168, 168, 0.1) 0%, transparent 70%);
+    }
+
+    .event-banner-empty {
+      background: var(--bg3);
+    }
+
+    .event-banner-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.3;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .event-banner-title.gold {
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(201, 168, 76, 0.4);
+    }
+
+    .event-banner-title.teal {
+      color: var(--teal);
+      text-shadow: 0 0 20px rgba(76, 168, 168, 0.3);
+    }
+
+    .event-banner-title.muted {
+      color: var(--text-muted);
+    }
+
+    /* Placeholder icon for pagaille */
+    .placeholder-icon {
+      font-size: 40px;
+      opacity: 0.25;
+      position: relative;
+      z-index: 1;
+    }
+
+    .event-body {
+      padding: 16px 20px 20px;
+    }
+
+    .event-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .event-status::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .event-status.active {
+      color: #7ddf7d;
+    }
+
+    .event-status.active::before {
+      background: #7ddf7d;
+      box-shadow: 0 0 8px #7ddf7d;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .event-status.upcoming {
+      color: #5cc4c4;
+    }
+
+    .event-status.upcoming::before {
+      background: #5cc4c4;
+    }
+
+    .event-status.past {
+      color: var(--text-muted);
+    }
+
+    .event-status.past::before {
+      background: var(--text-muted);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .event-name {
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .event-desc {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    .event-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+    }
+
+    .event-dates {
+      font-family: 'Crimson Pro', serif;
+    }
+
+    .event-cta {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+
+    .event-card:hover .event-cta {
+      color: var(--gold);
+    }
+
+    .event-cta-arrow {
+      transition: transform 0.2s;
+    }
+
+    .event-card:hover .event-cta-arrow {
+      transform: translateX(3px);
+    }
+
+    /* Status categories */
+    .events-category {
+      margin-bottom: 36px;
+    }
+
+    .events-category:last-child {
+      margin-bottom: 0;
+    }
+
+    .category-label {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+    }
+
+    /* ─── VIDEOS ─── */
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .video-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    .video-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .video-thumb-wrap {
+      position: relative;
+      padding-top: 56.25%;
+      cursor: pointer;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .video-thumb-wrap img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s, opacity 0.3s;
+    }
+
+    .video-thumb-wrap:hover img {
+      transform: scale(1.03);
+      opacity: 0.8;
+    }
+
+    .video-play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .video-play-icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .video-thumb-wrap:hover .video-play-icon {
+      background: rgba(255, 0, 0, 0.8);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.1);
+    }
+
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      background: var(--bg3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .video-placeholder-icon {
+      font-size: 32px;
+      opacity: 0.3;
+    }
+
+    .video-placeholder-text {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .video-info {
+      padding: 12px 14px 14px;
+    }
+
+    .video-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .video-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Inline YT iframe */
+    .video-iframe-wrap {
+      position: absolute;
+      inset: 0;
+    }
+
+    .video-iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 28px 24px 36px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-ornament {
+      font-size: 18px;
+      color: var(--gold-dim);
+      opacity: 0.4;
+      letter-spacing: 0.3em;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .footer-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ─── LANG TOGGLE ─── */
+    .lang-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding: 5px 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:first-child {
+      border-radius: 3px 0 0 3px;
+    }
+
+    .lang-btn:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+
+    .lang-btn.active {
+      color: var(--gold);
+      border-color: var(--border-bright);
+      background: rgba(201, 168, 76, 0.06);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      main {
+        padding: 40px 16px 64px;
+        gap: 52px;
+      }
+
+      .events-grid,
+      .videos-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lang-toggle {
+        top: 12px;
+        right: 12px;
+      }
+
+      header {
+        padding: 44px 16px 32px;
+      }
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate {
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .delay-1 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-3 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-4 {
+      animation-delay: 0.4s;
+    }
+
+    /* ── BADGES ── */
+    .badge-wrap {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+
+    .badge-inline {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      object-fit: cover;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .badge-inline:hover {
+      transform: scale(1.35);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .badge-wrap .badge-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0e120e;
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      border-radius: 4px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: #e8c96a;
+      z-index: 20;
+      pointer-events: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .badge-wrap .badge-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: rgba(201, 168, 76, 0.35);
+    }
+
+    .badge-wrap:hover .badge-tooltip {
+      display: block;
+    }
+
+    /* Modal profil */
     .modal-overlay {
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75);
-      backdrop-filter:blur(4px); z-index:500; align-items:center; justify-content:center;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      backdrop-filter: blur(4px);
     }
-    .modal-overlay.open { display:flex; }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
     .modal {
-      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
-      max-width:680px; width:calc(100% - 32px); max-height:85vh; overflow-y:auto;
+      background: #0d1210;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
     }
+
     .modal-header {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:18px 22px; border-bottom:1px solid var(--border);
-      position:sticky; top:0; background:var(--bg2); z-index:1;
-    }
-    .modal-player-name { font-family:'Cinzel',serif; font-size:16px; color:var(--text); }
-    .modal-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:18px; padding:4px 8px; transition:color 0.2s; }
-    .modal-close:hover { color:var(--text); }
-    .modal-body { padding:20px 22px 24px; }
-    .modal-section-title { font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:14px; }
-    .modal-chars { display:flex; flex-direction:column; gap:14px; }
-    .modal-char {
-      background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:14px 16px;
-    }
-    .modal-char.dead-char { border-color:rgba(255,68,68,0.2); }
-    .modal-char-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-    .modal-char-name { font-family:'Cinzel',serif; font-size:14px; color:var(--text); }
-    .modal-char-status-alive { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; color:var(--teal-dim); padding:2px 8px; border:1px solid rgba(64,212,212,0.3); border-radius:20px; }
-    .modal-char-status-dead  { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; color:rgba(255,68,68,0.7); padding:2px 8px; border:1px solid rgba(255,68,68,0.3); border-radius:20px; }
-    .modal-stats-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    .modal-stat { text-align:center; padding:8px; background:rgba(0,0,0,0.2); border-radius:4px; }
-    .modal-stat-val { font-family:'Cinzel',serif; font-size:18px; color:var(--teal-light); }
-    .modal-stat-val.red { color:rgba(255,68,68,0.8); }
-    .modal-stat-lbl { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-top:2px; }
-    .modal-capstones { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
-    .modal-death-info { margin-top:10px; padding:8px 12px; background:rgba(255,68,68,0.06); border-radius:4px; border-left:2px solid rgba(255,68,68,0.4); font-size:14px; color:rgba(255,68,68,0.65); font-style:italic; }
-
-    @media (max-width:700px) {
-      main { padding:20px 14px 64px; }
-      .lb-header, .lb-row { grid-template-columns:36px 1fr 80px 70px; }
-      .lb-header .col-attempts, .lb-row .col-attempts { display:none; }
-      .expand-grid { grid-template-columns:1fr; }
-      .modal-stats-grid { grid-template-columns:1fr 1fr; }
-      nav { padding:8px 10px; flex-wrap:wrap; gap:4px; }
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
     }
 
-    /* ── PROFILE PAGE ── */
-    .profile-visitor {
-      max-width:480px; margin:0 auto; text-align:center; padding:48px 0;
-    }
-    .profile-visitor-title {
-      font-family:'Cinzel',serif; font-size:18px; letter-spacing:0.15em; text-transform:uppercase;
-      color:var(--text-dim); margin-bottom:10px;
-    }
-    .profile-visitor-desc { font-size:15px; color:var(--text-muted); font-style:italic; margin-bottom:28px; line-height:1.7; }
-    .profile-magic-form {
-      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
-      padding:24px 28px; text-align:left;
-    }
-    .profile-magic-title {
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--text-muted); margin-bottom:16px; text-align:center;
-    }
-    .profile-magic-row { display:flex; gap:8px; }
-    .profile-magic-row input {
-      flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:4px;
-      color:var(--text); font-family:'Crimson Pro',serif; font-size:16px;
-      padding:10px 14px; outline:none; transition:border-color 0.2s;
-    }
-    .profile-magic-row input:focus { border-color:rgba(255,68,68,0.5); }
-    .profile-magic-row input::placeholder { color:var(--text-muted); }
-    .btn-magic {
-      padding:10px 18px; font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.15em;
-      text-transform:uppercase; background:rgba(255,68,68,0.1); border:1px solid rgba(255,68,68,0.4);
-      color:var(--hc-red); border-radius:4px; cursor:pointer; transition:all 0.2s; white-space:nowrap;
-    }
-    .btn-magic:hover { background:rgba(255,68,68,0.18); }
-    .btn-magic:disabled { opacity:0.4; cursor:default; }
-    .profile-magic-sent {
-      margin-top:14px; padding:10px 14px; border-radius:4px; font-size:14px;
-      background:rgba(68,238,68,0.08); border:1px solid rgba(68,238,68,0.3); color:var(--tier1);
-      display:none;
-    }
-    .profile-magic-sent.show { display:block; }
-
-    /* Onboarding */
-    .onboarding-card {
-      max-width:560px; margin:0 auto;
-      background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:28px 32px;
-    }
-    .onboarding-step-indicator {
-      display:flex; gap:8px; margin-bottom:24px; align-items:center;
-    }
-    .onboarding-step-dot {
-      width:28px; height:28px; border-radius:50%; border:1px solid var(--border);
-      display:flex; align-items:center; justify-content:center;
-      font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted);
-      transition:all 0.2s;
-    }
-    .onboarding-step-dot.active { border-color:rgba(255,68,68,0.6); color:var(--hc-red); background:rgba(255,68,68,0.08); }
-    .onboarding-step-dot.done   { border-color:rgba(68,238,68,0.4); color:var(--tier1); background:rgba(68,238,68,0.06); }
-    .onboarding-step-line { flex:1; height:1px; background:var(--border); }
-    .onboarding-title {
-      font-family:'Cinzel',serif; font-size:14px; letter-spacing:0.18em; text-transform:uppercase;
-      color:var(--text-dim); margin-bottom:20px;
+    .modal-player-name {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: var(--gold);
     }
 
-    /* Heroes grid */
-    .heroes-section { margin-bottom:20px; }
-    .heroes-role-label {
-      font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--text-muted); margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid var(--border);
-    }
-    .heroes-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
-    .hero-toggle {
-      display:flex; align-items:center; gap:8px;
-      padding:8px 14px; border-radius:4px; border:1px solid var(--border);
-      background:var(--bg3); cursor:pointer; transition:all 0.2s;
-      font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.1em;
-      color:var(--text-muted); user-select:none;
-    }
-    .hero-toggle:hover { border-color:rgba(255,255,255,0.2); color:var(--text-dim); }
-    .hero-toggle.selected { color:var(--text); }
-    .hero-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .hero-toggle-check { font-size:10px; opacity:0; transition:opacity 0.15s; }
-    .hero-toggle.selected .hero-toggle-check { opacity:1; }
-
-    /* Profile connected */
-    .profile-header {
-      display:flex; align-items:center; justify-content:space-between;
-      margin-bottom:28px; padding-bottom:16px; border-bottom:1px solid var(--border);
-    }
-    .profile-user { display:flex; flex-direction:column; gap:3px; }
-    .profile-username { font-family:'Cinzel',serif; font-size:18px; color:var(--text); }
-    .profile-email { font-size:14px; color:var(--text-muted); font-style:italic; }
-    .btn-logout {
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
-      padding:7px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:3px;
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s;
-    }
-    .btn-logout:hover { border-color:rgba(255,68,68,0.4); color:var(--hc-red); }
-
-    /* Section persos */
-    .profile-section-title {
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
-      color:var(--text-muted); margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--border);
-    }
-    .profile-hero-card {
-      background:var(--bg2); border:1px solid var(--border); border-radius:6px;
-      padding:16px 18px; margin-bottom:10px; transition:border-color 0.2s;
-    }
-    .profile-hero-card.hm-on { border-color:rgba(255,68,68,0.35); }
-    .profile-hero-header {
-      display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
-    }
-    .profile-hero-name { font-family:'Cinzel',serif; font-size:15px; }
-    .profile-hero-role { font-size:13px; color:var(--text-muted); font-style:italic; margin-left:8px; }
-    .hm-toggle-pill {
-      display:flex; align-items:center; gap:8px;
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
-    }
-    .hm-toggle-switch {
-      position:relative; width:36px; height:20px; cursor:pointer;
-    }
-    .hm-toggle-switch input { display:none; }
-    .hm-toggle-track {
-      position:absolute; inset:0; border-radius:20px;
-      background:var(--bg3); border:1px solid var(--border); transition:all 0.25s;
-    }
-    .hm-toggle-thumb {
-      position:absolute; top:3px; left:3px; width:12px; height:12px;
-      border-radius:50%; background:var(--text-muted); transition:all 0.25s;
-    }
-    .hm-toggle-switch input:checked ~ .hm-toggle-track {
-      background:rgba(255,68,68,0.15); border-color:rgba(255,68,68,0.5);
-    }
-    .hm-toggle-switch input:checked ~ .hm-toggle-thumb {
-      background:var(--hc-red); transform:translateX(16px);
-    }
-    .profile-hero-stats {
-      display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px;
-    }
-    .profile-hero-stat { text-align:center; padding:6px; background:rgba(0,0,0,0.2); border-radius:4px; }
-    .profile-hero-stat-val { font-family:'Cinzel',serif; font-size:15px; color:var(--teal-light); }
-    .profile-hero-stat-val.dead { color:rgba(255,68,68,0.7); }
-    .profile-hero-stat-lbl { font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-top:2px; }
-    .profile-period {
-      font-size:13px; color:var(--text-muted); font-style:italic; margin-top:6px;
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 22px;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 4px;
     }
 
-    /* Warnings */
-    .profile-warnings { margin-top:28px; }
-    .profile-warning-item {
-      display:flex; align-items:flex-start; gap:12px;
-      padding:12px 16px; background:var(--bg2); border:1px solid rgba(255,68,68,0.25);
-      border-radius:5px; margin-bottom:8px; cursor:pointer; transition:opacity 0.2s;
+    .modal-close:hover {
+      color: var(--text);
     }
-    .profile-warning-item.read { opacity:0.45; }
-    .profile-warning-icon { font-size:18px; flex-shrink:0; }
-    .profile-warning-body { flex:1; }
-    .profile-warning-msg { font-size:15px; color:var(--text-dim); }
-    .profile-warning-time { font-size:12px; color:var(--text-muted); font-style:italic; margin-top:3px; }
 
-    /* Code contact */
-    .profile-contact-box {
-      margin-top:28px; padding:16px 18px; background:var(--bg2); border:1px solid var(--border);
-      border-radius:6px;
+    .modal-body {
+      padding: 20px 24px 28px;
     }
-    .profile-contact-code {
-      font-family:'Cinzel',serif; font-size:20px; letter-spacing:0.2em; color:var(--teal-light);
-      text-align:center; margin:10px 0;
+
+    .modal-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 14px;
     }
-    .btn-copy {
-      display:block; width:100%; margin-top:8px;
-      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
-      padding:8px; background:var(--bg3); border:1px solid var(--border); border-radius:3px;
-      color:var(--text-muted); cursor:pointer; transition:all 0.2s; text-align:center;
+
+    .badges-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
     }
-    .btn-copy:hover { border-color:var(--border-bright); color:var(--text-dim); }
+
+    .badge-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 72px;
+    }
+
+    .badge-card img {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .badge-card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .badge-card-event {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .modal-no-badges {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 15px;
+    }
   </style>
 </head>
+
 <body>
 
-<div class="top-line"></div>
+  <div class="top-line"></div>
 
-<header>
-  <div class="event-title">Fellowship Hardcore</div>
-  <div class="event-subtitle" data-fr="Mourir, c'est recommencer." data-en="Death is just the beginning.">Mourir, c'est recommencer.</div>
-  <div class="event-season">
-    <span data-fr="Saison 1" data-en="Season 1">Saison 1</span>
-    <span style="color:var(--hc-red);opacity:0.7;margin:0 4px">·</span>
-    <span id="active-count">— <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">aventuriers actifs</span></span>
+  <!-- Lang toggle -->
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('fr')" id="btn-fr">FR</button>
+    <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
   </div>
-  <div class="social-links">
-    <a href="https://twitch.tv/pouf_hgaming" target="_blank" class="social-link twitch">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
-      Twitch
-    </a>
-    <a href="https://discord.gg/3WH65QCARa" target="_blank" class="social-link discord">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.132 18.114a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.04.001-.088-.041-.104a13.2 13.2 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-      Discord
-    </a>
-    <a href="https://www.youtube.com/@PoufHGaming" target="_blank" class="social-link youtube">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-      YouTube
-    </a>
-  </div>
-</header>
 
-<nav>
-  <a href="../index.html" class="tab home-btn" title="Accueil" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:8px 14px;">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-  </a>
-  <div class="nav-sep"></div>
-  <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement" data-en="Leaderboard">Classement</button>
-  <button class="tab" id="tab-events" onclick="showPage('events',this)" data-fr="Événements" data-en="Events">Événements</button>
-  <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
-  <button class="tab" id="tab-profile" onclick="showPage('profile',this)" data-fr="Mon Profil" data-en="My Profile">Mon Profil</button>
-  <div class="nav-right">
-    <div class="lang-toggle">
-      <button class="lang-btn active" id="lang-btn-fr" onclick="setLang('fr')">FR</button>
-      <button class="lang-btn" id="lang-btn-en" onclick="setLang('en')">EN</button>
-    </div>
-  </div>
-</nav>
-
-<main>
-
-  <!-- ── LEADERBOARD ── -->
-  <div id="page-leaderboard" class="page active">
-    <div class="lb-toolbar">
-      <div class="sync-info" id="sync-info">
-        <span class="sync-dot" id="sync-dot"></span>
-        <span id="sync-text">—</span>
+  <!-- ─── HEADER ─── -->
+  <header>
+    <div class="header-inner">
+      <div class="avatar-wrap animate">
+        <img class="avatar" src="images/profil.png" alt="Pouf"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="avatar-placeholder" style="display:none;">P</div>
       </div>
-      <button class="refresh-btn" id="refresh-btn" onclick="refreshLeaderboard()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-        <span data-fr="Actualiser" data-en="Refresh">Actualiser</span>
-      </button>
-    </div>
-    <div class="lb-search-row">
-      <div class="lb-search-wrap">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);flex-shrink:0"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" id="lb-search" placeholder="Rechercher un joueur…" oninput="onLbSearch()" autocomplete="off">
-        <button class="lb-search-clear" id="lb-search-clear" onclick="clearLbSearch()" style="display:none">✕</button>
+
+      <div class="identity animate delay-1">
+        <div class="site-name">Pouf</div>
+        <div class="site-tagline" data-fr="Streamer · Créateur d'événements MMO" data-en="Streamer · MMO Event Creator">
+          Streamer · Créateur d'événements MMO</div>
+        <p class="bio"
+          data-fr="Streamer français sur Twitch, spécialisé dans les MMO/RPG et les événements communautaires. Bonne humeur garantie."
+          data-en="French Twitch streamer specializing in MMO/RPG games and community events. Good vibes guaranteed.">
+          Streamer français sur Twitch, spécialisé dans les MMO/RPG et les événements communautaires. Bonne humeur
+          garantie.
+        </p>
       </div>
-      <div class="lb-count" id="lb-count"></div>
+
+      <div class="social-links animate delay-2">
+        <a href="https://twitch.tv/pouf_hgaming" target="_blank" class="social-link twitch">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z" />
+          </svg>
+          Twitch
+        </a>
+        <a href="https://discord.gg/3WH65QCARa" target="_blank" class="social-link discord">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.079.11 18.1.132 18.114a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.04.001-.088-.041-.104a13.2 13.2 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+          </svg>
+          Discord
+        </a>
+        <a href="https://www.youtube.com/@PoufHGaming" target="_blank" class="social-link youtube">
+          <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+          </svg>
+          YouTube
+        </a>
+      </div>
     </div>
-    <div class="lb-header">
-      <div>#</div>
-      <div data-fr="Joueur / Personnage(s)" data-en="Player / Character(s)">Joueur / Personnage(s)</div>
-      <div style="text-align:right" data-fr="Meilleur ilvl" data-en="Best ilvl">Meilleur ilvl</div>
-      <div class="col-attempts" style="text-align:right" data-fr="Tentatives" data-en="Attempts">Tentatives</div>
-      <div style="text-align:right" data-fr="Meilleur Donjon" data-en="Highest Dungeon">Meilleur Donjon</div>
-    </div>
-    <div id="lb-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
-    <div id="lb-pagination"></div>
-  </div>
+  </header>
 
-  <!-- ── EVENTS ── -->
-  <div id="page-events" class="page">
-    <div class="section-title" data-fr="Catalogue des événements" data-en="Event Catalogue">Catalogue des événements</div>
-    <div class="events-filters">
-      <button class="evt-filter active" onclick="setEvtFilter('all',this)" data-fr="Tous" data-en="All">Tous</button>
-      <button class="evt-filter" onclick="setEvtFilter('death',this)" data-fr="💀 Morts" data-en="💀 Deaths">💀 Morts</button>
-      <button class="evt-filter" onclick="setEvtFilter('capstone',this)" data-fr="👑 Capstones" data-en="👑 Capstones">👑 Capstones</button>
-    </div>
-    <div id="events-content"><div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div></div>
-  </div>
+  <!-- ─── MAIN ─── -->
+  <main>
 
-  <!-- ── RULES ── -->
-  <div id="page-rules" class="page">
-    <div id="rules-content"></div>
-  </div>
+    <!-- EVENTS -->
+    <section class="animate delay-2">
+      <div class="section-header">
+        <span class="section-ornament">⚔</span>
+        <span class="section-title" data-fr="Événements" data-en="Events">Événements</span>
+        <span class="section-ornament">⚔</span>
+      </div>
 
-  <!-- ── PROFILE (inclut inscription) ── -->
-  <div id="page-profile" class="page">
-    <div id="profile-content">
-      <div class="loading" data-fr="Chargement…" data-en="Loading…">Chargement…</div>
-    </div>
-  </div>
-
-</main>
-
-<div class="toast" id="toast"></div>
-
-<!-- ── MODAL DÉTAIL JOUEUR ── -->
-<div class="modal-overlay" id="player-modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-player-name" id="modal-player-name">—</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modal-body"></div>
-  </div>
-</div>
-
-<script>
-  // ── CONFIG ──────────────────────────────────────────────────────────────────
-  const SUPABASE_URL      = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
-  const SEASON            = 'S1';
-  const PAGE_SIZE         = 20;
-  const CACHE_MS          = 60_000;
-
-  // Mapping classe → couleur (couleurs officielles des héros)
-  const CLASS_COLORS = {
-    'Helena':  '#b26731',
-    'Meiko':   '#29dd5c',
-    'Xavian':  '#097265',
-    'Aeona':   '#f99de9',
-    'Sylvie':  '#e74f82',
-    'Vigour':  '#dbd9c3',
-    'Rime':    '#1ca2ec',
-    'Ardeos':  '#e96326',
-    'Elarion': '#925dfc',
-    'Tariq':   '#5179f3',
-    'Mara':    '#94598e',
-    'Gunde':   '#933637',
-  };
-  function classColor(cls) { return CLASS_COLORS[cls] || 'var(--text-muted)'; }
-
-  // Couleurs par tier de donjon
-  const TIER_COLORS = {
-    'Recrue':   '#00c700',
-    'Adepte':   '#006fe6',
-    'Champion': '#a920fd',
-    'Parangon': '#b79f00',
-    'Eternal':  '#b60000',
-  };
-  function tierColor(tierName) {
-    if (!tierName) return 'var(--text-muted)';
-    for (const [tier, color] of Object.entries(TIER_COLORS)) {
-      if (tierName.startsWith(tier)) return color;
-    }
-    return 'var(--text-muted)';
-  }
-
-  // Convertit un difficultyLevel en { tier, level, label }
-  // Recrue 1-4, Adepte 1-4, Champion 1-4, Parangon 1-4, Eternal 1+
-  function diffLevelToRank(dl) {
-    if (!dl || dl <= 0) return { tier: '', level: 0, label: '—' };
-    if (dl <= 4)  return { tier: 'Recrue',   level: dl,      label: `Recrue ${dl}` };
-    if (dl <= 12) return { tier: 'Adepte',   level: dl - 8,  label: `Adepte ${dl - 8}` };
-    if (dl <= 20) return { tier: 'Champion', level: dl - 16, label: `Champion ${dl - 16}` };
-    if (dl <= 28) return { tier: 'Parangon', level: dl - 24, label: `Parangon ${dl - 24}` };
-    return { tier: 'Eternal', level: dl - 32, label: `Eternal ${dl - 32}` };
-  }
-
-  // Clé de tri numérique : Recrue1=1 … Recrue4=4, Adepte1=5 … Parangon4=16, Eternal1=17 …
-  function rankSortKey(dl) {
-    if (!dl || dl <= 0) return 0;
-    if (dl <= 4)  return dl;           // Recrue 1-4 → 1-4
-    if (dl <= 12) return dl - 4;       // Adepte 1-4 → 5-8  (dl 9-12 → 5-8)
-    if (dl <= 20) return dl - 8;       // Champion 1-4 → 9-12
-    if (dl <= 28) return dl - 12;      // Parangon 1-4 → 13-16
-    return dl - 16;                    // Eternal 1+ → 17+
-  }
-
-  // ── LANG ────────────────────────────────────────────────────────────────────
-  let currentLang = localStorage.getItem('pouf_lang') || 'fr';
-  const fr = () => currentLang === 'fr';
-
-  function setLang(lang) {
-    currentLang = lang;
-    localStorage.setItem('pouf_lang', lang);
-    document.getElementById('lang-btn-fr').classList.toggle('active', lang === 'fr');
-    document.getElementById('lang-btn-en').classList.toggle('active', lang === 'en');
-    document.querySelectorAll('[data-fr]').forEach(el => {
-      el.textContent = el.dataset[lang] || el.dataset.fr;
-    });
-    const s = document.getElementById('lb-search');
-    if (s) s.placeholder = fr() ? 'Rechercher un joueur…' : 'Search a player…';
-    renderSyncInfo();
-    renderRules();
-    if (_lbData) renderLbPage();
-    if (_eventsData) renderEvents();
-  }
-
-  // ── TOAST ───────────────────────────────────────────────────────────────────
-  function toast(msg, err = false) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'toast show' + (err ? ' error' : '');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => el.className = 'toast', 3000);
-  }
-
-  // ── NAVIGATION ──────────────────────────────────────────────────────────────
-  async function showPage(id, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
-    if (btn) btn.classList.add('active');
-    if (id === 'leaderboard') loadLeaderboard();
-    if (id === 'events')      loadEvents();
-    if (id === 'rules')       renderRules();
-    if (id === 'profile')     renderProfilePage();
-  }
-
-  // ── SUPABASE FETCH ───────────────────────────────────────────────────────────
-  async function sbFetch(path, opts = {}) {
-    const res = await fetch(SUPABASE_URL + path, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': opts.prefer || '',
-      },
-      method: opts.method || 'GET',
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
-    });
-    if (!res.ok) throw new Error(await res.text());
-    if (res.status === 204) return null;
-    return res.json();
-  }
-
-  // ── SYNC META ────────────────────────────────────────────────────────────────
-  let _syncMeta = null, _syncTimer = null;
-  async function loadSyncMeta() {
-    try {
-      const data = await sbFetch('/rest/v1/hm_sync_meta?id=eq.1&select=last_sync,next_sync,last_status,runs_added,deaths_found');
-      _syncMeta = data?.[0] ?? null;
-      renderSyncInfo();
-      clearInterval(_syncTimer);
-      _syncTimer = setInterval(renderSyncInfo, 1000);
-    } catch(e) { console.warn('sync_meta unavailable'); }
-  }
-
-  function renderSyncInfo() {
-    const dot  = document.getElementById('sync-dot');
-    const text = document.getElementById('sync-text');
-    if (!dot || !text) return;
-    if (!_syncMeta) { text.textContent = '—'; return; }
-    const { last_sync, next_sync, last_status } = _syncMeta;
-    const now = Date.now();
-    dot.className = 'sync-dot ' + (last_status === 'ok' ? 'ok' : last_status === 'error' ? 'error' : '');
-    const agoMs  = last_sync ? now - new Date(last_sync).getTime() : null;
-    const nextMs = next_sync ? new Date(next_sync).getTime() - now : null;
-    let agoStr = '';
-    if (agoMs !== null) { const s = Math.round(agoMs/1000); agoStr = s < 60 ? `${s}s` : `${Math.round(s/60)}min`; }
-    let nextStr = '';
-    if (nextMs !== null && nextMs > 0) {
-      const s = Math.round(nextMs/1000);
-      nextStr = s < 60
-        ? (fr() ? `prochain sync dans ${s}s`   : `next sync in ${s}s`)
-        : (fr() ? `prochain sync dans ${Math.round(s/60)}min` : `next sync in ${Math.round(s/60)}min`);
-    } else if (nextMs !== null) {
-      nextStr = fr() ? 'sync imminent…' : 'syncing soon…';
-      dot.className = 'sync-dot live';
-    }
-    if (last_status === 'error') text.textContent = fr() ? `Erreur sync · ${nextStr}` : `Sync error · ${nextStr}`;
-    else if (agoStr && nextStr)  text.textContent = fr() ? `Mis à jour il y a ${agoStr} · ${nextStr}` : `Updated ${agoStr} ago · ${nextStr}`;
-    else text.textContent = nextStr || '—';
-  }
-
-  // ── LEADERBOARD ─────────────────────────────────────────────────────────────
-  let _lbData = null, _lbCacheTs = 0;
-  let _lbFiltered = [], _lbPage = 1, _expandedPlayer = null;
-
-  async function loadLeaderboard(force = false) {
-    if (!force && _lbData && Date.now() - _lbCacheTs < CACHE_MS) {
-      renderLeaderboard(_lbData); return;
-    }
-    const btn = document.getElementById('refresh-btn');
-    if (btn) btn.classList.add('spinning');
-    try {
-      // Charger la vue hm_summary + capstones + unlocks en parallèle
-      const [summary, capstones, unlocks] = await Promise.all([
-        sbFetch(`/rest/v1/hm_summary?season=eq.${SEASON}&order=total_rating_score.desc`),
-        sbFetch('/rest/v1/hm_capstones?select=id,tier_name,difficulty_level_threshold&order=difficulty_level_threshold.asc'),
-        sbFetch(`/rest/v1/hm_capstone_unlocks?select=player_id,character_id,capstone_id,attempt_number&season=eq.${SEASON}`),
-      ]);
-      _lbData = { summary: summary ?? [], capstones: capstones ?? [], unlocks: unlocks ?? [] };
-      _lbCacheTs = Date.now();
-      renderLeaderboard(_lbData);
-      loadSyncMeta();
-    } catch(e) {
-      document.getElementById('lb-content').innerHTML = `<div class="empty">${fr() ? 'Erreur de chargement.' : 'Loading error.'}</div>`;
-      console.error(e);
-    } finally {
-      if (btn) btn.classList.remove('spinning');
-    }
-  }
-
-  function refreshLeaderboard() { loadLeaderboard(true); }
-
-  function renderLeaderboard(data) {
-    // Grouper par player_id
-    const playerMap = new Map();
-    for (const row of data.summary) {
-      if (!playerMap.has(row.player_id)) {
-        playerMap.set(row.player_id, { player_id: row.player_id, player_name: row.player_name, chars: [] });
-      }
-      playerMap.get(row.player_id).chars.push(row);
-    }
-
-    // Calculer best rank + total tentatives par joueur
-    const players = [...playerMap.values()].map(p => {
-      const aliveChars    = p.chars.filter(c => c.status === 'alive');
-      const bestIlvl      = Math.max(...p.chars.map(c => c.ilvl_best || 0), 0);
-      const totalAttempts = p.chars.reduce((s, c) => s + (c.character_total_attempts || 1), 0);
-      // Meilleur difficultyLevel toutes tentatives confondues
-      const bestDl = Math.max(...p.chars.map(c => c.best_difficulty_level || 0), 0);
-      const bestRank = diffLevelToRank(bestDl);
-      const sortKey  = rankSortKey(bestDl);
-      return { ...p, aliveChars, bestIlvl, totalAttempts, bestDl, bestRank, sortKey };
-    });
-
-    // Tri : highest dungeon desc (sortKey), à égalité tentatives asc
-    players.sort((a, b) => b.sortKey - a.sortKey || a.totalAttempts - b.totalAttempts);
-
-    // Mise à jour compteur header
-    const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
-    const countEl = document.getElementById('active-count');
-    if (countEl) countEl.innerHTML = `${activeCount} <span data-fr="aventuriers actifs" data-en="active adventurers" style="font-size:12px">${fr() ? 'aventuriers actifs' : 'active adventurers'}</span>`;
-
-    // Filtre search
-    const q = (document.getElementById('lb-search')?.value || '').toLowerCase().trim();
-    _lbFiltered = q ? players.filter(p =>
-      p.player_name.toLowerCase().includes(q) ||
-      p.chars.some(c => c.character_name.toLowerCase().includes(q) || (c.character_class || '').toLowerCase().includes(q))
-    ) : players;
-
-    const countEl2 = document.getElementById('lb-count');
-    if (countEl2) countEl2.textContent = q ? `${_lbFiltered.length} / ${players.length}` : `${players.length} ${fr() ? 'joueur(s)' : 'player(s)'}`;
-
-    _lbPage = 1;
-    renderLbPage(_lbFiltered, data);
-  }
-
-  function renderLbPage(filtered, data) {
-    filtered = filtered || _lbFiltered;
-    data = data || _lbData;
-    const total  = filtered.length;
-    const pages  = Math.ceil(total / PAGE_SIZE);
-    _lbPage      = Math.min(_lbPage, pages || 1);
-    const slice  = filtered.slice((_lbPage-1)*PAGE_SIZE, _lbPage*PAGE_SIZE);
-
-    const cont = document.getElementById('lb-content');
-    if (!slice.length) { cont.innerHTML = `<div class="empty">${fr() ? 'Aucun joueur inscrit.' : 'No registered players.'}</div>`; return; }
-
-    cont.innerHTML = slice.map((p, i) => {
-      const rank    = (_lbPage-1)*PAGE_SIZE + i + 1;
-      const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-
-      // Highest dungeon badge coloré
-      const rankColor = tierColor(p.bestRank.tier);
-      const rankHtml  = p.bestDl > 0
-        ? `<span style="font-family:'Cinzel',serif;font-size:12px;color:${rankColor};
-                        border:1px solid ${rankColor}40;background:${rankColor}12;
-                        padding:3px 9px;border-radius:20px;white-space:nowrap">${p.bestRank.label}</span>`
-        : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
-
-      // Tags héros : affiche seulement la classe colorée (pas le nom du joueur)
-      const charTags = p.chars.map(c => {
-        const col = classColor(c.character_class);
-        const dead = c.status === 'dead';
-        return `<span class="lb-char-tag ${c.status}"
-          style="${dead ? '' : `border-color:${col}40;color:${col};background:${col}0d`}">
-          ${dead ? '<span class="lb-char-skull">💀</span>' : ''}
-          <span style="${dead ? '' : `color:${col}`}">${c.character_class || c.character_name}</span>
-        </span>`;
-      }).join('');
-
-      return `
-        <div class="lb-row" id="lbrow-${p.player_id}" onclick="toggleExpand(${p.player_id})">
-          <div class="lb-rank ${rankCls}">${rank}</div>
-          <div class="lb-player">
-            <div class="lb-player-name">${p.player_name}</div>
-            <div class="lb-char-list">${charTags}</div>
-          </div>
-          <div class="lb-ilvl">${p.bestIlvl || '—'}</div>
-          <div class="lb-attempts col-attempts">${p.totalAttempts}</div>
-          <div class="lb-capstone">${rankHtml}</div>
-        </div>
-        <div class="lb-expand" id="lbexpand-${p.player_id}">
-          ${renderExpandedPlayer(p, data)}
-        </div>`;
-    }).join('');
-
-    // Pagination
-    renderPagination(pages, filtered, data);
-  }
-
-  function renderExpandedPlayer(p, data) {
-    if (!p.chars.length) return '';
-    const cards = p.chars.map(c => {
-      // Highest dungeon de ce perso
-      const charRank  = diffLevelToRank(c.best_difficulty_level || 0);
-      const charColor = tierColor(charRank.tier);
-      const rankBadge = c.best_difficulty_level > 0
-        ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${charColor};
-                        border:1px solid ${charColor}40;background:${charColor}10;
-                        padding:2px 8px;border-radius:20px">${charRank.label}</span>`
-        : `<span style="color:var(--text-muted);font-size:12px;font-style:italic">${fr() ? 'Aucun run' : 'No run'}</span>`;
-      const diedHtml = c.died_at
-        ? `<div class="expand-death-info">💀 ${fr() ? 'Mort le' : 'Died on'} ${new Date(c.died_at).toLocaleDateString(fr()?'fr-FR':'en-GB')}</div>`
-        : '';
-      const heroColor = classColor(c.character_class);
-      return `
-        <div class="expand-char-card ${c.status === 'dead' ? 'dead-card' : ''}">
-          <div class="expand-char-header">
-            <div>
-              <div class="expand-char-name" style="color:${heroColor}">${c.character_class || c.character_name}</div>
-              <div class="expand-char-class" style="color:var(--text-muted)">${c.status === 'alive' ? (fr() ? 'En vie' : 'Alive') : (fr() ? 'Mort' : 'Dead')} · ${fr() ? 'Tentative' : 'Attempt'} #${c.current_attempt_number}</div>
+      <!-- EN COURS -->
+      <div class="events-category">
+        <div class="category-label" data-fr="En cours" data-en="Active">En cours</div>
+        <div class="events-grid">
+          <a href="gloire/index.html" class="event-card">
+            <div class="event-banner event-banner-gloire">
+              <div class="event-banner-title gold">Gloire à la<br>Compagnie I</div>
             </div>
-            ${c.status === 'dead'
-              ? `<span style="color:rgba(255,68,68,0.6);font-size:20px">💀</span>`
-              : `<span style="color:var(--teal-dim);font-size:20px">⚔️</span>`}
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">${fr() ? 'Highest dungeon' : 'Highest dungeon'}</span>
-            <span>${rankBadge}</span>
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">ilvl</span>
-            <span class="expand-stat-value ${c.status==='dead'?'red':''}">${c.ilvl_current || '—'}</span>
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">${fr() ? 'meilleur ilvl' : 'best ilvl'}</span>
-            <span class="expand-stat-value">${c.ilvl_best || '—'}</span>
-          </div>
-          <div class="expand-stat-row">
-            <span class="expand-stat-label">Power Score</span>
-            <span class="expand-stat-value">${c.power_score_current ? c.power_score_current.toFixed(0) : '—'}</span>
-          </div>
-          ${diedHtml}
-        </div>`;
-    }).join('');
-    return `<div class="expand-grid">${cards}</div>`;
-  }
-
-  function toggleExpand(playerId) {
-    const row = document.getElementById(`lbrow-${playerId}`);
-    const exp = document.getElementById(`lbexpand-${playerId}`);
-    if (!row || !exp) return;
-    const isOpen = exp.classList.contains('open');
-    // Fermer tous
-    document.querySelectorAll('.lb-expand.open').forEach(e => { e.classList.remove('open'); });
-    document.querySelectorAll('.lb-row.expanded').forEach(r => { r.classList.remove('expanded'); });
-    if (!isOpen) { exp.classList.add('open'); row.classList.add('expanded'); }
-  }
-
-  function renderPagination(pages, filtered, data) {
-    const el = document.getElementById('lb-pagination');
-    if (pages <= 1) { el.innerHTML = ''; return; }
-    let html = `<button class="pg-btn" onclick="goLbPage(${_lbPage-1},event)" ${_lbPage===1?'disabled':''}>‹</button>`;
-    for (let i = 1; i <= pages; i++) {
-      if (pages > 7 && Math.abs(i - _lbPage) > 2 && i !== 1 && i !== pages) {
-        if (i === _lbPage - 3 || i === _lbPage + 3) html += `<span class="pg-sep">…</span>`;
-        continue;
-      }
-      html += `<button class="pg-btn ${i===_lbPage?'active':''}" onclick="goLbPage(${i},event)">${i}</button>`;
-    }
-    html += `<button class="pg-btn" onclick="goLbPage(${_lbPage+1},event)" ${_lbPage===pages?'disabled':''}>›</button>`;
-    el.innerHTML = html;
-  }
-
-  function goLbPage(p, e) {
-    e?.stopPropagation();
-    _lbPage = p;
-    renderLbPage();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // ── SEARCH ──────────────────────────────────────────────────────────────────
-  function onLbSearch() {
-    const q = document.getElementById('lb-search').value;
-    document.getElementById('lb-search-clear').style.display = q ? 'block' : 'none';
-    if (_lbData) renderLeaderboard(_lbData);
-  }
-  function clearLbSearch() {
-    document.getElementById('lb-search').value = '';
-    document.getElementById('lb-search-clear').style.display = 'none';
-    if (_lbData) renderLeaderboard(_lbData);
-  }
-
-  // ── MODAL ───────────────────────────────────────────────────────────────────
-  function openModal(playerId) {
-    if (!_lbData) return;
-    const p = [...new Map(_lbData.summary.map(r => [r.player_id, r])).values()]
-      .find(r => r.player_id === playerId);
-    if (!p) return;
-    document.getElementById('modal-player-name').textContent = p.player_name;
-    // corps généré par renderExpandedPlayer via lbData
-    document.getElementById('player-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeModal() {
-    document.getElementById('player-modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // ── EVENTS CATALOGUE ────────────────────────────────────────────────────────
-  let _eventsData = null, _evtFilter = 'all';
-
-  async function loadEvents(force = false) {
-    if (!force && _eventsData) { renderEvents(); return; }
-    document.getElementById('events-content').innerHTML = `<div class="loading">${fr() ? 'Chargement…' : 'Loading…'}</div>`;
-    try {
-      const events = await sbFetch(
-        `/rest/v1/hm_events?season=eq.${SEASON}&event_type=neq.new_attempt&event_type=neq.run_invalidated&order=created_at.desc&limit=200` +
-        `&select=id,event_type,player_id,character_name,character_class,capstone_id,metadata,attempt_number,created_at`
-      );
-      // Charger capstones pour le libellé
-      const caps = _lbData?.capstones || await sbFetch('/rest/v1/hm_capstones?select=id,tier_name,difficulty_level_threshold');
-      _eventsData = { events: events ?? [], capstones: caps ?? [] };
-      renderEvents();
-    } catch(e) {
-      document.getElementById('events-content').innerHTML = `<div class="empty">${fr() ? 'Erreur de chargement.' : 'Loading error.'}</div>`;
-    }
-  }
-
-  function setEvtFilter(f, btn) {
-    _evtFilter = f;
-    document.querySelectorAll('.evt-filter').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderEvents();
-  }
-
-  function renderEvents() {
-    if (!_eventsData) return;
-    const { events, capstones } = _eventsData;
-    const capMap = Object.fromEntries(capstones.map(c => [c.id, c]));
-    const filtered = _evtFilter === 'all' ? events : events.filter(e => e.event_type === _evtFilter);
-    const cont = document.getElementById('events-content');
-    if (!filtered.length) {
-      cont.innerHTML = `<div class="empty">${fr() ? 'Aucun événement.' : 'No events.'}</div>`; return;
-    }
-    cont.innerHTML = `<div class="evt-list">${filtered.map(e => {
-      const d = new Date(e.created_at);
-      const timeStr = d.toLocaleDateString(fr()?'fr-FR':'en-GB', { day:'2-digit', month:'short' })
-        + ' ' + d.toLocaleTimeString(fr()?'fr-FR':'en-GB', { hour:'2-digit', minute:'2-digit' });
-      let icon = '📜', titleHtml = '', metaHtml = '';
-      const heroCol = e.character_class ? classColor(e.character_class) : 'var(--text-dim)';
-      const charSpan = `<strong style="color:${heroCol}">${e.character_name}</strong>${e.character_class ? ` <span style="color:${heroCol};font-size:14px">(${e.character_class})</span>` : ''}`;
-
-      if (e.event_type === 'death') {
-        icon = '💀';
-        const meta = e.metadata || {};
-        // Rang du donjon où le joueur est mort
-        const dl    = meta.difficulty_level;
-        const rank  = dl ? diffLevelToRank(dl) : null;
-        const rankCol = rank ? tierColor(rank.tier) : 'var(--text-muted)';
-        const rankBadge = rank
-          ? `<span style="color:${rankCol};font-size:13px">${rank.label}</span>`
-          : '';
-        titleHtml = `<div class="evt-title">${charSpan} ${fr() ? 'est mort(e)' : 'has died'} ${rankBadge}</div>`;
-        metaHtml  = meta.dungeon
-          ? `<div class="evt-meta">${meta.dungeon}${meta.ilvl_at_death ? ` · ilvl ${meta.ilvl_at_death}` : ''}${meta.ps_at_death ? ` · PS ${Math.round(meta.ps_at_death)}` : ''}</div>`
-          : '';
-      } else if (e.event_type === 'capstone') {
-        icon = '👑';
-        const meta  = e.metadata || {};
-        const dl    = meta.difficulty_level;
-        const rank  = dl ? diffLevelToRank(dl) : null;
-        const rankCol = rank ? tierColor(rank.tier) : 'var(--hc-eternal)';
-        const rankLabel = rank ? rank.label : (meta.rank_label || '');
-        const rankBadge = `<span style="font-family:'Cinzel',serif;font-size:12px;color:${rankCol};
-          border:1px solid ${rankCol}40;background:${rankCol}12;
-          padding:2px 8px;border-radius:20px">${rankLabel}</span>`;
-        titleHtml = `<div class="evt-title">${charSpan} ${fr() ? 'atteint' : 'reached'} ${rankBadge}</div>`;
-        metaHtml  = meta.dungeon
-          ? `<div class="evt-meta">${meta.dungeon}${meta.rating ? ` · ${Math.floor(meta.rating)} pts` : ''}</div>`
-          : '';
-      } else {
-        titleHtml = `<div class="evt-title">${charSpan} · ${e.event_type}</div>`;
-      }
-      return `<div class="evt-item ${e.event_type}">
-        <div class="evt-icon">${icon}</div>
-        <div class="evt-body">${titleHtml}${metaHtml}</div>
-        <div class="evt-time">${timeStr}</div>
-      </div>`;
-    }).join('')}</div>`;
-  }
-
-  // ── RULES ───────────────────────────────────────────────────────────────────
-  function renderRules() {
-    const f = fr();
-    document.getElementById('rules-content').innerHTML = `
-      <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Règles Hardcore' : 'Hardcore Rules'}</div>
-        <div class="rules-list">
-          <div class="rules-item warning">
-            ☠️ <strong>${f ? 'Mort permanente' : 'Permanent Death'}</strong> — ${f
-              ? 'Si ton personnage meurt dans un donjon, il repart de zéro. Nouvelle tentative, ilvl 0, tout recommence.'
-              : 'If your character dies in a dungeon, they start over from scratch. New attempt, ilvl 0, everything resets.'}
-          </div>
-          <div class="rules-item">
-            👥 <strong>${f ? 'Groupe 100% Hardcore' : '100% Hardcore Group'}</strong> — ${f
-              ? 'Tu ne peux jouer qu\'avec d\'autres joueurs inscrits en mode Hardcore. Un joueur non-HM dans le groupe annule le run pour tout le monde.'
-              : 'You can only play with other players registered in Hardcore mode. A non-HM player in the group invalidates the run for everyone.'}
-          </div>
-          <div class="rules-item">
-            ⚔️ ${f
-              ? 'Chaque joueur peut avoir <strong>plusieurs héros actifs</strong> simultanément — un par classe de personnage.'
-              : 'Each player can have <strong>multiple active heroes</strong> simultaneously — one per character class.'}
-          </div>
-          <div class="rules-item">
-            🔴 ${f
-              ? 'Le même héros ne peut pas être joué en <strong>HM et Normal simultanément</strong>. Active/désactive le mode depuis ton profil.'
-              : 'The same hero cannot be played in <strong>HM and Normal simultaneously</strong>. Toggle the mode from your profile.'}
-          </div>
-          <div class="rules-item">
-            📋 <strong>${f ? 'Live Logs obligatoires' : 'Live Logs mandatory'}</strong> — ${f
-              ? 'Les logs Fellowship doivent être actifs pendant chaque donjon. Un donjon sans logs ne sera pas comptabilisé. Le risque d\'un upload de fichier : perte de la progression.'
-              : 'Fellowship logs must be active during each dungeon. A dungeon without logs will not be counted. Risk of file upload: loss of progression.'}
-          </div>
-          <div class="rules-item">
-            📊 ${f
-              ? 'Le classement est basé sur le <strong>meilleur donjon timé</strong> réalisé, pas sur l\'ilvl.'
-              : 'Rankings are based on the <strong>best timed dungeon</strong> completed, not ilvl.'}
-          </div>
+            <div class="event-body">
+              <div class="event-status active" data-fr="En cours" data-en="Active">En cours</div>
+              <div class="event-name" data-fr="Gloire à la Compagnie 1" data-en="Glory to the Fellowship I">Gloire à la
+                Compagnie</div>
+              <div class="event-desc"
+                data-fr="Complétez un maximum de hauts-faits de donjons en équipe ou en solo. 48 hauts-faits, 12 donjons, points, badges et classement en direct."
+                data-en="Complete as many dungeon achievements as possible solo or in a group. 48 achievements, 12 dungeons, live leaderboard.">
+                Complétez un maximum de hauts-faits de donjons en équipe ou en solo. 48 hauts-faits, 12 donjons, points,
+                badges et classement en direct.
+              </div>
+              <div class="event-meta">
+                <span class="event-dates" data-fr="21 avr. → fin juin 2025" data-en="Apr 21 → end of June 2025">21 avr.
+                  → fin juin 2025</span>
+                <span class="event-cta">
+                  <span data-fr="Voir" data-en="View">Voir</span>
+                  <span class="event-cta-arrow">→</span>
+                </span>
+              </div>
+            </div>
+          </a>
         </div>
       </div>
 
-      <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Progression & Rangs' : 'Progression & Ranks'}</div>
-        <div class="rules-list">
-          <div class="rules-item">
-            ${f
-              ? 'Les rangs progressent du plus bas au plus haut : <strong style="color:#00c700">Recrue 1→4</strong> · <strong style="color:#006fe6">Adepte 1→4</strong> · <strong style="color:#a920fd">Champion 1→4</strong> · <strong style="color:#b79f00">Parangon 1→4</strong> · <strong style="color:#b60000">Eternal 1→∞</strong>'
-              : 'Ranks progress from lowest to highest: <strong style="color:#00c700">Recruit 1→4</strong> · <strong style="color:#006fe6">Adept 1→4</strong> · <strong style="color:#a920fd">Champion 1→4</strong> · <strong style="color:#b79f00">Paragon 1→4</strong> · <strong style="color:#b60000">Eternal 1→∞</strong>'}
+      <!-- À VENIR -->
+      <div class="events-category">
+        <div class="category-label" data-fr="À venir" data-en="Coming soon">À venir</div>
+        <div class="events-grid">
+          <a href="pagaille/index.html" class="event-card">
+            <div class="event-banner event-banner-pagaille">
+              <div class="placeholder-icon">💣</div>
+            </div>
+            <div class="event-body">
+              <div class="event-status upcoming" data-fr="À venir" data-en="Coming soon">À venir</div>
+              <div class="event-name" data-fr="Donjon en Pagaille" data-en="Dungeon Mayhem">Donjon en Pagaille</div>
+              <div class="event-desc" data-fr="Prochain événement communautaire. Détails à venir bientôt…"
+                data-en="Next community event. Details coming soon…">
+                Prochain événement communautaire. Détails à venir bientôt…
+              </div>
+              <div class="event-meta">
+                <span class="event-dates" data-fr="22 Juin - 13 Juillet" data-en="22nd June - 13th July">Début pré-saison
+                  3</span>
+              </div>
+            </div>
+          </a>
+           <a href="fellowship_hardcore/index.html" class="event-card">
+            <div class="event-banner event-banner-pagaille">
+              <div class="placeholder-icon">💣</div>
+            </div>
+            <div class="event-body">
+              <div class="event-status upcoming" data-fr="À venir" data-en="Coming soon">À venir</div>
+              <div class="event-name" data-fr="Fellowship Hardcore" data-en="Fellowship Hardcore">Fellowship Hardcore</div>
+              <div class="event-desc" data-fr="Prochain événement communautaire. Détails à venir bientôt…"
+                data-en="Next community event. Details coming soon…">
+                Prochain événement communautaire. Détails à venir bientôt…
+              </div>
+              <div class="event-meta">
+                <span class="event-dates" data-fr="??" data-en="??">Début pré-saison
+                  3</span>
+              </div>
+            </div>
+          </a>
+                    <a href="strongholdrush/index.html" class="event-card">
+            <div class="event-banner event-banner-pagaille">
+              <div class="placeholder-icon">💣</div>
+            </div>
+            <div class="event-body">
+              <div class="event-status upcoming" data-fr="À venir" data-en="Coming soon">À venir</div>
+              <div class="event-name" data-fr="Stronghold Rush" data-en="Stronghold Rush">Stronghold Rush</div>
+              <div class="event-desc" data-fr="Prochain événement communautaire. Détails à venir bientôt…"
+                data-en="Next community event. Details coming soon…">
+                Prochain événement communautaire. Détails à venir bientôt…
+              </div>
+              <div class="event-meta">
+                <span class="event-dates" data-fr="??" data-en="??">Début pré-saison
+                  3</span>
+              </div>
+            </div>
+          </a>
+          <div class="event-card inactive">
+            <div class="event-banner event-banner-pagaille">
+              <div class="placeholder-icon">⚔️</div>
+            </div>
+            <div class="event-body">
+              <div class="event-status upcoming" data-fr="À venir" data-en="Coming soon">À venir</div>
+              <div class="event-name" data-fr="Mythic Dungeon Rival" data-en="Mythic Dungeon Rival">Mythic Dungeon Rival
+              </div>
+              <div class="event-desc" data-fr="Prochain événement communautaire. Détails à venir bientôt…"
+                data-en="Next community event. Details coming soon…">
+                Prochain événement communautaire. Détails à venir bientôt…
+              </div>
+              <div class="event-meta">
+                <span class="event-dates" data-fr="??" data-en="??">??</span>
+              </div>
+            </div>
           </div>
-          <div class="rules-item">
-            ${f
-              ? 'Chaque niveau de rang correspond à un <strong>niveau de donjon timé</strong> dans les logs Fellowship. Seuls les donjons complétés dans le temps imparti comptent.'
-              : 'Each rank level corresponds to a <strong>timed dungeon level</strong> in Fellowship logs. Only dungeons completed within the time limit count.'}
+          <div class="event-card inactive">
+            <div class="event-banner event-banner-pagaille">
+              <div class="placeholder-icon">🚩</div>
+            </div>
+            <div class="event-body">
+              <div class="event-status upcoming" data-fr="À venir" data-en="Coming soon">À venir</div>
+              <div class="event-name" data-fr="FellowGuessR" data-en="FellowGuessR">FellowGuessR</div>
+              <div class="event-desc" data-fr="Prochain événement communautaire. Détails à venir bientôt…"
+                data-en="Next community event. Details coming soon…">
+                Prochain événement communautaire. Détails à venir bientôt…
+              </div>
+              <div class="event-meta">
+                <span class="event-dates" data-fr="??" data-en="??">Début pré-saison
+                  3</span>
+              </div>
+            </div>
+          </div>
+                  </div>
+      </div>
+
+      <!-- PASSÉ -->
+      <div class="events-category">
+        <div class="category-label" data-fr="Passé" data-en="Past">Passé</div>
+        <div class="events-grid">
+          <div class="event-card inactive" style="opacity:0.4;">
+            <div class="event-banner event-banner-empty">
+              <div class="event-banner-title muted" data-fr="Aucun événement passé" data-en="No past events">Aucun
+                événement passé</div>
+            </div>
+            <div class="event-body">
+              <div class="event-status past" data-fr="Passé" data-en="Past">Passé</div>
+              <div class="event-desc" data-fr="Les événements terminés apparaîtront ici."
+                data-en="Completed events will appear here.">
+                Les événements terminés apparaîtront ici.
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Mort & Reset' : 'Death & Reset'}</div>
-        <div class="rules-list">
-          <div class="rules-item">
-            🔄 <strong>${f ? 'Reset automatique' : 'Automatic Reset'}</strong> — ${f
-              ? 'La mort est détectée automatiquement via les logs (sync toutes les 15 min). Le personnage passe en statut "mort" et une nouvelle tentative démarre depuis ilvl 0.'
-              : 'Death is detected automatically via logs (sync every 15 min). The character moves to "dead" status and a new attempt starts from ilvl 0.'}
-          </div>
-          <div class="rules-item">
-            📝 <strong>${f ? 'Reset manuel' : 'Manual Reset'}</strong> — ${f
-              ? 'Pour les cas particuliers (bug, situation imprévue), contacte Pouf sur Discord. Un admin peut déclencher le reset manuellement.'
-              : 'For special cases (bug, unexpected situation), contact Pouf on Discord. An admin can trigger the reset manually.'}
-          </div>
-          <div class="rules-item warning">
-            🚫 ${f
-              ? 'Si un joueur non-HM est détecté dans ton groupe, le run est <strong>annulé pour tout le groupe</strong>. Tu seras notifié dans ton profil et tu devras repartir de ton équipement précédent.'
-              : 'If a non-HM player is detected in your group, the run is <strong>cancelled for the whole group</strong>. You will be notified in your profile and must resume from your previous gear.'}
-          </div>
-        </div>
+    <!-- VIDEOS -->
+    <section class="animate delay-3">
+      <div class="section-header">
+        <span class="section-ornament">◆</span>
+        <span class="section-title" data-fr="Highlights" data-en="Highlights">Highlights</span>
+        <span class="section-ornament">◆</span>
       </div>
 
-      <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Achievements' : 'Achievements'}</div>
-        <table class="capstone-table">
-          <thead><tr><th>Achievement</th></tr></thead>
-          <tbody>
-            <tr><td style="color:#a920fd">🛡️ ${f ? 'Atteindre Champion 4 dans les temps' : 'Achieve Champion 4 in Time'}</td></tr>
-            <tr><td style="color:#b79f00">🏆 ${f ? 'Atteindre Parangon 4 dans les temps' : 'Achieve Paragon 4 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 1 dans les temps'  : 'Achieve Eternal 1 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 5 dans les temps'  : 'Achieve Eternal 5 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 10 dans les temps' : 'Achieve Eternal 10 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 15 dans les temps' : 'Achieve Eternal 15 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 20 dans les temps' : 'Achieve Eternal 20 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 25 dans les temps' : 'Achieve Eternal 25 in Time'}</td></tr>
-            <tr><td style="color:#b60000">👑 ${f ? 'Atteindre Eternal 30 dans les temps' : 'Achieve Eternal 30 in Time'}</td></tr>
-          </tbody>
-        </table>
+      <div class="videos-grid">
+
+        <!-- Vidéo 1 — réelle -->
+        <div class="video-card">
+          <div class="video-thumb-wrap" id="thumb-0" onclick="playVideo(0, 'sZtp0PkAhX0')">
+            <img src="https://img.youtube.com/vi/sZtp0PkAhX0/mqdefault.jpg" alt="Highlight Gloire à la Compagnie"
+              loading="lazy">
+            <div class="video-play-btn">
+              <div class="video-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="video-info">
+            <div class="video-title" data-fr="Highlight Gloire à la Compagnie 1"
+              data-en="Highlight Glory to the Fellowship 1">Highlight — Gloire à la Compagnie</div>
+            <div class="video-meta" data-fr="Événement communautaire Fellowship" data-en="Fellowship community event">
+              Événement communautaire Fellowship</div>
+          </div>
+        </div>
+
+        <!-- Vidéo 2 — placeholder -->
+        <div class="video-card">
+          <div class="video-thumb-wrap" id="thumb-0" onclick="playVideo(0, 'KqUmfBsh5nk')">
+            <img src="https://img.youtube.com/vi/KqUmfBsh5nk/mqdefault.jpg" alt="Highlight Gloire à la Compagnie"
+              loading="lazy">
+            <div class="video-play-btn">
+              <div class="video-play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="video-info">
+            <div class="video-title" data-fr="Highlight Gloire à la Compagnie 2"
+              data-en="Highlight Glory to the Fellowship 2">Highlight — Gloire à la Compagnie</div>
+            <div class="video-meta" data-fr="Événement communautaire Fellowship" data-en="Fellowship community event">
+              Événement communautaire Fellowship</div>
+          </div>
+        </div>
+
+        <!-- Vidéo 3 — placeholder -->
+        <div class="video-card">
+          <div class="video-thumb-wrap" style="cursor:default;">
+            <div class="video-placeholder">
+              <div class="video-placeholder-icon">🎬</div>
+              <div class="video-placeholder-text" data-fr="Bientôt" data-en="Coming soon">Bientôt</div>
+            </div>
+          </div>
+          <div class="video-info">
+            <div class="video-title" style="color:var(--text-muted);" data-fr="Prochaine vidéo à venir…"
+              data-en="Next video coming soon…">Prochaine vidéo à venir…</div>
+            <div class="video-meta" data-fr="Stay tuned" data-en="Stay tuned">Stay tuned</div>
+          </div>
+        </div>
+
       </div>
+    </section>
 
-      <div class="rules-section">
-        <div class="rules-section-title">${f ? 'Communauté in-game' : 'In-game Community'}</div>
-        <div class="rules-list">
-          <div class="rules-item">
-            💬 ${f
-              ? 'Une communauté Fellowship est disponible pour l\'event. Envoie ton <strong>Fellowship Contact Code</strong> à Pouf sur Discord (<strong>pouf_hgaming</strong>) pour recevoir l\'invitation.'
-              : 'A Fellowship community is available for the event. Send your <strong>Fellowship Contact Code</strong> to Pouf on Discord (<strong>pouf_hgaming</strong>) to receive the invitation.'}
-          </div>
-        </div>
-      </div>`;
-  }
+  </main>
 
-  // ── PROFILE — AUTH SUPABASE ─────────────────────────────────────────────────
-  // Supabase Auth via le SDK léger (fetch direct)
-  const SB_AUTH_URL = SUPABASE_URL + '/auth/v1';
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <span class="footer-ornament">⸻ ✦ ⸻</span>
+    <div class="footer-text" data-fr="Fait avec passion pour la communauté · pouf_hgaming"
+      data-en="Made with passion for the community · pouf_hgaming">
+      Fait avec passion pour la communauté · pouf_hgaming
+    </div>
+  </footer>
 
-  async function authFetch(path, opts = {}) {
-    const res = await fetch(SB_AUTH_URL + path, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-        ...(opts.token ? { 'Authorization': 'Bearer ' + opts.token } : {}),
-      },
-      method: opts.method || 'GET',
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
-    });
-    if (!res.ok && res.status !== 204) throw new Error(await res.text());
-    if (res.status === 204) return null;
-    return res.json();
-  }
+  <script>
+    // ─── LANG ───
+    let currentLang = localStorage.getItem('pouf_lang') || 'en';
 
-  // Session stockée localement
-  let _session = null;
-
-  async function getSession() {
-    if (_session) return _session;
-    const raw = localStorage.getItem('hm_session');
-    if (!raw) return null;
-    try {
-      const s = JSON.parse(raw);
-      // Vérifier expiry
-      if (s.expires_at && Date.now() / 1000 > s.expires_at - 60) {
-        localStorage.removeItem('hm_session');
-        return null;
-      }
-      _session = s;
-      return s;
-    } catch { return null; }
-  }
-
-  function saveSession(session) {
-    _session = session;
-    if (session) localStorage.setItem('hm_session', JSON.stringify(session));
-    else localStorage.removeItem('hm_session');
-  }
-
-  async function sendMagicLink(email) {
-    const redirectTo = 'https://dev.poufhgaming.com/fellowship_hardcore/index.html';
-    await authFetch('/magiclink', {
-      method: 'POST',
-      body: { email, redirect_to: redirectTo },
-    });
-  }
-
-  async function signOut() {
-    const session = await getSession();
-    if (session) {
-      await authFetch('/logout', { method: 'POST', token: session.access_token }).catch(() => {});
-    }
-    saveSession(null);
-    _profileData = null;
-    renderProfilePage();
-  }
-
-  // Capturer le token depuis l'URL après le clic sur le magic link
-  // ⚠️  Dans Supabase Dashboard → Auth → URL Configuration :
-  //     Site URL = https://poufhgaming.github.io/hardcore/index.html
-  //     Redirect URLs = https://poufhgaming.github.io/hardcore/index.html
-  async function handleAuthCallback() {
-    const hash = window.location.hash;
-    if (!hash.includes('access_token')) return;
-    const params       = new URLSearchParams(hash.replace('#', ''));
-    const type         = params.get('type');
-    const accessToken  = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    const expiresAt    = parseInt(params.get('expires_at')  || '0');
-    const expiresIn    = parseInt(params.get('expires_in')  || '3600');
-    if (!accessToken) return;
-    // Accepter magiclink et recovery
-    if (type && !['magiclink','recovery','signup'].includes(type)) return;
-    const session = {
-      access_token:  accessToken,
-      refresh_token: refreshToken,
-      expires_at:    expiresAt || Math.floor(Date.now() / 1000) + expiresIn,
-    };
-    saveSession(session);
-    history.replaceState(null, '', window.location.pathname);
-    showPage('profile', document.getElementById('tab-profile'));
-  }
-
-  // ── PROFILE DATA ─────────────────────────────────────────────────────────────
-  let _profileData  = null;
-  let _heroClasses  = null;
-
-  async function loadHeroClasses() {
-    if (_heroClasses) return _heroClasses;
-    const data = await sbFetch('/rest/v1/hm_hero_classes?select=*&order=sort_order');
-    _heroClasses = data ?? [];
-    return _heroClasses;
-  }
-
-  async function loadProfileData(session) {
-    const headers = {
-      'apikey': SUPABASE_ANON_KEY,
-      'Authorization': 'Bearer ' + session.access_token,
-    };
-    const base = SUPABASE_URL + '/rest/v1';
-
-    const [profile, warnings, characters, heroClasses] = await Promise.all([
-      fetch(`${base}/hm_profiles?select=*`, { headers }).then(r => r.json()),
-      fetch(`${base}/hm_player_warnings?select=*&order=created_at.desc&limit=20&season=eq.${SEASON}`, { headers }).then(r => r.json()),
-      fetch(`${base}/hm_characters?select=*&season=eq.${SEASON}&order=character_name`, { headers }).then(r => r.json()),
-      loadHeroClasses(),
-    ]);
-
-    // Périodes actives
-    const charIds = (characters ?? []).map(c => c.id).join(',');
-    let periods = [];
-    if (charIds) {
-      periods = await fetch(`${base}/hm_active_periods?character_id=in.(${charIds})&order=active_from.desc`, { headers }).then(r => r.json()).catch(() => []);
-    }
-
-    return {
-      profile: profile?.[0] ?? null,
-      warnings: warnings ?? [],
-      characters: characters ?? [],
-      periods: periods ?? [],
-      heroClasses,
-    };
-  }
-
-  // ── PROFILE RENDER ────────────────────────────────────────────────────────────
-
-  async function renderProfilePage() {
-    const cont = document.getElementById('profile-content');
-    if (!cont) return;
-    const f = fr();
-    const session = await getSession();
-
-    if (!session) {
-      renderProfileVisitor(cont, f);
-      return;
-    }
-
-    cont.innerHTML = `<div class="loading">${f ? 'Chargement de ton profil…' : 'Loading your profile…'}</div>`;
-
-    try {
-      _profileData = await loadProfileData(session);
-    } catch (e) {
-      cont.innerHTML = `<div class="empty">${f ? 'Erreur de chargement.' : 'Loading error.'}</div>`;
-      return;
-    }
-
-    if (!_profileData.profile || !_profileData.profile.onboarding_complete) {
-      renderProfileOnboarding(cont, f, session);
-    } else {
-      renderProfileConnected(cont, f, session);
-    }
-  }
-
-  function renderProfileVisitor(cont, f) {
-    cont.innerHTML = `
-      <div class="profile-visitor">
-        <div class="profile-visitor-title">⚔️ ${f ? 'Mon Profil Hardcore' : 'My Hardcore Profile'}</div>
-        <div class="profile-visitor-desc">${f
-          ? 'Connecte-toi avec ton email pour t\'inscrire à l\'event, activer le mode Hardcore sur tes héros, et suivre ta progression en temps réel.'
-          : 'Sign in with your email to register for the event, enable Hardcore mode on your heroes, and track your progress in real time.'}</div>
-        <div class="profile-magic-form">
-          <div class="profile-magic-title">${f ? 'Connexion / Inscription sans mot de passe' : 'Sign In / Register — passwordless'}</div>
-          <p style="font-size:14px;color:var(--text-muted);font-style:italic;text-align:center;margin-bottom:14px">${f
-            ? 'Entre ton email et reçois un lien magique. Première fois ? Tu configureras ton profil directement.'
-            : 'Enter your email and receive a magic link. First time? You\'ll set up your profile right after.'}</p>
-          <div class="profile-magic-row">
-            <input type="email" id="magic-email" placeholder="${f ? 'ton@email.com' : 'your@email.com'}">
-            <button class="btn-magic" id="magic-btn" onclick="doMagicLink()">
-              ${f ? 'Recevoir le lien' : 'Send link'}
-            </button>
-          </div>
-          <div class="profile-magic-sent" id="magic-sent">
-            ✓ ${f
-              ? 'Lien envoyé ! Vérifie ta boîte mail — et pense à regarder les <strong>spams</strong> si tu ne le vois pas.'
-              : 'Link sent! Check your inbox — and don\'t forget to check your <strong>spam folder</strong> if you don\'t see it.'}
-          </div>
-          <div style="margin-top:12px;font-size:13px;color:var(--text-muted);text-align:center;font-style:italic;display:none" id="magic-spam-hint">
-            📬 ${f
-              ? 'L\'email vient de <strong style="color:var(--text-dim)">onboarding@resend.dev</strong> — si tu ne le trouves pas, vérifie tes spams et marque-le comme "non spam".'
-              : 'The email comes from <strong style="color:var(--text-dim)">onboarding@resend.dev</strong> — if you can\'t find it, check your spam and mark it as "not spam".'}
-          </div>
-        </div>
-      </div>`;
-  }
-
-  async function doMagicLink() {
-    const email = document.getElementById('magic-email')?.value?.trim();
-    const f = fr();
-    if (!email) return;
-    const btn = document.getElementById('magic-btn');
-    btn.disabled = true;
-    btn.textContent = f ? 'Envoi…' : 'Sending…';
-    try {
-      await sendMagicLink(email);
-      document.getElementById('magic-sent').classList.add('show');
-      document.getElementById('magic-spam-hint').style.display = 'block';
-      btn.textContent = f ? 'Envoyé ✓' : 'Sent ✓';
-    } catch (e) {
-      btn.disabled = false;
-      btn.textContent = f ? 'Réessayer' : 'Retry';
-      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
-    }
-  }
-
-  // État B — Onboarding
-  let _onboardingStep = 1;
-  let _onboardingSelectedHeroes = new Set();
-  let _onboardingPlayerName = '';
-  let _onboardingCode = '';
-
-  function renderProfileOnboarding(cont, f, session) {
-    _onboardingStep = 1;
-    _onboardingSelectedHeroes = new Set();
-    renderOnboardingStep(cont, f, session);
-  }
-
-  function renderOnboardingStep(cont, f, session) {
-    const steps = [
-      f ? 'Profil' : 'Profile',
-      f ? 'Mes héros' : 'My heroes',
-      f ? 'Communauté' : 'Community',
-    ];
-    const dotsHtml = steps.map((s, i) => {
-      const n = i + 1;
-      const cls = n < _onboardingStep ? 'done' : n === _onboardingStep ? 'active' : '';
-      return `${n > 1 ? '<div class="onboarding-step-line"></div>' : ''}
-              <div class="onboarding-step-dot ${cls}">${n < _onboardingStep ? '✓' : n}</div>`;
-    }).join('');
-
-    let body = '';
-    if (_onboardingStep === 1) {
-      body = `
-        <div class="onboarding-title">${f ? 'Bienvenue — Configure ton profil' : 'Welcome — Set up your profile'}</div>
-        <p style="font-size:14px;color:var(--text-muted);font-style:italic;margin-bottom:20px;line-height:1.6">${f
-          ? 'Ton nom Fellowship sera utilisé pour identifier tes personnages dans les logs de combat.'
-          : 'Your Fellowship name will be used to identify your characters in combat logs.'}</p>
-        <div class="field">
-          <label>${f ? 'Ton nom Fellowship (exact)' : 'Your Fellowship name (exact)'}</label>
-          <input type="text" id="ob-name" value="${_onboardingPlayerName}" placeholder="${f ? 'Ton nom exact sur FellowshipLogs' : 'Your exact name on FellowshipLogs'}">
-          <div class="field-hint">${f
-            ? 'Doit correspondre exactement à ton nom sur fellowshiplogs.com — c\'est aussi le nom de tes personnages en jeu.'
-            : 'Must match exactly your name on fellowshiplogs.com — this is also your in-game character name.'}</div>
-        </div>
-        <div class="field">
-          <label>${f ? 'Fellowship Contact Code (optionnel)' : 'Fellowship Contact Code (optional)'}</label>
-          <input type="text" id="ob-code" value="${_onboardingCode}" placeholder="${f ? 'Ton code pour l\'invitation communauté' : 'Your code for community invitation'}">
-          <div class="field-hint">${f ? 'Visible dans ton profil Fellowship' : 'Visible in your Fellowship profile'}</div>
-        </div>
-        <button class="btn-register" onclick="onboardingNext()" style="margin-top:8px">
-          ${f ? 'Continuer →' : 'Continue →'}
-        </button>`;
-    } else if (_onboardingStep === 2) {
-      const heroes = _heroClasses || [];
-      const roles  = ['Tank', 'Healer', 'DPS'];
-      const heroesHtml = roles.map(role => {
-        const roleHeroes = heroes.filter(h => h.role === role);
-        if (!roleHeroes.length) return '';
-        const items = roleHeroes.map(h => `
-          <div class="hero-toggle ${_onboardingSelectedHeroes.has(h.class_name) ? 'selected' : ''}"
-               onclick="toggleHeroSelect('${h.class_name}')" id="htoggle-${h.class_name}">
-            <div class="hero-dot" style="background:${h.color_hex}"></div>
-            ${h.class_name}
-            <span class="hero-toggle-check">✓</span>
-          </div>`).join('');
-        return `<div class="heroes-section">
-          <div class="heroes-role-label">${role}</div>
-          <div class="heroes-grid">${items}</div>
-        </div>`;
-      }).join('');
-      body = `
-        <div class="onboarding-title">${f ? 'Active tes héros en Hardcore' : 'Enable your Hardcore heroes'}</div>
-        <div style="font-size:14px;color:var(--text-muted);font-style:italic;margin-bottom:18px">${f
-          ? 'Active les héros que tu souhaites jouer en mode Hardcore. Tu pourras les activer ou désactiver à tout moment depuis ton profil.'
-          : 'Enable the heroes you want to play in Hardcore mode. You can toggle them on or off at any time from your profile.'}</div>
-        ${heroesHtml}
-        <div style="display:flex;gap:10px;margin-top:8px">
-          <button class="btn-register" onclick="_onboardingStep=1;renderOnboardingStep(document.getElementById('profile-content'),${f},'${session?.access_token}')" style="background:none;border-color:var(--border);color:var(--text-muted)">
-            ← ${f ? 'Retour' : 'Back'}
-          </button>
-          <button class="btn-register" onclick="onboardingNext()">
-            ${f ? 'Valider mes héros →' : 'Confirm heroes →'}
-          </button>
-        </div>`;
-    } else if (_onboardingStep === 3) {
-      const code = _onboardingCode || (session?.access_token?.slice(-8)?.toUpperCase() ?? '—');
-      body = `
-        <div class="onboarding-title">${f ? 'Invitation communauté' : 'Community Invitation'}</div>
-        <div style="font-size:15px;color:var(--text-muted);font-style:italic;margin-bottom:20px;line-height:1.7">${f
-          ? 'Pour participer à l\'event, tu dois rejoindre la communauté in-game. Envoie un message privé à Pouf sur Discord avec ton code de contact Fellowship.'
-          : 'To participate in the event, you need to join the in-game community. Send a private message to Pouf on Discord with your Fellowship contact code.'}</div>
-        <div class="profile-contact-box">
-          <div class="profile-magic-title">${f ? 'Ton code Fellowship' : 'Your Fellowship Code'}</div>
-          <div class="profile-contact-code">${_onboardingCode || '—'}</div>
-          <button class="btn-copy" onclick="copyCode('${_onboardingCode}')">${f ? '📋 Copier le code' : '📋 Copy code'}</button>
-        </div>
-        <div style="margin-top:16px;padding:12px 16px;background:rgba(64,212,212,0.04);border:1px solid var(--border);border-radius:4px;font-size:14px;color:var(--text-muted)">
-          💬 ${f ? 'Retrouve Pouf sur Discord : <strong style="color:var(--text-dim)">pouf_hgaming</strong>' : 'Find Pouf on Discord: <strong style="color:var(--text-dim)">pouf_hgaming</strong>'}
-        </div>
-        <button class="btn-register" onclick="completeOnboarding()" style="margin-top:16px">
-          ${f ? '✓ J\'ai envoyé le message — Terminer' : '✓ Message sent — Finish'}
-        </button>`;
-    }
-
-    cont.innerHTML = `
-      <div class="onboarding-card">
-        <div class="onboarding-step-indicator">${dotsHtml}</div>
-        ${body}
-      </div>`;
-  }
-
-  function toggleHeroSelect(className) {
-    if (_onboardingSelectedHeroes.has(className)) _onboardingSelectedHeroes.delete(className);
-    else _onboardingSelectedHeroes.add(className);
-    const el = document.getElementById('htoggle-' + className);
-    if (el) el.classList.toggle('selected', _onboardingSelectedHeroes.has(className));
-  }
-
-  async function onboardingNext() {
-    const f = fr();
-    if (_onboardingStep === 1) {
-      _onboardingPlayerName = document.getElementById('ob-name')?.value?.trim() || '';
-      _onboardingCode       = document.getElementById('ob-code')?.value?.trim() || '';
-      if (!_onboardingPlayerName) { toast(f ? 'Remplis ton nom Fellowship.' : 'Enter your Fellowship name.', true); return; }
-      _onboardingStep = 2;
-    } else if (_onboardingStep === 2) {
-      _onboardingStep = 3;
-    }
-    const session = await getSession();
-    renderOnboardingStep(document.getElementById('profile-content'), f, session);
-  }
-
-  async function completeOnboarding() {
-    const f = fr();
-    const session = await getSession();
-    if (!session) return;
-
-    try {
-      // Trouver le player_id
-      const players = await sbFetch(`/rest/v1/players?name=eq.${encodeURIComponent(_onboardingPlayerName)}&select=id`);
-      const playerId = players?.[0]?.id;
-      if (!playerId) { toast(f ? `Joueur "${_onboardingPlayerName}" introuvable.` : `Player not found.`, true); return; }
-
-      // Upsert profil
-      await fetch(SUPABASE_URL + '/rest/v1/hm_profiles', {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + session.access_token,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates',
-        },
-        body: JSON.stringify({
-          id: (await authFetch('/user', { token: session.access_token })).id,
-          player_id: playerId,
-          fellowship_contact_code: _onboardingCode || null,
-          onboarding_complete: true,
-        }),
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('pouf_lang', lang);
+      document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.querySelectorAll('[data-fr]').forEach(el => {
+        el.textContent = el.dataset[lang] || el.dataset.fr;
       });
+    }
 
-      // Créer les hm_characters pour les héros sélectionnés (character_name = nom Fellowship)
-      for (const heroClass of _onboardingSelectedHeroes) {
-        await fetch(SUPABASE_URL + '/rest/v1/hm_characters', {
-          method: 'POST',
-          headers: {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': 'Bearer ' + session.access_token,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal',
-          },
-          body: JSON.stringify({
-            player_id:      playerId,
-            character_name: _onboardingPlayerName,  // nom Fellowship = nom du perso en jeu
-            character_class: heroClass,
-            attempt_number: 1,
-            status:         'alive',
-            hm_enabled:     false,  // OFF par défaut, le joueur active manuellement
-            season:         SEASON,
-          }),
+    // Init : applique la langue sauvegardée au chargement
+    setLang(currentLang);
+
+    // ─── VIDEO PLAYER ───
+    function playVideo(index, videoId) {
+      const wrap = document.getElementById('thumb-' + index);
+      const iframeWrap = document.createElement('div');
+      iframeWrap.className = 'video-iframe-wrap';
+      iframeWrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+      wrap.innerHTML = '';
+      wrap.appendChild(iframeWrap);
+      wrap.style.cursor = 'default';
+      wrap.onclick = null;
+    }
+  </script>
+  <!-- ── MODAL PROFIL ── -->
+  <div class="modal-overlay" id="profile-modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-player-name" id="modal-player-name">—</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section-title">Badges</div>
+        <div class="badges-grid" id="modal-badges-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── SUPABASE (home) ──
+    const SUPABASE_URL_HOME = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
+    const SUPABASE_ANON_KEY_HOME = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
+
+    async function sbFetchHome(path) {
+      const res = await fetch(SUPABASE_URL_HOME + path, {
+        headers: { 'apikey': SUPABASE_ANON_KEY_HOME, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY_HOME }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    // ── BADGES ──
+    let _allBadges = null, _playerBadges = null;
+
+    async function loadBadgesHome() {
+      if (_allBadges) return;
+      try {
+        const [badges, playerBadges] = await Promise.all([
+          sbFetchHome('/rest/v1/badges?select=id,name,description,icon,event_slug,sort_order&order=sort_order'),
+          sbFetchHome('/rest/v1/player_badges?select=player_id,badge_id')
+        ]);
+        _allBadges = {};
+        badges.forEach(b => _allBadges[b.id] = b);
+        _playerBadges = {};
+        playerBadges.forEach(pb => {
+          if (!_playerBadges[pb.player_id]) _playerBadges[pb.player_id] = [];
+          const badge = _allBadges[pb.badge_id];
+          if (badge) _playerBadges[pb.player_id].push(badge);
         });
-      }
-
-      toast(f ? 'Profil créé !' : 'Profile created!');
-      _profileData = null;
-      await renderProfilePage();
-    } catch (e) {
-      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
-    }
-  }
-
-  // État C — Profil complet
-  function renderProfileConnected(cont, f, session) {
-    const { profile, warnings, characters, periods, heroClasses } = _profileData;
-    const unread = warnings.filter(w => !w.read).length;
-
-    // Grouper les persos par classe
-    const heroesByClass = {};
-    for (const h of heroClasses) heroesByClass[h.class_name] = { ...h, chars: [] };
-    for (const c of characters) {
-      if (heroesByClass[c.character_class]) heroesByClass[c.character_class].chars.push(c);
+      } catch (e) { console.warn('Badges unavailable:', e); _allBadges = {}; _playerBadges = {}; }
     }
 
-    const roles = ['Tank', 'Healer', 'DPS'];
-    const heroSections = roles.map(role => {
-      const items = heroClasses.filter(h => h.role === role).map(h => {
-        const chars = heroesByClass[h.class_name]?.chars ?? [];
-        const aliveChar = chars.find(c => c.status === 'alive');
-        const bestChar  = chars.reduce((best, c) => (!best || c.best_difficulty_level > best.best_difficulty_level) ? c : best, null);
-        const isOn      = aliveChar?.hm_enabled ?? false;
-        const period    = aliveChar ? periods.find(p => p.character_id === aliveChar.id && !p.active_until) : null;
-
-        return `<div class="profile-hero-card ${isOn ? 'hm-on' : ''}" id="hcard-${h.class_name}">
-          <div class="profile-hero-header">
-            <div style="display:flex;align-items:baseline;gap:6px">
-              <div class="profile-hero-name" style="color:${h.color_hex}">${h.class_name}</div>
-              <div class="profile-hero-role">${h.role}</div>
-            </div>
-            <div class="hm-toggle-pill">
-              <span style="color:var(--text-muted);font-size:10px">${isOn ? 'HM ON' : 'HM OFF'}</span>
-              <label class="hm-toggle-switch">
-                <input type="checkbox" ${isOn ? 'checked' : ''} onchange="toggleHm('${h.class_name}', this.checked)">
-                <div class="hm-toggle-track"></div>
-                <div class="hm-toggle-thumb"></div>
-              </label>
-            </div>
-          </div>
-          ${aliveChar ? `
-          <div class="profile-hero-stats">
-            <div class="profile-hero-stat">
-              <div class="profile-hero-stat-val">${aliveChar.best_rank_label || '—'}</div>
-              <div class="profile-hero-stat-lbl">${f ? 'Meilleur rang' : 'Best rank'}</div>
-            </div>
-            <div class="profile-hero-stat">
-              <div class="profile-hero-stat-val">${aliveChar.ilvl_current || '—'}</div>
-              <div class="profile-hero-stat-lbl">ilvl</div>
-            </div>
-            <div class="profile-hero-stat">
-              <div class="profile-hero-stat-val">${aliveChar.power_score_current ? aliveChar.power_score_current.toFixed(0) : '—'}</div>
-              <div class="profile-hero-stat-lbl">Power Score</div>
-            </div>
-          </div>
-          ${period ? `<div class="profile-period">⚔️ HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</div>` : ''}
-          ` : `<div style="font-size:14px;color:var(--text-muted);font-style:italic;margin-top:6px">${f ? 'Pas de personnage actif' : 'No active character'}</div>`}
-        </div>`;
-      }).join('');
-      return `<div style="margin-bottom:20px">
-        <div class="profile-section-title">${role}</div>
-        ${items}
-      </div>`;
-    }).join('');
-
-    // Avertissements
-    const warningsHtml = warnings.length ? `
-      <div class="profile-warnings">
-        <div class="profile-section-title">
-          ${f ? 'Avertissements' : 'Warnings'}
-          ${unread ? `<span style="color:var(--hc-red);margin-left:8px">(${unread})</span>` : ''}
-        </div>
-        ${warnings.map(w => {
-          let icon = '⚠️';
-          if (w.warning_type === 'run_invalidated') icon = '🚫';
-          if (w.warning_type === 'nm_detected')     icon = '🔍';
-          return `
-          <div class="profile-warning-item ${w.read ? 'read' : ''}" onclick="markWarningRead('${w.id}', this)">
-            <div class="profile-warning-icon">${icon}</div>
-            <div class="profile-warning-body">
-              <div class="profile-warning-msg">${f ? w.message_fr : w.message_en}</div>
-              <div class="profile-warning-time">${new Date(w.created_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short', year:'numeric' })} ${new Date(w.created_at).toLocaleTimeString(f ? 'fr-FR' : 'en-GB', { hour:'2-digit', minute:'2-digit' })}</div>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>` : '';
-
-    const contactCode = profile?.fellowship_contact_code;
-    const contactHtml = contactCode ? `
-      <div class="profile-contact-box" style="margin-top:28px">
-        <div class="profile-magic-title">${f ? 'Ton code Fellowship' : 'Your Fellowship Code'}</div>
-        <div class="profile-contact-code">${contactCode}</div>
-        <button class="btn-copy" onclick="copyCode('${contactCode}')">${f ? '📋 Copier le code' : '📋 Copy code'}</button>
-        ${profile?.community_invited ? `<div style="text-align:center;margin-top:8px;font-size:13px;color:var(--tier1)">✓ ${f ? 'Invitation communauté envoyée' : 'Community invitation sent'}</div>` : ''}
-      </div>` : '';
-
-    cont.innerHTML = `
-      <div class="profile-header">
-        <div class="profile-user">
-          <div class="profile-username">${_onboardingPlayerName || profile?.player_id || '—'}</div>
-          <div class="profile-email">${f ? 'Profil Hardcore' : 'Hardcore Profile'} · ${f ? 'Saison' : 'Season'} 1</div>
-        </div>
-        <button class="btn-logout" onclick="signOut()">${f ? 'Déconnexion' : 'Sign out'}</button>
-      </div>
-      <div class="profile-section-title" style="margin-bottom:18px">${f ? 'Mes héros' : 'My heroes'}</div>
-      ${heroSections}
-      ${warningsHtml}
-      ${contactHtml}`;
-  }
-
-  async function toggleHm(heroClass, enabled) {
-    const f = fr();
-    const session = await getSession();
-    if (!session) return;
-    const chars = _profileData?.characters ?? [];
-    const char  = chars.find(c => c.character_class === heroClass && c.status === 'alive');
-    if (!char) { toast(f ? 'Personnage introuvable.' : 'Character not found.', true); return; }
-
-    try {
-      const fn = enabled ? 'activate_hm_character' : 'deactivate_hm_character';
-      await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + session.access_token,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(enabled
-          ? { p_character_id: char.id, p_user_id: session.user?.id, p_player_id: char.player_id }
-          : { p_character_id: char.id }),
+    function openProfile(playerId, playerName) {
+      loadBadgesHome().then(() => {
+        const badges = (_playerBadges && _playerBadges[playerId]) || [];
+        const lang = localStorage.getItem('pouf_lang') || 'fr';
+        document.getElementById('modal-player-name').textContent = playerName || '—';
+        const grid = document.getElementById('modal-badges-grid');
+        grid.innerHTML = !badges.length
+          ? `<div class="modal-no-badges">${lang === 'en' ? 'No badges yet.' : 'Aucun badge pour le moment.'}</div>`
+          : badges.map(b => `
+          <div class="badge-card">
+            <img src="/images/${b.icon}" alt="${b.name}" onerror="this.style.opacity='0.2'">
+            <div class="badge-card-name">${b.name}</div>
+            <div class="badge-card-event">${b.event_slug}</div>
+          </div>`).join('');
+        document.getElementById('profile-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
       });
-      toast(enabled
-        ? (f ? `HM activé pour ${heroClass}` : `HM enabled for ${heroClass}`)
-        : (f ? `HM désactivé pour ${heroClass}` : `HM disabled for ${heroClass}`));
-      _profileData = null;
-      await renderProfilePage();
-    } catch (e) {
-      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
     }
-  }
 
-  async function markWarningRead(warningId, el) {
-    const session = await getSession();
-    if (!session || el.classList.contains('read')) return;
-    el.classList.add('read');
-    await fetch(SUPABASE_URL + '/rest/v1/hm_player_warnings?id=eq.' + warningId, {
-      method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + session.access_token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ read: true }),
-    }).catch(() => {});
-  }
-
-  function copyCode(code) {
-    if (!code || code === '—') return;
-    navigator.clipboard.writeText(code).then(() => {
-      toast(fr() ? 'Code copié !' : 'Code copied!');
-    });
-  }
-
-  // ── INIT ────────────────────────────────────────────────────────────────────
-  setLang(currentLang);
-  renderRules();
-  loadLeaderboard();
-  handleAuthCallback();
-</script>
+    function closeModal() {
+      document.getElementById('profile-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
 
 </body>
+
 </html>
