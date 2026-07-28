@@ -5,6 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pouf — Événements Communautaires</title>
+  <script>
+    // Capture le token Supabase magic link et redirige vers la page HM
+    if (window.location.hash.includes('access_token')) {
+      window.location.replace(
+        'https://poufhgaming.github.io/Dev/fellowship_hardcore/index.html'
+        + window.location.hash
+      );
+    }
+  </script>
   <link rel="icon" type="image/png" href="images/pouf.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
