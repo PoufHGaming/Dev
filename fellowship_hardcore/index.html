@@ -1553,10 +1553,14 @@
     };
     const base = SUPABASE_URL + '/rest/v1';
 
+    // Récupérer le user_id depuis le token
+    const userRes = await authFetch('/user', { token: session.access_token });
+    const userId = userRes?.id;
+
     const [profile, warnings, characters, heroClasses] = await Promise.all([
       fetch(`${base}/hm_profiles?select=*`, { headers }).then(r => r.json()),
       fetch(`${base}/hm_player_warnings?select=*&order=created_at.desc&limit=20&season=eq.${SEASON}`, { headers }).then(r => r.json()),
-      fetch(`${base}/hm_characters?select=*&season=eq.${SEASON}&order=character_name`, { headers }).then(r => r.json()),
+      fetch(`${base}/hm_characters?select=*&season=eq.${SEASON}&user_id=eq.${userId}&order=character_name`, { headers }).then(r => r.json()),
       loadHeroClasses(),
     ]);
 
