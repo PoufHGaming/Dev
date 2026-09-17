@@ -15,11 +15,11 @@
       --bg: #070b0b;
       --bg2: #0d1a1a;
       --bg3: #122424;
-      --border: rgba(64,212,212,0.22);
+      --border: rgba(64,212,212,0.28);
       --border-bright: rgba(64,212,212,0.65);
       --text: #f0fafa;
-      --text-dim: #9fd8d8;
-      --text-muted: #4d8080;
+      --text-dim: #c8f0f0;
+      --text-muted: #6ba8a8;
       --tier1: #44ee44;
       --tier2: #40d4d4;
       --tier3: #c4a0ff;
@@ -443,8 +443,8 @@
 
 
     /* ── LEADERBOARD v2 ── */
-    .lb-header { grid-template-columns: 48px 1fr 140px 90px 160px; font-size:11px; }
-    .lb-row    { grid-template-columns: 48px 1fr 140px 90px 160px; }
+    .lb-header { grid-template-columns: 48px 1fr 150px 100px 170px; font-size:11px; letter-spacing:0.12em; }
+    .lb-row    { grid-template-columns: 48px 1fr 150px 100px 170px; }
 
     /* Hero portrait squares in expand panel */
     .hero-portraits { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
@@ -460,12 +460,7 @@
       position:absolute; bottom:3px; right:3px; font-size:14px;
       filter:drop-shadow(0 0 3px rgba(0,0,0,0.9));
     }
-    .hero-portrait-attempt {
-      position:absolute; top:2px; left:2px;
-      font-family:'Cinzel',serif; font-size:9px; font-weight:700;
-      background:rgba(0,0,0,0.75); color:var(--text-muted);
-      padding:1px 4px; border-radius:3px;
-    }
+    /* hero-portrait-attempt removed — no longer shown */
 
     /* Hero detail card */
     .hero-detail { margin-bottom:20px; }
@@ -487,9 +482,9 @@
     /* Dungeon best table */
     .dungeon-table { width:100%; border-collapse:collapse; border-radius:6px; overflow:hidden; }
     .dungeon-row {
-      display:grid; grid-template-columns:52px 1fr 130px 80px 100px;
+      display:grid; grid-template-columns:52px 1fr 150px 90px 90px;
       align-items:center; position:relative; overflow:hidden;
-      border-bottom:1px solid rgba(0,0,0,0.3);
+      border-bottom:1px solid rgba(255,255,255,0.06);
     }
     .dungeon-row:last-child { border-bottom:none; }
     .dungeon-row-bg {
@@ -512,23 +507,26 @@
     .dungeon-name-cell { padding:8px 12px; }
     .dungeon-name {
       font-family:'Cinzel',serif; font-size:13px; font-weight:700;
-      color:var(--text); line-height:1.2;
+      color:#f0f0f0; line-height:1.2; text-shadow:0 1px 4px rgba(0,0,0,0.9);
     }
-    .dungeon-name.xul { color:#c4732a; }
+    .dungeon-name.xul { color:#e8a060; text-shadow:0 0 8px rgba(200,115,42,0.6); }
     .dungeon-key {
       padding:8px 12px; text-align:right;
-      font-family:'Cinzel',serif; font-size:14px; font-weight:700;
+      font-family:'Cinzel',serif; font-size:13px; font-weight:700;
+      text-shadow:0 1px 4px rgba(0,0,0,0.9);
     }
     .dungeon-score {
       padding:8px 12px; text-align:right;
-      font-family:'Cinzel',serif; font-size:13px; color:var(--teal-light);
+      font-family:'Cinzel',serif; font-size:13px; color:#72e8e8;
+      text-shadow:0 1px 4px rgba(0,0,0,0.9);
     }
     .dungeon-time {
       padding:8px 12px; text-align:right;
-      font-size:12px; color:var(--text-muted);
+      font-size:12px; color:#ccc;
+      text-shadow:0 1px 4px rgba(0,0,0,0.9);
     }
     .dungeon-table-header {
-      display:grid; grid-template-columns:52px 1fr 130px 80px 100px;
+      display:grid; grid-template-columns:52px 1fr 150px 90px 90px;
       padding:6px 0; border-bottom:1px solid var(--border); margin-bottom:0;
     }
     .dungeon-table-header span {
@@ -1415,7 +1413,10 @@
           <div class="lb-player">
             <div style="display:flex;align-items:baseline;gap:10px">
               <div class="lb-player-name">${p.player_name}</div>
-              ${bestChar ? `<span style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:${heroCol};letter-spacing:0.1em">${heroName}${isDead?' 💀':''}</span>` : ''}
+              ${bestChar ? `<span style="display:inline-flex;align-items:center;gap:5px;font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:${heroCol};letter-spacing:0.1em">
+                <span style="width:8px;height:8px;border-radius:50%;background:${isDead?'#ff4444':'#44ee44'};flex-shrink:0;box-shadow:0 0 5px ${isDead?'#ff4444':'#44ee44'}66"></span>
+                ${heroName}
+              </span>` : ''}
             </div>
           </div>
           <div class="lb-ilvl" style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--teal-light)">${p.totalScore > 0 ? Math.floor(p.totalScore) : '—'}</div>
@@ -1434,20 +1435,31 @@
     if (!p.chars.length) return '';
     const f = fr();
 
-    // Portraits des héros (carrés cliquables)
-    const portraits = p.chars.map(c => {
-      const col  = classColor(c.character_class);
-      const dead = c.status === 'dead';
-      const img  = heroImg(c.character_class);
+    // Only show ALIVE characters in portraits (latest attempt per class)
+    // Group by character_class, keep most recent attempt
+    const byClass = new Map();
+    for (const c of p.chars) {
+      const existing = byClass.get(c.character_class);
+      if (!existing || c.current_attempt_number > existing.current_attempt_number) {
+        byClass.set(c.character_class, c);
+      }
+    }
+    const latestChars = [...byClass.values()];
+
+    const portraits = latestChars.map(c => {
+      const col    = classColor(c.character_class);
+      const dead   = c.status === 'dead';
+      const img    = heroImg(c.character_class);
+      // Status dot: green = alive, red = dead
+      const dotCol = dead ? '#ff4444' : '#44ee44';
       return `
         <div class="hero-portrait ${dead?'dead':''}" id="portrait-${c.character_id}"
              onclick="selectHeroPortrait('${c.character_id}', ${p.player_id})"
-             title="${c.character_class} · ${dead ? (f?'Mort':'Dead') : (f?'En vie':'Alive')} · #${c.current_attempt_number}"
+             title="${c.character_class}"
              style="border-color:${col}60">
           <img src="${img}" alt="${c.character_class}"
                onerror="this.parentNode.style.background='${col}22';this.style.display='none'">
-          <div class="hero-portrait-attempt">#${c.current_attempt_number}</div>
-          ${dead ? '<div class="hero-portrait-skull">💀</div>' : ''}
+          <div style="position:absolute;bottom:4px;right:4px;width:9px;height:9px;border-radius:50%;background:${dotCol};border:1.5px solid rgba(0,0,0,0.6);box-shadow:0 0 4px ${dotCol}"></div>
         </div>`;
     }).join('');
 
@@ -1463,11 +1475,9 @@
   let _selectedPortrait = {};
 
   async function selectHeroPortrait(characterId, playerId) {
-    // Highlight portrait
     const player = _lbFiltered?.find(p => p.player_id === playerId);
     if (!player) return;
 
-    // Toggle: if same portrait clicked, close
     if (_selectedPortrait[playerId] === characterId) {
       _selectedPortrait[playerId] = null;
       document.querySelectorAll(`#lbexpand-${playerId} .hero-portrait`).forEach(p => p.classList.remove('active'));
@@ -1476,25 +1486,63 @@
     }
     _selectedPortrait[playerId] = characterId;
 
+    // Find the clicked char
+    const char = player.chars.find(c => c.character_id === characterId);
+    if (!char) return;
+
+    // All attempts for this class
+    const allAttempts = player.chars
+      .filter(c => c.character_class === char.character_class)
+      .sort((a,b) => b.current_attempt_number - a.current_attempt_number);
+
     // Update portrait highlights
-    player.chars.forEach(c => {
+    const byClass = new Map();
+    for (const c of player.chars) {
+      const existing = byClass.get(c.character_class);
+      if (!existing || c.current_attempt_number > existing.current_attempt_number) {
+        byClass.set(c.character_class, c);
+      }
+    }
+    byClass.forEach(c => {
       const el = document.getElementById(`portrait-${c.character_id}`);
       if (el) el.classList.toggle('active', c.character_id === characterId);
     });
 
-    const char  = player.chars.find(c => c.character_id === characterId);
-    if (!char) return;
-    const f     = fr();
-    const det   = document.getElementById(`hero-detail-${playerId}`);
+    const f   = fr();
+    const det = document.getElementById(`hero-detail-${playerId}`);
+    await renderHeroDetail(det, char, allAttempts, playerId, f);
+  }
+
+  async function renderHeroDetail(det, char, allAttempts, playerId, f) {
     const col   = classColor(char.character_class);
     const rank  = diffLevelToRank(char.best_difficulty_level || 0);
     const rCol  = tierColor(rank.tier);
     const score = char.total_rating_score ? Math.floor(char.total_rating_score) : 0;
+    const dead  = char.status === 'dead';
+    const dotCol = dead ? '#ff4444' : '#44ee44';
+
+    // Attempt picklist (only if multiple attempts)
+    const picklistHtml = allAttempts.length > 1
+      ? `<select onchange="switchAttempt(this.value, ${playerId})"
+           style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.1em;
+                  background:var(--bg3);border:1px solid var(--border);color:var(--text);
+                  padding:5px 10px;border-radius:4px;cursor:pointer;margin-bottom:14px">
+          ${allAttempts.map(a =>
+            `<option value="${a.character_id}" ${a.character_id===char.character_id?'selected':''}>
+              ${f?'Tentative':'Attempt'} #${a.current_attempt_number} ${a.status==='dead'?'💀':'⚔️'}
+            </option>`
+          ).join('')}
+        </select>`
+      : '';
 
     det.innerHTML = `<div class="hero-detail">
-      <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:${col};margin-bottom:14px;letter-spacing:0.08em">
-        ${char.character_class}
-        <span style="font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px">${char.status==='dead'?'💀 '+(f?'Mort':'Dead'):'⚔️ '+(f?'En vie':'Alive')} · #${char.current_attempt_number}</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <span style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:${col}">${char.character_class}</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.12em;padding:4px 10px;border-radius:20px;border:1px solid ${dotCol}40;background:${dotCol}12;color:${dotCol}">
+          <span style="width:7px;height:7px;border-radius:50%;background:${dotCol};display:inline-block"></span>
+          ${dead ? (f?'Mort':'Dead') : (f?'En vie':'Alive')}
+        </span>
+        ${picklistHtml}
       </div>
       <div class="hero-detail-stats">
         <div class="hero-detail-stat">
@@ -1510,36 +1558,46 @@
           <div class="hero-detail-stat-lbl">${f?'Meilleur ilvl':'Best ilvl'}</div>
         </div>
       </div>
-      <div id="dungeon-table-${characterId}">
-        <div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:8px 0">${f?'Chargement des donjons…':'Loading dungeons…'}</div>
+      <div id="dungeon-table-${char.character_id}">
+        <div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:8px 0">${f?'Chargement…':'Loading…'}</div>
       </div>
     </div>`;
 
-    // Load best dungeon ratings
-    const bdrs = await fetchBestDungeonRatings(characterId);
+    await loadDungeonTable(char.character_id, f);
+  }
+
+  async function switchAttempt(characterId, playerId) {
+    const player = _lbFiltered?.find(p => p.player_id === playerId);
+    if (!player) return;
+    const char = player.chars.find(c => c.character_id === characterId);
+    if (!char) return;
+    const allAttempts = player.chars
+      .filter(c => c.character_class === char.character_class)
+      .sort((a,b) => b.current_attempt_number - a.current_attempt_number);
+    const det = document.getElementById(`hero-detail-${playerId}`);
+    await renderHeroDetail(det, char, allAttempts, playerId, fr());
+  }
+
+  async function loadDungeonTable(characterId, f) {
     const dtEl = document.getElementById(`dungeon-table-${characterId}`);
     if (!dtEl) return;
-
+    const bdrs = await fetchBestDungeonRatings(characterId);
     if (!bdrs.length) {
       dtEl.innerHTML = `<div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:8px 0">${f?'Aucun donjon completé.':'No dungeons completed.'}</div>`;
       return;
     }
-
     const rows = bdrs.map(bdr => {
-      const img      = dungeonImg(bdr.dungeon_name);
-      const xul      = isXul(bdr.dungeon_name);
-      const dl       = bdr.difficulty_level;
-      const rank2    = dl ? diffLevelToRank(dl) : null;
-      const rc       = rank2 ? tierColor(rank2.tier) : 'var(--text-muted)';
-      const timeStr  = bdr.completion_time
-        ? `${Math.floor(bdr.completion_time/60000)}:${String(Math.floor((bdr.completion_time%60000)/1000)).padStart(2,'0')}`
-        : '—';
-      const bgStyle  = img
-        ? `background-image:url('${img}');`
-        : '';
+      const img     = dungeonImg(bdr.dungeon_name);
+      const xul     = isXul(bdr.dungeon_name);
+      const dl      = bdr.difficulty_level;
+      const rank2   = dl ? diffLevelToRank(dl) : null;
+      const rc      = rank2 ? tierColor(rank2.tier) : '#888';
+      const mins    = bdr.completion_time ? Math.floor(bdr.completion_time/60000) : null;
+      const secs    = bdr.completion_time ? String(Math.floor((bdr.completion_time%60000)/1000)).padStart(2,'0') : null;
+      const timeStr = mins !== null ? `${mins}:${secs}` : '—';
       return `
         <div class="dungeon-row">
-          ${bgStyle ? `<div class="dungeon-row-bg" style="${bgStyle}background-size:cover;background-position:center"></div>` : ''}
+          ${img ? `<div class="dungeon-row-bg" style="background-image:url('${img}');background-size:cover;background-position:center"></div>` : ''}
           ${img
             ? `<img class="dungeon-img-thumb" src="${img}" alt="${bdr.dungeon_name}" onerror="this.style.display='none'">`
             : `<div class="dungeon-img-placeholder">⚔️</div>`}
@@ -1551,19 +1609,19 @@
           <div class="dungeon-time">${timeStr}</div>
         </div>`;
     }).join('');
-
     dtEl.innerHTML = `
       <div class="dungeon-table-header">
         <span></span>
         <span>${f?'Donjon':'Dungeon'}</span>
-        <span style="text-align:right">${f?'Meilleure clé':'Best key'}</span>
-        <span style="text-align:right">Score</span>
-        <span style="text-align:right">Temps</span>
+        <span style="text-align:right;padding-right:12px">${f?'Meilleure clé':'Best key'}</span>
+        <span style="text-align:right;padding-right:12px">Score</span>
+        <span style="text-align:right;padding-right:12px">Temps</span>
       </div>
       <div class="dungeon-table">${rows}</div>`;
   }
 
-  function toggleExpand(playerId) {
+
+    function toggleExpand(playerId) {
     const row = document.getElementById(`lbrow-${playerId}`);
     const exp = document.getElementById(`lbexpand-${playerId}`);
     if (!row || !exp) return;
