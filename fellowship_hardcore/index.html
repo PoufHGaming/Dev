@@ -1591,34 +1591,29 @@
       const xul     = isXul(bdr.dungeon_name);
       const dl      = bdr.difficulty_level;
       const rank2   = dl ? diffLevelToRank(dl) : null;
-      const rc      = rank2 ? tierColor(rank2.tier) : '#888';
+      const rc      = rank2 ? tierColor(rank2.tier) : '#ccc';
       const mins    = bdr.completion_time ? Math.floor(bdr.completion_time/60000) : null;
       const secs    = bdr.completion_time ? String(Math.floor((bdr.completion_time%60000)/1000)).padStart(2,'0') : null;
       const timeStr = mins !== null ? `${mins}:${secs}` : '—';
       return `
         <div class="dungeon-row">
-          ${img ? `<div class="dungeon-row-bg" style="background-image:url('${img}')"></div><div class="dungeon-row-fade"></div>` : ''}
-          <div class="dungeon-thumb-cell">
-            ${img
-              ? `<img src="${img}" alt="${bdr.dungeon_name}" onerror="this.style.display='none'">`
-              : `<div class="no-img">⚔️</div>`}
-          </div>
-          <div class="dungeon-name-cell">
+          ${img ? `<div class="dungeon-row-bg" style="background-image:url('${img}')"></div>` : ''}
+          <div class="dungeon-row-overlay"></div>
+          <div class="dungeon-row-content">
             <div class="dungeon-name ${xul?'xul':''}">${bdr.dungeon_name}</div>
+            <div class="dungeon-key" style="color:${rc}">${rank2?.label||'—'}</div>
+            <div class="dungeon-score">${bdr.best_rating ? Math.floor(bdr.best_rating)+' pts' : '—'}</div>
+            <div class="dungeon-time">${timeStr}</div>
           </div>
-          <div class="dungeon-key" style="color:${rc}">${rank2?.label||'—'}</div>
-          <div class="dungeon-score">${bdr.best_rating ? Math.floor(bdr.best_rating)+' pts' : '—'}</div>
-          <div class="dungeon-time">${timeStr}</div>
         </div>`;
     }).join('');
     dtEl.innerHTML = `
       <div class="dungeon-table-wrap">
       <div class="dungeon-table-header">
-        <span></span>
         <span>${f?'Donjon':'Dungeon'}</span>
-        <span style="text-align:right">${f?'Meilleure clé':'Best key'}</span>
-        <span style="text-align:right">Score</span>
-        <span style="text-align:right">Temps</span>
+        <span>${f?'Meilleure clé':'Best key'}</span>
+        <span>Score</span>
+        <span>Temps</span>
       </div>
       <div class="dungeon-table">${rows}</div>
       </div>`;
