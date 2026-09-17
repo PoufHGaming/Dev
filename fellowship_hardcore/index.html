@@ -1598,7 +1598,11 @@
       return `
         <div class="dungeon-row">
           ${img ? `<div class="dungeon-row-bg" style="background-image:url('${img}')"></div><div class="dungeon-row-fade"></div>` : ''}
-          <div class="dungeon-img-spacer"></div>
+          <div class="dungeon-thumb-cell">
+            ${img
+              ? `<img src="${img}" alt="${bdr.dungeon_name}" onerror="this.style.display='none'">`
+              : `<div class="no-img">⚔️</div>`}
+          </div>
           <div class="dungeon-name-cell">
             <div class="dungeon-name ${xul?'xul':''}">${bdr.dungeon_name}</div>
           </div>
@@ -1608,14 +1612,16 @@
         </div>`;
     }).join('');
     dtEl.innerHTML = `
+      <div class="dungeon-table-wrap">
       <div class="dungeon-table-header">
-        <span style="padding-left:14px">${f?'Donjon':'Dungeon'}</span>
         <span></span>
+        <span>${f?'Donjon':'Dungeon'}</span>
         <span style="text-align:right">${f?'Meilleure clé':'Best key'}</span>
         <span style="text-align:right">Score</span>
         <span style="text-align:right">Temps</span>
       </div>
-      <div class="dungeon-table">${rows}</div>`;
+      <div class="dungeon-table">${rows}</div>
+      </div>`;
   }
 
 
