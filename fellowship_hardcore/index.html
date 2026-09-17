@@ -441,6 +441,102 @@
     .recap-heroes { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
     .recap-hero-tag { font-family:'Cinzel',serif; font-size:10px; padding:2px 8px; border-radius:20px; border:1px solid; }
 
+
+    /* ── LEADERBOARD v2 ── */
+    .lb-header { grid-template-columns: 48px 1fr 140px 90px 160px; font-size:11px; }
+    .lb-row    { grid-template-columns: 48px 1fr 140px 90px 160px; }
+
+    /* Hero portrait squares in expand panel */
+    .hero-portraits { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .hero-portrait {
+      width:64px; flex-shrink:0; cursor:pointer; border-radius:6px; overflow:hidden;
+      border:2px solid var(--border); transition:all 0.2s; position:relative;
+    }
+    .hero-portrait:hover  { border-color:rgba(255,255,255,0.4); transform:translateY(-2px); }
+    .hero-portrait.active { border-color:var(--hc-red); box-shadow:0 0 12px rgba(255,68,68,0.4); }
+    .hero-portrait.dead   { filter:grayscale(0.6); }
+    .hero-portrait img    { width:64px; height:64px; object-fit:cover; object-position:top; display:block; }
+    .hero-portrait-skull  {
+      position:absolute; bottom:3px; right:3px; font-size:14px;
+      filter:drop-shadow(0 0 3px rgba(0,0,0,0.9));
+    }
+    .hero-portrait-attempt {
+      position:absolute; top:2px; left:2px;
+      font-family:'Cinzel',serif; font-size:9px; font-weight:700;
+      background:rgba(0,0,0,0.75); color:var(--text-muted);
+      padding:1px 4px; border-radius:3px;
+    }
+
+    /* Hero detail card */
+    .hero-detail { margin-bottom:20px; }
+    .hero-detail-stats {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;
+    }
+    .hero-detail-stat {
+      background:var(--bg3); border:1px solid var(--border); border-radius:6px;
+      padding:12px; text-align:center;
+    }
+    .hero-detail-stat-val {
+      font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:var(--teal-light);
+    }
+    .hero-detail-stat-lbl {
+      font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--text-muted); margin-top:4px;
+    }
+
+    /* Dungeon best table */
+    .dungeon-table { width:100%; border-collapse:collapse; border-radius:6px; overflow:hidden; }
+    .dungeon-row {
+      display:grid; grid-template-columns:52px 1fr 130px 80px 100px;
+      align-items:center; position:relative; overflow:hidden;
+      border-bottom:1px solid rgba(0,0,0,0.3);
+    }
+    .dungeon-row:last-child { border-bottom:none; }
+    .dungeon-row-bg {
+      position:absolute; inset:0;
+      background-size:cover; background-position:center;
+      opacity:0.18; transition:opacity 0.2s;
+      z-index:0;
+    }
+    .dungeon-row:hover .dungeon-row-bg { opacity:0.28; }
+    .dungeon-row > * { position:relative; z-index:1; }
+    .dungeon-img-thumb {
+      width:52px; height:38px; object-fit:cover; object-position:center;
+      display:block;
+    }
+    .dungeon-img-placeholder {
+      width:52px; height:38px; background:var(--bg3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
+    }
+    .dungeon-name-cell { padding:8px 12px; }
+    .dungeon-name {
+      font-family:'Cinzel',serif; font-size:13px; font-weight:700;
+      color:var(--text); line-height:1.2;
+    }
+    .dungeon-name.xul { color:#c4732a; }
+    .dungeon-key {
+      padding:8px 12px; text-align:right;
+      font-family:'Cinzel',serif; font-size:14px; font-weight:700;
+    }
+    .dungeon-score {
+      padding:8px 12px; text-align:right;
+      font-family:'Cinzel',serif; font-size:13px; color:var(--teal-light);
+    }
+    .dungeon-time {
+      padding:8px 12px; text-align:right;
+      font-size:12px; color:var(--text-muted);
+    }
+    .dungeon-table-header {
+      display:grid; grid-template-columns:52px 1fr 130px 80px 100px;
+      padding:6px 0; border-bottom:1px solid var(--border); margin-bottom:0;
+    }
+    .dungeon-table-header span {
+      font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.18em;
+      text-transform:uppercase; color:var(--text-muted); padding:0 12px;
+    }
+    .dungeon-table-header span:first-child { padding-left:0; }
+
     @media (max-width:700px) {
       main { padding:20px 14px 64px; }
       .lb-header, .lb-row { grid-template-columns:36px 1fr 80px 70px; }
@@ -623,6 +719,169 @@
       color:var(--text-muted); cursor:pointer; transition:all 0.2s; text-align:center;
     }
     .btn-copy:hover { border-color:var(--border-bright); color:var(--text-dim); }
+
+    /* ── PROFILE TABS ── */
+    .profile-tabs {
+      display:flex; gap:0; border-bottom:2px solid var(--border);
+      margin-bottom:28px;
+    }
+    .profile-tab-btn {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
+      padding:12px 20px; background:none; border:none; border-bottom:2px solid transparent;
+      color:var(--text-muted); cursor:pointer; transition:all 0.2s; margin-bottom:-2px;
+    }
+    .profile-tab-btn:hover { color:var(--text-dim); }
+    .profile-tab-btn.active { color:var(--hc-red); border-bottom-color:var(--hc-red); }
+
+    /* ── HERO CARDS v2 ── */
+    .hero-card-v2 {
+      background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+      padding:20px 24px; margin-bottom:14px; transition:border-color 0.2s;
+      position:relative;
+    }
+    .hero-card-v2.hm-on { border-color:rgba(255,68,68,0.4); }
+    .hero-card-v2.hm-on::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, transparent, rgba(255,68,68,0.6), transparent);
+      border-radius:8px 8px 0 0;
+    }
+    .hero-card-v2-header {
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;
+    }
+    .hero-card-v2-title {
+      display:flex; align-items:baseline; gap:10px;
+    }
+    .hero-card-v2-name {
+      font-family:'Cinzel',serif; font-size:22px; font-weight:700; letter-spacing:0.05em;
+    }
+    .hero-card-v2-role {
+      font-size:14px; color:var(--text-muted); font-style:italic;
+    }
+    .hero-card-v2-stats {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px;
+    }
+    .hero-stat-block {
+      background:rgba(0,0,0,0.25); border:1px solid var(--border); border-radius:6px;
+      padding:12px 14px; text-align:center;
+    }
+    .hero-stat-block-val {
+      font-family:'Cinzel',serif; font-size:22px; font-weight:700; color:var(--teal-light);
+      line-height:1;
+    }
+    .hero-stat-block-lbl {
+      font-family:'Cinzel',serif; font-size:9px; letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--text-muted); margin-top:5px;
+    }
+    .hero-card-v2-footer {
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    }
+    .hero-status-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+      padding:5px 12px; border-radius:20px; border:1px solid;
+    }
+    .hero-status-badge.alive {
+      color:var(--tier1); border-color:rgba(68,238,68,0.3); background:rgba(68,238,68,0.06);
+    }
+    .hero-status-badge.dead {
+      color:rgba(255,68,68,0.7); border-color:rgba(255,68,68,0.3); background:rgba(255,68,68,0.06);
+    }
+    .hero-hm-since {
+      font-size:13px; color:var(--text-muted); font-style:italic;
+    }
+    .hero-card-add {
+      background:var(--bg2); border:1px dashed rgba(64,212,212,0.2); border-radius:8px;
+      padding:16px 24px; margin-bottom:10px; display:flex; align-items:center;
+      justify-content:space-between; opacity:0.6; transition:opacity 0.2s;
+    }
+    .hero-card-add:hover { opacity:1; }
+    .hero-card-add-name {
+      font-family:'Cinzel',serif; font-size:16px; font-weight:600;
+    }
+
+    /* ── EQUIPMENT GRID ── */
+    .equip-hero-selector {
+      display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;
+    }
+    .equip-hero-btn {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+      padding:7px 14px; border-radius:4px; border:1px solid var(--border);
+      background:var(--bg3); color:var(--text-muted); cursor:pointer; transition:all 0.2s;
+    }
+    .equip-hero-btn.active { color:var(--text); }
+    .equip-snapshot-info {
+      font-size:13px; color:var(--text-muted); font-style:italic; margin-bottom:18px;
+    }
+    .equip-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px;
+    }
+    .equip-item {
+      display:flex; align-items:center; gap:12px;
+      background:var(--bg2); border:1px solid var(--border); border-radius:6px;
+      padding:10px 14px; transition:border-color 0.15s;
+    }
+    .equip-item:hover { border-color:rgba(64,212,212,0.35); }
+    .equip-icon {
+      width:42px; height:42px; border-radius:4px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; border:1px solid;
+    }
+    .equip-info { flex:1; min-width:0; }
+    .equip-name {
+      font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden;
+      text-overflow:ellipsis; line-height:1.3;
+    }
+    .equip-meta {
+      display:flex; gap:8px; align-items:center; margin-top:3px;
+    }
+    .equip-slot {
+      font-size:11px; color:var(--text-muted); text-transform:uppercase;
+      letter-spacing:0.1em; font-family:'Cinzel',serif;
+    }
+    .equip-ilvl {
+      font-family:'Cinzel',serif; font-size:12px; font-weight:700;
+      background:rgba(0,0,0,0.4); padding:1px 6px; border-radius:3px;
+    }
+    .equip-gs {
+      font-family:'Cinzel',serif; font-size:11px; color:var(--text-muted);
+    }
+    .equip-totals {
+      background:var(--bg2); border:1px solid var(--border); border-radius:6px;
+      padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .equip-total-label {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--text-muted);
+    }
+    .equip-total-val {
+      font-family:'Cinzel',serif; font-size:24px; font-weight:700; color:var(--teal-light);
+    }
+    .equip-empty {
+      text-align:center; padding:40px; color:var(--text-muted); font-style:italic; font-size:15px;
+    }
+
+    /* ── HISTORIQUE TAB ── */
+    .hist-section { margin-bottom:28px; }
+    .hist-section-title {
+      font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border);
+    }
+    .hist-run-item {
+      display:grid; grid-template-columns:1fr 130px 80px 70px 90px;
+      gap:10px; align-items:center; padding:10px 0;
+      border-bottom:1px solid rgba(64,212,212,0.05); font-size:15px;
+    }
+    .hist-run-item:last-child { border-bottom:none; }
+
+    /* ── QUALITY COLORS ── */
+    .q1 { color:#00c700; border-color:rgba(0,199,0,0.4);    background:rgba(0,199,0,0.08); }
+    .q2 { color:#006fe6; border-color:rgba(0,111,230,0.4);  background:rgba(0,111,230,0.08); }
+    .q3 { color:#a920fd; border-color:rgba(169,32,253,0.4); background:rgba(169,32,253,0.08); }
+    .q4 { color:#b79f00; border-color:rgba(183,159,0,0.4);  background:rgba(183,159,0,0.08); }
+    .q5 { color:#b60000; border-color:rgba(182,0,0,0.4);    background:rgba(182,0,0,0.08); }
+    .q6 { color:#e96326; border-color:rgba(233,99,38,0.4);  background:rgba(233,99,38,0.08); }
+
+    /* ── SLOT NAMES ── */
   </style>
 </head>
 <body>
@@ -661,7 +920,7 @@
   <button class="tab active" id="tab-leaderboard" onclick="showPage('leaderboard',this)" data-fr="Classement" data-en="Leaderboard">Classement</button>
   <button class="tab" id="tab-events" onclick="showPage('events',this)" data-fr="Événements" data-en="Events">Événements</button>
   <button class="tab" id="tab-rules" onclick="showPage('rules',this)" data-fr="Règles" data-en="Rules">Règles</button>
-  <button class="tab" id="tab-profile" onclick="showPage('profile',this)" data-fr="Mon Profil" data-en="My Profile">Mon Profil</button>
+  <button class="tab" id="tab-profile" onclick="showPage('profile',this)" data-fr="Se connecter" data-en="Sign In">Se connecter</button>
   <div class="nav-right">
     <div class="lang-toggle">
       <button class="lang-btn active" id="lang-btn-fr" onclick="setLang('fr')">FR</button>
@@ -694,8 +953,8 @@
     </div>
     <div class="lb-header">
       <div>#</div>
-      <div data-fr="Joueur / Personnage(s)" data-en="Player / Character(s)">Joueur / Personnage(s)</div>
-      <div style="text-align:right" data-fr="Meilleur ilvl" data-en="Best ilvl">Meilleur ilvl</div>
+      <div data-fr="Joueur" data-en="Player">Joueur</div>
+      <div style="text-align:right" data-fr="Meilleur Score" data-en="Best Score">Meilleur Score</div>
       <div class="col-attempts" style="text-align:right" data-fr="Tentatives" data-en="Attempts">Tentatives</div>
       <div style="text-align:right" data-fr="Meilleur Donjon" data-en="Highest Dungeon">Meilleur Donjon</div>
     </div>
@@ -775,7 +1034,7 @@
 <script>
   // ── CONFIG ──────────────────────────────────────────────────────────────────
   const SUPABASE_URL      = 'https://ehsnzujkmtbzikdbqnjt.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_GgNaGBPs4nD65Mt60yGJxA_82DhdeRO';
+  const SUPABASE_ANON_KEY = 'sb_publishable_VaKW09b17IXBlU_snJ7S_g_xiwNzyvH';
   const SEASON            = 'S1';
   const PAGE_SIZE         = 20;
   const CACHE_MS          = 60_000;
@@ -796,6 +1055,35 @@
     'Gunde':   '#933637',
   };
   function classColor(cls) { return CLASS_COLORS[cls] || 'var(--text-muted)'; }
+  function heroImg(cls) { return `../images/heroes/${(cls||'').toLowerCase()}.jpg`; }
+
+  // Mapping dungeon name (Fellowship logs) → image file
+  const DUNGEON_MAP = {
+    "Sailor's Abyss":       'abime-des-marins',
+    "Everdawn Grove":       'bois-de-laube',
+    "Godfall Quarry":       'carriere-tombe-dieu',
+    "Wraithtide Vault":     'caveau-de-lamespectre',
+    "Wyrmheart":            'coeur-de-guivre',
+    "The Heart of Tuzari":  'coeur-de-tuzari',
+    "Silken Hollow":        'creux-soyeux',
+    "Stormwatch":           'guet-tempete',
+    "Cithrel's Fall":       'la-chute-cithrel',
+    "Urrak Markets":        'marche-durrak',
+    "Ruins of Regath":      'ruins-of-regath',
+    "Empyrean Sands":       'sables-empyreens',
+    "Ransack of Drakheim":  'saccage-de-drakheim',
+    "Scryer's Peak":        'scryers-peak',
+    "Xul the Blood Monolith": 'xul-the-blood-monolith',
+    "Sinthara":             'xul-the-blood-monolith', // fallback
+  };
+  function dungeonImg(name) {
+    const slug = DUNGEON_MAP[name];
+    if (!slug) return null;
+    const ext = slug === 'medal' ? 'png' : 'jpg';
+    return `../gloire/images/${slug}.${ext}`;
+  }
+  function isXul(name) { return name && name.toLowerCase().includes('xul'); }
+
 
   // Couleurs par tier de donjon
   const TIER_COLORS = {
@@ -975,17 +1263,17 @@
     // Calculer best rank + total tentatives par joueur
     const players = [...playerMap.values()].map(p => {
       const aliveChars    = p.chars.filter(c => c.status === 'alive');
-      const bestIlvl      = Math.max(...p.chars.map(c => c.ilvl_best || 0), 0);
       const totalAttempts = p.chars.reduce((s, c) => s + (c.character_total_attempts || 1), 0);
-      // Meilleur difficultyLevel toutes tentatives confondues
-      const bestDl = Math.max(...p.chars.map(c => c.best_difficulty_level || 0), 0);
-      const bestRank = diffLevelToRank(bestDl);
-      const sortKey  = rankSortKey(bestDl);
-      return { ...p, aliveChars, bestIlvl, totalAttempts, bestDl, bestRank, sortKey };
+      const bestDl        = Math.max(...p.chars.map(c => c.best_difficulty_level || 0), 0);
+      const bestRank      = diffLevelToRank(bestDl);
+      const sortKey       = rankSortKey(bestDl);
+      // Score = total_rating_score du meilleur personnage (celui avec le plus haut score)
+      const totalScore    = Math.max(...p.chars.map(c => c.total_rating_score || 0), 0);
+      return { ...p, aliveChars, totalAttempts, bestDl, bestRank, sortKey, totalScore };
     });
 
-    // Tri : highest dungeon desc (sortKey), à égalité tentatives asc
-    players.sort((a, b) => b.sortKey - a.sortKey || a.totalAttempts - b.totalAttempts);
+    // Tri : meilleur score desc, à égalité highest dungeon, à égalité tentatives asc
+    players.sort((a, b) => b.totalScore - a.totalScore || b.sortKey - a.sortKey || a.totalAttempts - b.totalAttempts);
 
     // Mise à jour compteur header
     const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
@@ -1061,137 +1349,218 @@
   }
 
   // Cache des runs par character_id
-  const _runsCache = new Map();
+  // ── LEADERBOARD v2 ─────────────────────────────────────────────────────────
+
+  const _runsCache  = new Map();
+  const _bdrCache   = new Map(); // best dungeon ratings cache
 
   async function fetchHeroRuns(characterId) {
     if (_runsCache.has(characterId)) return _runsCache.get(characterId);
     try {
       const runs = await sbFetch(
-        `/rest/v1/hm_runs?character_id=eq.${characterId}&season=eq.${SEASON}&order=completed_at.desc&limit=5` +
-        `&select=dungeon_name,difficulty_level,in_time,rating,completed_at,completed,hm_death,valid`
+        `/rest/v1/hm_runs?character_id=eq.${characterId}&season=eq.${SEASON}` +
+        `&valid=eq.true&order=completed_at.desc&limit=5` +
+        `&select=dungeon_name,difficulty_level,in_time,rating,completed_at,hm_death`
       );
       _runsCache.set(characterId, runs ?? []);
       return runs ?? [];
     } catch { return []; }
   }
 
+  async function fetchBestDungeonRatings(characterId) {
+    if (_bdrCache.has(characterId)) return _bdrCache.get(characterId);
+    try {
+      const rows = await sbFetch(
+        `/rest/v1/hm_best_dungeon_ratings?character_id=eq.${characterId}&season=eq.${SEASON}` +
+        `&order=best_rating.desc` +
+        `&select=dungeon_name,best_rating,difficulty_level,completion_time`
+      );
+      _bdrCache.set(characterId, rows ?? []);
+      return rows ?? [];
+    } catch { return []; }
+  }
+
+  function renderLbPage(filtered, data) {
+    filtered = filtered || _lbFiltered;
+    data     = data || _lbData;
+    const total = filtered.length;
+    const pages = Math.ceil(total / PAGE_SIZE);
+    _lbPage     = Math.min(_lbPage, pages || 1);
+    const slice = filtered.slice((_lbPage-1)*PAGE_SIZE, _lbPage*PAGE_SIZE);
+
+    const cont = document.getElementById('lb-content');
+    if (!slice.length) { cont.innerHTML = `<div class="empty">${fr() ? 'Aucun joueur inscrit.' : 'No registered players.'}</div>`; return; }
+
+    cont.innerHTML = slice.map((p, i) => {
+      const rank    = (_lbPage-1)*PAGE_SIZE + i + 1;
+      const rankCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+      const f       = fr();
+
+      // Best hero = highest total_rating_score
+      const bestChar = p.chars.reduce((best, c) =>
+        (!best || (c.total_rating_score||0) > (best.total_rating_score||0)) ? c : best, null);
+      const heroCol   = bestChar ? classColor(bestChar.character_class) : 'var(--text-muted)';
+      const isDead    = bestChar?.status === 'dead';
+      const heroName  = bestChar?.character_class || '—';
+
+      // Highest dungeon badge
+      const rankColor = tierColor(p.bestRank.tier);
+      const rankBadge = p.bestDl > 0
+        ? `<span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:${rankColor};border:1px solid ${rankColor}40;background:${rankColor}12;padding:3px 10px;border-radius:20px;white-space:nowrap">${p.bestRank.label}</span>`
+        : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
+
+      return `
+        <div class="lb-row" id="lbrow-${p.player_id}" onclick="toggleExpand(${p.player_id})">
+          <div class="lb-rank ${rankCls}">${rank}</div>
+          <div class="lb-player">
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <div class="lb-player-name">${p.player_name}</div>
+              ${bestChar ? `<span style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:${heroCol};letter-spacing:0.1em">${heroName}${isDead?' 💀':''}</span>` : ''}
+            </div>
+          </div>
+          <div class="lb-ilvl" style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:var(--teal-light)">${p.totalScore > 0 ? Math.floor(p.totalScore) : '—'}</div>
+          <div class="lb-attempts col-attempts" style="font-family:'Cinzel',serif;font-weight:700">${p.totalAttempts}</div>
+          <div class="lb-capstone">${rankBadge}</div>
+        </div>
+        <div class="lb-expand" id="lbexpand-${p.player_id}">
+          ${renderExpandedPlayer(p, data)}
+        </div>`;
+    }).join('');
+
+    renderPagination(pages, filtered, data);
+  }
+
   function renderExpandedPlayer(p, data) {
     if (!p.chars.length) return '';
     const f = fr();
 
-    // Trier les héros : best_difficulty_level desc, alive avant dead
-    const sorted = [...p.chars].sort((a, b) => {
-      const dlDiff = (b.best_difficulty_level || 0) - (a.best_difficulty_level || 0);
-      if (dlDiff !== 0) return dlDiff;
-      if (a.status === 'alive' && b.status !== 'alive') return -1;
-      if (b.status === 'alive' && a.status !== 'alive') return 1;
-      return (a.character_class || '').localeCompare(b.character_class || '');
-    });
-
-    const rows = sorted.map(c => {
-      const heroColor = classColor(c.character_class);
-      const charRank  = diffLevelToRank(c.best_difficulty_level || 0);
-      const charColor = tierColor(charRank.tier);
-      const isAlive   = c.status === 'alive';
-      const dotColor  = isAlive ? 'var(--tier1)' : 'rgba(255,68,68,0.6)';
-      const rankBadge = c.best_difficulty_level > 0
-        ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${charColor};border:1px solid ${charColor}40;background:${charColor}10;padding:2px 7px;border-radius:20px;white-space:nowrap">${charRank.label}</span>`
-        : `<span style="color:var(--text-muted);font-size:12px;font-style:italic">${f ? 'Aucun run' : 'No run'}</span>`;
-
-      // Score de ce perso = best_rating (meilleur rating toutes tentatives)
-      const score = c.best_rating ? Math.floor(c.best_rating) : '—';
-
+    // Portraits des héros (carrés cliquables)
+    const portraits = p.chars.map(c => {
+      const col  = classColor(c.character_class);
+      const dead = c.status === 'dead';
+      const img  = heroImg(c.character_class);
       return `
-        <tr class="hero-row" id="herorow-${c.character_id}" onclick="toggleHeroRuns('${c.character_id}')">
-          <td>
-            <div class="hero-name-cell">
-              <div class="hero-status-dot" style="background:${dotColor};${isAlive ? `box-shadow:0 0 5px ${dotColor}` : ''}"></div>
-              <span style="font-family:'Cinzel',serif;color:${heroColor};font-size:13px">${c.character_class || c.character_name}</span>
-              <span style="font-size:11px;color:var(--text-muted)">${isAlive ? (f ? 'En vie' : 'Alive') : (f ? 'Mort' : 'Dead')} · #${c.current_attempt_number}</span>
-              ${c.died_at ? `<span style="font-size:11px;color:rgba(255,68,68,0.5)">· 💀 ${new Date(c.died_at).toLocaleDateString(f?'fr-FR':'en-GB')}</span>` : ''}
-            </div>
-          </td>
-          <td>${rankBadge}</td>
-          <td><span style="font-family:'Cinzel',serif;font-size:13px;color:var(--teal-light)">${c.ilvl_best || '—'}</span></td>
-          <td><span style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-dim)">${c.power_score_best ? Math.round(c.power_score_best) : '—'}</span></td>
-          <td style="text-align:right"><span style="font-family:'Cinzel',serif;font-size:12px;color:var(--teal-dim)">${score}</span></td>
-        </tr>
-        <tr class="hero-runs-row" id="herorunrow-${c.character_id}" style="display:none">
-          <td colspan="5">
-            <div class="hero-runs-inner" id="heroruninner-${c.character_id}">
-              <div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:6px 0">${f ? 'Chargement…' : 'Loading…'}</div>
-            </div>
-          </td>
-        </tr>`;
+        <div class="hero-portrait ${dead?'dead':''}" id="portrait-${c.character_id}"
+             onclick="selectHeroPortrait('${c.character_id}', ${p.player_id})"
+             title="${c.character_class} · ${dead ? (f?'Mort':'Dead') : (f?'En vie':'Alive')} · #${c.current_attempt_number}"
+             style="border-color:${col}60">
+          <img src="${img}" alt="${c.character_class}"
+               onerror="this.parentNode.style.background='${col}22';this.style.display='none'">
+          <div class="hero-portrait-attempt">#${c.current_attempt_number}</div>
+          ${dead ? '<div class="hero-portrait-skull">💀</div>' : ''}
+        </div>`;
     }).join('');
 
     return `
-      <table class="hero-table">
-        <thead>
-          <tr>
-            <th>${f ? 'Héros' : 'Hero'}</th>
-            <th style="text-align:right">${f ? 'Meilleur donjon' : 'Best dungeon'}</th>
-            <th style="text-align:right">ilvl</th>
-            <th style="text-align:right">PS</th>
-            <th style="text-align:right">${f ? 'Score' : 'Score'}</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+      <div class="hero-portraits">${portraits}</div>
+      <div id="hero-detail-${p.player_id}">
+        <div style="font-size:13px;color:var(--text-muted);font-style:italic;text-align:center;padding:16px">
+          ${f ? 'Clique sur un héros pour voir ses détails.' : 'Click on a hero to see their details.'}
+        </div>
+      </div>`;
   }
 
-  let _expandedHero = null;
+  let _selectedPortrait = {};
 
-  async function toggleHeroRuns(characterId) {
-    const row   = document.getElementById(`herorow-${characterId}`);
-    const runRow = document.getElementById(`herorunrow-${characterId}`);
-    const inner  = document.getElementById(`heroruninner-${characterId}`);
-    if (!row || !runRow || !inner) return;
+  async function selectHeroPortrait(characterId, playerId) {
+    // Highlight portrait
+    const player = _lbFiltered?.find(p => p.player_id === playerId);
+    if (!player) return;
 
-    const isOpen = runRow.style.display !== 'none';
+    // Toggle: if same portrait clicked, close
+    if (_selectedPortrait[playerId] === characterId) {
+      _selectedPortrait[playerId] = null;
+      document.querySelectorAll(`#lbexpand-${playerId} .hero-portrait`).forEach(p => p.classList.remove('active'));
+      document.getElementById(`hero-detail-${playerId}`).innerHTML = '';
+      return;
+    }
+    _selectedPortrait[playerId] = characterId;
 
-    // Fermer tous les héros ouverts dans ce panel
-    document.querySelectorAll('.hero-runs-row').forEach(r => { r.style.display = 'none'; });
-    document.querySelectorAll('.hero-runs-inner').forEach(r => r.classList.remove('open'));
-    document.querySelectorAll('.hero-row.expanded-hero').forEach(r => r.classList.remove('expanded-hero'));
+    // Update portrait highlights
+    player.chars.forEach(c => {
+      const el = document.getElementById(`portrait-${c.character_id}`);
+      if (el) el.classList.toggle('active', c.character_id === characterId);
+    });
 
-    if (isOpen) return;
+    const char  = player.chars.find(c => c.character_id === characterId);
+    if (!char) return;
+    const f     = fr();
+    const det   = document.getElementById(`hero-detail-${playerId}`);
+    const col   = classColor(char.character_class);
+    const rank  = diffLevelToRank(char.best_difficulty_level || 0);
+    const rCol  = tierColor(rank.tier);
+    const score = char.total_rating_score ? Math.floor(char.total_rating_score) : 0;
 
-    row.classList.add('expanded-hero');
-    runRow.style.display = 'table-row';
-    inner.classList.add('open');
+    det.innerHTML = `<div class="hero-detail">
+      <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:${col};margin-bottom:14px;letter-spacing:0.08em">
+        ${char.character_class}
+        <span style="font-size:12px;color:var(--text-muted);font-weight:400;margin-left:8px">${char.status==='dead'?'💀 '+(f?'Mort':'Dead'):'⚔️ '+(f?'En vie':'Alive')} · #${char.current_attempt_number}</span>
+      </div>
+      <div class="hero-detail-stats">
+        <div class="hero-detail-stat">
+          <div class="hero-detail-stat-val" style="color:${rCol||'var(--teal-light)'}">${char.best_rank_label||'—'}</div>
+          <div class="hero-detail-stat-lbl">${f?'Meilleur donjon':'Best dungeon'}</div>
+        </div>
+        <div class="hero-detail-stat">
+          <div class="hero-detail-stat-val">${score > 0 ? score.toLocaleString() : '—'}</div>
+          <div class="hero-detail-stat-lbl">Score total</div>
+        </div>
+        <div class="hero-detail-stat">
+          <div class="hero-detail-stat-val">${char.ilvl_best||'—'}</div>
+          <div class="hero-detail-stat-lbl">${f?'Meilleur ilvl':'Best ilvl'}</div>
+        </div>
+      </div>
+      <div id="dungeon-table-${characterId}">
+        <div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:8px 0">${f?'Chargement des donjons…':'Loading dungeons…'}</div>
+      </div>
+    </div>`;
 
-    // Charger les runs
-    const runs = await fetchHeroRuns(characterId);
-    const f = fr();
+    // Load best dungeon ratings
+    const bdrs = await fetchBestDungeonRatings(characterId);
+    const dtEl = document.getElementById(`dungeon-table-${characterId}`);
+    if (!dtEl) return;
 
-    if (!runs.length) {
-      inner.innerHTML = `<div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:6px 0">${f ? 'Aucun run enregistré.' : 'No runs recorded.'}</div>`;
+    if (!bdrs.length) {
+      dtEl.innerHTML = `<div style="font-size:13px;color:var(--text-muted);font-style:italic;padding:8px 0">${f?'Aucun donjon completé.':'No dungeons completed.'}</div>`;
       return;
     }
 
-    inner.innerHTML = `
-      <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">${f ? '5 derniers runs' : 'Last 5 runs'}</div>
-      ${runs.map(r => {
-        const dl     = r.difficulty_level;
-        const rank   = dl ? diffLevelToRank(dl) : null;
-        const rColor = rank ? tierColor(rank.tier) : 'var(--text-muted)';
-        const rankSpan = rank
-          ? `<span style="font-family:'Cinzel',serif;font-size:11px;color:${rColor}">${rank.label}</span>`
-          : `<span style="color:var(--text-muted);font-size:11px">—</span>`;
-        const timedIcon = r.in_time ? `<span style="color:var(--tier1)">✓</span>` : `<span style="color:var(--text-muted)">✗</span>`;
-        const deathIcon = r.hm_death ? ` <span style="color:rgba(255,68,68,0.7)">💀</span>` : '';
-        const validIcon = !r.valid ? ` <span style="color:rgba(255,68,68,0.5);font-size:11px">${f ? '(annulé)' : '(cancelled)'}</span>` : '';
-        const ratingStr = r.rating ? Math.floor(r.rating) + ' pts' : '—';
-        const dateStr   = new Date(r.completed_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short' });
-        return `<div class="hero-run-item">
-          <div class="hero-run-dungeon">${r.dungeon_name}${deathIcon}${validIcon}</div>
-          <div class="hero-run-rank">${rankSpan}</div>
-          <div class="hero-run-rating">${ratingStr}</div>
-          <div class="hero-run-timed">${timedIcon}</div>
-          <div class="hero-run-date">${dateStr}</div>
+    const rows = bdrs.map(bdr => {
+      const img      = dungeonImg(bdr.dungeon_name);
+      const xul      = isXul(bdr.dungeon_name);
+      const dl       = bdr.difficulty_level;
+      const rank2    = dl ? diffLevelToRank(dl) : null;
+      const rc       = rank2 ? tierColor(rank2.tier) : 'var(--text-muted)';
+      const timeStr  = bdr.completion_time
+        ? `${Math.floor(bdr.completion_time/60000)}:${String(Math.floor((bdr.completion_time%60000)/1000)).padStart(2,'0')}`
+        : '—';
+      const bgStyle  = img
+        ? `background-image:url('${img}');`
+        : '';
+      return `
+        <div class="dungeon-row">
+          ${bgStyle ? `<div class="dungeon-row-bg" style="${bgStyle}background-size:cover;background-position:center"></div>` : ''}
+          ${img
+            ? `<img class="dungeon-img-thumb" src="${img}" alt="${bdr.dungeon_name}" onerror="this.style.display='none'">`
+            : `<div class="dungeon-img-placeholder">⚔️</div>`}
+          <div class="dungeon-name-cell">
+            <div class="dungeon-name ${xul?'xul':''}">${bdr.dungeon_name}</div>
+          </div>
+          <div class="dungeon-key" style="color:${rc}">${rank2?.label||'—'}</div>
+          <div class="dungeon-score">${bdr.best_rating ? Math.floor(bdr.best_rating)+' pts' : '—'}</div>
+          <div class="dungeon-time">${timeStr}</div>
         </div>`;
-      }).join('')}`;
+    }).join('');
+
+    dtEl.innerHTML = `
+      <div class="dungeon-table-header">
+        <span></span>
+        <span>${f?'Donjon':'Dungeon'}</span>
+        <span style="text-align:right">${f?'Meilleure clé':'Best key'}</span>
+        <span style="text-align:right">Score</span>
+        <span style="text-align:right">Temps</span>
+      </div>
+      <div class="dungeon-table">${rows}</div>`;
   }
 
   function toggleExpand(playerId) {
@@ -1201,14 +1570,12 @@
     const isOpen = exp.classList.contains('open');
     document.querySelectorAll('.lb-expand.open').forEach(e => e.classList.remove('open'));
     document.querySelectorAll('.lb-row.expanded').forEach(r => r.classList.remove('expanded'));
-    // Reset hero sub-panels when closing
-    document.querySelectorAll('.hero-runs-row').forEach(r => { r.style.display = 'none'; });
-    document.querySelectorAll('.hero-runs-inner').forEach(r => r.classList.remove('open'));
-    document.querySelectorAll('.hero-row.expanded-hero').forEach(r => r.classList.remove('expanded-hero'));
+    _selectedPortrait = {};
     if (!isOpen) { exp.classList.add('open'); row.classList.add('expanded'); }
   }
 
-  function renderPagination(pages, filtered, data) {
+
+    function renderPagination(pages, filtered, data) {
     const el = document.getElementById('lb-pagination');
     if (pages <= 1) { el.innerHTML = ''; return; }
     let html = `<button class="pg-btn" onclick="goLbPage(${_lbPage-1},event)" ${_lbPage===1?'disabled':''}>‹</button>`;
@@ -1610,6 +1977,9 @@
   }
 
   function renderProfileVisitor(cont, f) {
+    // Tab label: "Se connecter" quand non connecté
+    const tabEl = document.getElementById('tab-profile');
+    if (tabEl) { tabEl.textContent = f ? 'Se connecter' : 'Sign In'; tabEl.setAttribute('data-fr','Se connecter'); tabEl.setAttribute('data-en','Sign In'); }
     cont.innerHTML = `
       <div class="profile-visitor">
         <div class="profile-visitor-title">⚔️ ${f ? 'Mon Profil Hardcore' : 'My Hardcore Profile'}</div>
@@ -1910,189 +2280,241 @@
     }
   }
 
-  // État C — Profil complet
+  // ── QUALITY / SLOT HELPERS ────────────────────────────────────────────────
+  const QUALITY_LABELS = {
+    1: { fr:'Commun', en:'Common', cls:'q1' },
+    2: { fr:'Peu commun', en:'Uncommon', cls:'q2' },
+    3: { fr:'Rare', en:'Rare', cls:'q3' },
+    4: { fr:'Héroïque', en:'Heroic', cls:'q4' },
+    5: { fr:'Royal', en:'Royal', cls:'q5' },
+    6: { fr:'Légendaire', en:'Legendary', cls:'q6' },
+  };
+  const SLOT_NAMES_MAP = {
+    fr: { 0:'Tête',1:'Collier',2:'Épaules',3:'Dos',4:'Torse',5:'Poignets',6:'Mains',7:'Taille',8:'Jambes',9:'Pieds',10:'Bague',11:'Bague',12:'Bague',13:'Arme',14:'Relique',15:'Relique',16:'Relique',17:'Relique' },
+    en: { 0:'Head',1:'Neck',2:'Shoulders',3:'Back',4:'Chest',5:'Wrists',6:'Hands',7:'Waist',8:'Legs',9:'Feet',10:'Ring',11:'Ring',12:'Ring',13:'Weapon',14:'Relic',15:'Relic',16:'Relic',17:'Relic' },
+  };
+  const SLOT_ICONS_MAP = { 0:'🪖',1:'📿',2:'🛡',3:'🧥',4:'👕',5:'🧤',6:'🧤',7:'👔',8:'👖',9:'👟',10:'💍',11:'💍',12:'💍',13:'⚔️',14:'💎',15:'💎',16:'💎',17:'💎' };
+  function qualityClass(q) { return (QUALITY_LABELS[q]||QUALITY_LABELS[1]).cls; }
+  function slotName(slot, f) { return (f ? SLOT_NAMES_MAP.fr : SLOT_NAMES_MAP.en)[slot] || 'Slot'; }
+
+  let _activeProfileTab = 'heroes';
+  let _equipSelectedHero = null;
+
   function renderProfileConnected(cont, f, session) {
-    const { profile, warnings, characters, periods, heroClasses } = _profileData;
+    const { warnings, characters } = _profileData;
+    const playerName = characters.find(c => c.character_name)?.character_name || '—';
+    const tabEl = document.getElementById('tab-profile');
+    if (tabEl) { tabEl.textContent = f ? 'Gérer mes héros' : 'My Heroes'; tabEl.setAttribute('data-fr','Gérer mes héros'); tabEl.setAttribute('data-en','My Heroes'); }
     const unread = warnings.filter(w => !w.read).length;
-
-    const heroesByClass = {};
-    for (const h of heroClasses) heroesByClass[h.class_name] = { ...h, chars: [] };
-    for (const c of characters) {
-      if (heroesByClass[c.character_class]) heroesByClass[c.character_class].chars.push(c);
-    }
-
-    const roles = ['Tank', 'Healer', 'DPS'];
-    const heroSections = roles.map(role => {
-      const items = heroClasses.filter(h => h.role === role).map(h => {
-        const chars     = heroesByClass[h.class_name]?.chars ?? [];
-        const aliveChar = chars.find(c => c.status === 'alive');
-        const isOn      = aliveChar?.hm_enabled ?? false;
-        const period    = aliveChar ? periods.find(p => p.character_id === aliveChar.id && !p.active_until) : null;
-        const hasChar   = chars.length > 0;
-
-        return `<div class="profile-hero-card ${isOn ? 'hm-on' : ''}" id="hcard-${h.class_name}">
-          <div class="profile-hero-header">
-            <div style="display:flex;align-items:baseline;gap:6px">
-              <div class="profile-hero-name" style="color:${h.color_hex}">${h.class_name}</div>
-              <div class="profile-hero-role">${h.role}</div>
-            </div>
-            ${hasChar ? `
-            <div class="hm-toggle-pill">
-              <span style="color:var(--text-muted);font-size:10px">${isOn ? 'HM ON' : 'HM OFF'}</span>
-              <label class="hm-toggle-switch">
-                <input type="checkbox" ${isOn ? 'checked' : ''} onchange="toggleHm('${h.class_name}', this.checked, '${aliveChar?.id || ''}', ${aliveChar?.player_id || 0})">
-                <div class="hm-toggle-track"></div>
-                <div class="hm-toggle-thumb"></div>
-              </label>
-            </div>` : `
-            <button onclick="addHeroToProfile('${h.class_name}')" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.12em;padding:5px 10px;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.3);color:var(--hc-red);border-radius:3px;cursor:pointer">
-              ${f ? '+ Ajouter' : '+ Add'}
-            </button>`}
-          </div>
-          ${aliveChar ? `
-          <div class="profile-hero-stats">
-            <div class="profile-hero-stat">
-              <div class="profile-hero-stat-val">${aliveChar.best_rank_label || '—'}</div>
-              <div class="profile-hero-stat-lbl">${f ? 'Meilleur rang' : 'Best rank'}</div>
-            </div>
-            <div class="profile-hero-stat">
-              <div class="profile-hero-stat-val">${aliveChar.ilvl_current || '—'}</div>
-              <div class="profile-hero-stat-lbl">ilvl</div>
-            </div>
-            <div class="profile-hero-stat">
-              <div class="profile-hero-stat-val">${aliveChar.power_score_current ? Math.round(aliveChar.power_score_current) : '—'}</div>
-              <div class="profile-hero-stat-lbl">Power Score</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px">
-            <div>
-              ${aliveChar.status === 'alive'
-                ? `<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;color:var(--tier1);padding:2px 8px;border:1px solid rgba(68,238,68,0.3);border-radius:20px">⚔️ ${f ? 'En vie' : 'Alive'}</span>`
-                : `<span style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;color:rgba(255,68,68,0.7);padding:2px 8px;border:1px solid rgba(255,68,68,0.3);border-radius:20px">💀 ${f ? 'Mort' : 'Dead'}</span>`}
-              ${period ? `<span style="font-size:12px;color:var(--text-muted);margin-left:8px;font-style:italic">HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</span>` : ''}
-            </div>
-            <button onclick="openResetModal('${aliveChar.id}','${h.class_name}')"
-              style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;padding:4px 10px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.25);color:rgba(255,68,68,0.6);border-radius:3px;cursor:pointer;transition:all 0.2s"
-              onmouseover="this.style.borderColor='rgba(255,68,68,0.5)';this.style.color='var(--hc-red)'"
-              onmouseout="this.style.borderColor='rgba(255,68,68,0.25)';this.style.color='rgba(255,68,68,0.6)'">
-              🔄 ${f ? 'Reset' : 'Reset'}
-            </button>
-          </div>
-          ` : `<div style="font-size:13px;color:var(--text-muted);font-style:italic;margin-top:6px">${f ? 'Non sélectionné, clique "Ajouter" pour l\'activer.' : 'Not selected, click "Add" to enable it.'}</div>`}
-        </div>`;
-      }).join('');
-      return `<div style="margin-bottom:20px">
-        <div class="profile-section-title">${role}</div>
-        ${items}
-      </div>`;
-    }).join('');
-
-    const warningsHtml = warnings.length ? `
-      <div class="profile-warnings">
-        <div class="profile-section-title">
-          ${f ? 'Avertissements' : 'Warnings'}
-          ${unread ? `<span style="color:var(--hc-red);margin-left:8px">(${unread})</span>` : ''}
-        </div>
-        ${warnings.map(w => {
-          let icon = '⚠️';
-          if (w.warning_type === 'run_invalidated') icon = '🚫';
-          if (w.warning_type === 'nm_detected')     icon = '🔍';
-          return `
-          <div class="profile-warning-item ${w.read ? 'read' : ''}" onclick="markWarningRead('${w.id}', this)">
-            <div class="profile-warning-icon">${icon}</div>
-            <div class="profile-warning-body">
-              <div class="profile-warning-msg">${f ? w.message_fr : w.message_en}</div>
-              <div class="profile-warning-time">${new Date(w.created_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>` : '';
-
-    const playerName = characters[0]?.character_name || profile?.player_id || '—';
-
     cont.innerHTML = `
       <div class="profile-header">
         <div class="profile-user">
           <div class="profile-username">${playerName}</div>
-          <div class="profile-email">${f ? 'Profil Hardcore' : 'Hardcore Profile'} · ${f ? 'Saison' : 'Season'} 1</div>
+          <div class="profile-email">${f ? 'Fellowship Hardcore · Saison 1' : 'Fellowship Hardcore · Season 1'}</div>
         </div>
         <button class="btn-logout" onclick="signOut()">${f ? 'Déconnexion' : 'Sign out'}</button>
       </div>
-      <div class="profile-section-title" style="margin-bottom:18px">${f ? 'Mes héros' : 'My heroes'}</div>
-      ${heroSections}
-      ${warningsHtml}
+      <div class="profile-tabs">
+        <button class="profile-tab-btn ${_activeProfileTab==='heroes'?'active':''}" onclick="switchProfileTab('heroes')">${f ? '⚔️ Mes Héros' : '⚔️ My Heroes'}</button>
+        <button class="profile-tab-btn ${_activeProfileTab==='equipment'?'active':''}" onclick="switchProfileTab('equipment')">${f ? '🛡 Équipement' : '🛡 Equipment'}</button>
+        <button class="profile-tab-btn ${_activeProfileTab==='history'?'active':''}" onclick="switchProfileTab('history')">${f ? '📋 Historique' : '📋 History'}${unread ? `<span style="color:var(--hc-red);margin-left:4px">(${unread})</span>` : ''}</button>
+      </div>
+      <div id="profile-tab-content"></div>
       <div style="margin-top:28px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--text-muted);line-height:1.7">
-        💬 ${f
-          ? `Un problème ? Contacte Pouf directement sur <strong style="color:var(--text-dim)">Discord : pouf_hgaming</strong> ou par <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.`
-          : `A problem? Contact Pouf on <strong style="color:var(--text-dim)">Discord: pouf_hgaming</strong> or by <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.`}
+        💬 ${f ? `Un problème ? Contacte Pouf sur <strong style="color:var(--text-dim)">Discord : pouf_hgaming</strong> ou par <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.` : `A problem? Contact Pouf on <strong style="color:var(--text-dim)">Discord: pouf_hgaming</strong> or by <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.`}
       </div>`;
+    renderProfileTabContent();
   }
 
-  async function toggleHm(heroClass, enabled, charId, playerId) {
+  function switchProfileTab(tab) {
+    _activeProfileTab = tab;
+    document.querySelectorAll('.profile-tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', ['heroes','equipment','history'][i] === tab);
+    });
+    renderProfileTabContent();
+  }
+
+  function renderProfileTabContent() {
+    const cont = document.getElementById('profile-tab-content');
+    if (!cont || !_profileData) return;
     const f = fr();
-    const session = await getSession();
-    if (!session) return;
+    if (_activeProfileTab === 'heroes')    renderTabHeroes(cont, f);
+    if (_activeProfileTab === 'equipment') renderTabEquipment(cont, f);
+    if (_activeProfileTab === 'history')   renderTabHistory(cont, f);
+  }
 
-    if (!charId) {
-      const char = _profileData?.characters?.find(c => c.character_class === heroClass && c.status === 'alive');
-      if (!char) { toast(f ? 'Personnage introuvable.' : 'Character not found.', true); return; }
-      charId = char.id; playerId = char.player_id;
-    }
-
-    try {
-      const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' };
-      if (enabled) {
-        const userRes = await authFetch('/user', { token: session.access_token });
-        await fetch(SUPABASE_URL + '/rest/v1/hm_active_periods', {
-          method: 'POST', headers: { ...headers, 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ character_id: charId, user_id: userRes.id, player_id: playerId, active_from: new Date().toISOString(), season: SEASON }),
-        });
-      } else {
-        await fetch(SUPABASE_URL + `/rest/v1/hm_active_periods?character_id=eq.${charId}&active_until=is.null`, {
-          method: 'PATCH', headers,
-          body: JSON.stringify({ active_until: new Date().toISOString(), deactivated_by: 'user' }),
-        });
+  function renderTabHeroes(cont, f) {
+    const { characters, periods, heroClasses } = _profileData;
+    const byClass = {};
+    for (const h of heroClasses) byClass[h.class_name] = { ...h, chars: [] };
+    for (const c of characters) { if (byClass[c.character_class]) byClass[c.character_class].chars.push(c); }
+    let html = '';
+    for (const role of ['Tank','Healer','DPS']) {
+      html += `<div style="margin-bottom:28px"><div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)">${role}</div>`;
+      for (const h of heroClasses.filter(x => x.role === role)) {
+        const chars  = byClass[h.class_name]?.chars ?? [];
+        const alive  = chars.find(c => c.status === 'alive');
+        const isOn   = alive?.hm_enabled ?? false;
+        const period = alive ? periods.find(p => p.character_id === alive.id && !p.active_until) : null;
+        if (alive) {
+          const rank = diffLevelToRank(alive.best_difficulty_level || 0);
+          const rCol = tierColor(rank.tier);
+          html += `<div class="hero-card-v2 ${isOn ? 'hm-on' : ''}">
+            <div class="hero-card-v2-header">
+              <div class="hero-card-v2-title">
+                <div class="hero-card-v2-name" style="color:${h.color_hex}">${h.class_name}</div>
+                <div class="hero-card-v2-role">${h.role}</div>
+              </div>
+              <div class="hm-toggle-pill">
+                <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:${isOn?'var(--hc-red)':'var(--text-muted)'}">${isOn?'HM ON':'HM OFF'}</span>
+                <label class="hm-toggle-switch">
+                  <input type="checkbox" ${isOn?'checked':''} onchange="toggleHm('${h.class_name}',this.checked,'${alive.id}',${alive.player_id})">
+                  <div class="hm-toggle-track"></div><div class="hm-toggle-thumb"></div>
+                </label>
+              </div>
+            </div>
+            <div class="hero-card-v2-stats">
+              <div class="hero-stat-block"><div class="hero-stat-block-val" style="color:${rCol||'var(--teal-light)'}">${alive.best_rank_label||'—'}</div><div class="hero-stat-block-lbl">${f?'Meilleur donjon':'Best dungeon'}</div></div>
+              <div class="hero-stat-block"><div class="hero-stat-block-val">${alive.ilvl_current||'—'}</div><div class="hero-stat-block-lbl">ilvl</div></div>
+              <div class="hero-stat-block"><div class="hero-stat-block-val">${alive.power_score_current ? Math.round(alive.power_score_current).toLocaleString() : '—'}</div><div class="hero-stat-block-lbl">Power Score</div></div>
+            </div>
+            <div class="hero-card-v2-footer">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <span class="hero-status-badge alive">⚔️ ${f?'En vie':'Alive'} · #${alive.attempt_number}</span>
+                ${period ? `<span class="hero-hm-since">HM ${f?'depuis':'since'} ${new Date(period.active_from).toLocaleDateString(f?'fr-FR':'en-GB')}</span>` : ''}
+              </div>
+              <button onclick="openResetModal('${alive.id}','${h.class_name}')" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;padding:5px 12px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.25);color:rgba(255,68,68,0.6);border-radius:4px;cursor:pointer">🔄 Reset</button>
+            </div>
+          </div>`;
+          for (const dc of chars.filter(c=>c.status==='dead').sort((a,b)=>b.attempt_number-a.attempt_number)) {
+            html += `<div class="hero-card-v2" style="opacity:0.45;margin-left:16px;border-color:rgba(255,68,68,0.15)">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="font-family:'Cinzel',serif;font-size:15px;color:${h.color_hex};opacity:0.6">${h.class_name}</span>
+                  <span class="hero-status-badge dead">💀 ${f?'Mort':'Dead'} · #${dc.attempt_number}</span>
+                  ${dc.died_at ? `<span style="font-size:13px;color:var(--text-muted)">${new Date(dc.died_at).toLocaleDateString(f?'fr-FR':'en-GB')}</span>` : ''}
+                </div>
+                <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-muted)">${dc.best_rank_label||'—'}</span>
+              </div>
+            </div>`;
+          }
+        } else {
+          html += `<div class="hero-card-add">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:8px;height:8px;border-radius:50%;background:${h.color_hex};flex-shrink:0"></div>
+              <span class="hero-card-add-name" style="color:${h.color_hex}">${h.class_name}</span>
+              <span style="font-size:14px;color:var(--text-muted);font-style:italic">${h.role}</span>
+            </div>
+            <button onclick="addHeroToProfile('${h.class_name}')" style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.12em;padding:7px 16px;background:rgba(64,212,212,0.08);border:1px solid rgba(64,212,212,0.3);color:var(--teal-light);border-radius:4px;cursor:pointer">+ ${f?'Ajouter':'Add'}</button>
+          </div>`;
+        }
       }
-      await fetch(SUPABASE_URL + `/rest/v1/hm_characters?id=eq.${charId}`, {
-        method: 'PATCH', headers,
-        body: JSON.stringify({ hm_enabled: enabled }),
-      });
-      toast(enabled ? (f ? `HM activé — ${heroClass}` : `HM enabled — ${heroClass}`) : (f ? `HM désactivé — ${heroClass}` : `HM disabled — ${heroClass}`));
-      _profileData = null;
-      await renderProfilePage();
-    } catch (e) {
-      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+      html += '</div>';
     }
+    cont.innerHTML = html;
   }
 
-  async function addHeroToProfile(heroClass) {
-    const f = fr();
-    const session = await getSession();
-    if (!session || !_profileData) return;
-    const profile    = _profileData.profile;
-    const characters = _profileData.characters;
-    const playerId   = profile?.player_id;
-    const charName   = characters[0]?.character_name;
-    if (!playerId || !charName) { toast(f ? 'Profil incomplet.' : 'Incomplete profile.', true); return; }
-    if (characters.find(c => c.character_class === heroClass)) { toast(f ? 'Héros déjà ajouté.' : 'Hero already added.', true); return; }
+  async function renderTabEquipment(cont, f) {
+    const { characters, heroClasses } = _profileData;
+    const alive = characters.filter(c => c.status === 'alive');
+    if (!alive.length) { cont.innerHTML = `<div class="equip-empty">${f?'Aucun héros actif.':'No active hero.'}</div>`; return; }
+    if (!_equipSelectedHero) _equipSelectedHero = alive[0].id;
+    const sel = alive.map(c => {
+      const hd = heroClasses.find(h => h.class_name === c.character_class);
+      const col = hd?.color_hex || 'var(--text-muted)';
+      const act = c.id === _equipSelectedHero;
+      return `<button class="equip-hero-btn ${act?'active':''}" style="${act?`border-color:${col}60;color:${col};background:${col}12`:''}" onclick="_equipSelectedHero='${c.id}';renderTabEquipment(document.getElementById('profile-tab-content'),fr())">${c.character_class}</button>`;
+    }).join('');
+    cont.innerHTML = `<div class="equip-hero-selector">${sel}</div><div id="equip-snapshot-zone"><div class="equip-empty">${f?'Chargement…':'Loading…'}</div></div>`;
+    await renderEquipmentSnapshot(f);
+  }
 
+  async function renderEquipmentSnapshot(f) {
+    const zone = document.getElementById('equip-snapshot-zone');
+    if (!zone) return;
     try {
-      const userRes = await authFetch('/user', { token: session.access_token });
-      const fcid = characters[0]?.fellowship_character_id ?? null;
-      await fetch(SUPABASE_URL + '/rest/v1/hm_characters', {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ player_id: playerId, user_id: userRes.id, fellowship_character_id: fcid, character_name: charName, character_class: heroClass, attempt_number: 1, status: 'alive', hm_enabled: false, season: SEASON }),
-      });
-      toast(f ? `${heroClass} ajouté !` : `${heroClass} added!`);
-      _profileData = null;
-      await renderProfilePage();
-    } catch (e) {
-      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
-    }
+      const snap = await sbFetch(`/rest/v1/hm_equipment_snapshots?character_id=eq.${_equipSelectedHero}&season=eq.${SEASON}&order=created_at.desc&limit=1&select=ilvl,power_score,gear,created_at`);
+      if (!snap?.length || !snap[0].gear?.length) {
+        zone.innerHTML = `<div class="equip-empty">${f?'Aucun snapshot disponible.<br>Il sera créé après le premier run HM.':'No snapshot available.<br>It will be created after the first HM run.'}</div>`;
+        return;
+      }
+      const s = snap[0];
+      const gear = [...s.gear].sort((a,b) => (a.slot||0)-(b.slot||0));
+      const date = new Date(s.created_at).toLocaleDateString(f?'fr-FR':'en-GB',{day:'2-digit',month:'long',year:'numeric'});
+      const items = gear.map(item => {
+        const q = item.quality||1; const qc = qualityClass(q);
+        const sl = slotName(item.slot??0,f); const ic = SLOT_ICONS_MAP[item.slot??0]||'📦';
+        const gs = item.potentialPower ? Math.round(item.potentialPower/100) : null;
+        const nm = item.name||(f?'Objet inconnu':'Unknown item');
+        return `<div class="equip-item">
+          <div class="equip-icon ${qc}">${ic}</div>
+          <div class="equip-info">
+            <div class="equip-name ${qc}" style="border:none;background:none;padding:0">${nm}</div>
+            <div class="equip-meta">
+              <span class="equip-slot">${sl}</span>
+              <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:3px">${item.itemLevel||0}</span>
+              ${gs ? `<span class="equip-gs">PS ${gs}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      zone.innerHTML = `
+        <div class="equip-snapshot-info">${f?'Dernier run HM :':'Last HM run:'} <strong style="color:var(--text-dim)">${date}</strong></div>
+        <div class="equip-grid">${items}</div>
+        <div class="equip-totals">
+          <span class="equip-total-label">${f?'ilvl moyen':'Avg ilvl'}</span><span class="equip-total-val">${s.ilvl}</span>
+          <span class="equip-total-label" style="margin-left:32px">Power Score</span><span class="equip-total-val">${s.power_score ? Math.round(s.power_score).toLocaleString() : '—'}</span>
+        </div>`;
+    } catch(e) { zone.innerHTML = `<div class="equip-empty">${f?'Erreur.':'Error.'}</div>`; }
   }
 
-    async function markWarningRead(warningId, el) {
+  async function renderTabHistory(cont, f) {
+    const { warnings, characters, heroClasses } = _profileData;
+    const unread = warnings.filter(w=>!w.read).length;
+    let html = `<div class="hist-section"><div class="hist-section-title">${f?'Avertissements':'Warnings'}${unread?`<span style="color:var(--hc-red);margin-left:6px">(${unread})</span>`:''}</div>`;
+    if (!warnings.length) {
+      html += `<div style="font-size:15px;color:var(--text-muted);font-style:italic;padding:12px 0">${f?'Aucun avertissement.':'No warnings.'}</div>`;
+    } else {
+      for (const w of warnings) {
+        const ic = w.warning_type==='run_invalidated'?'🚫':w.warning_type==='nm_detected'?'🔍':'⚠️';
+        html += `<div class="profile-warning-item ${w.read?'read':''}" onclick="markWarningRead('${w.id}',this)">
+          <div class="profile-warning-icon">${ic}</div>
+          <div class="profile-warning-body">
+            <div class="profile-warning-msg">${f?w.message_fr:w.message_en}</div>
+            <div class="profile-warning-time">${new Date(w.created_at).toLocaleDateString(f?'fr-FR':'en-GB',{day:'2-digit',month:'short',year:'numeric'})}</div>
+          </div>
+        </div>`;
+      }
+    }
+    html += '</div>';
+    const withRuns = characters.filter(c=>c.status==='alive'&&(c.best_difficulty_level||0)>0);
+    if (withRuns.length) {
+      html += `<div class="hist-section"><div class="hist-section-title">${f?'Derniers runs HM':'Recent HM runs'}</div>`;
+      for (const c of withRuns.slice(0,2)) {
+        try {
+          const runs = await sbFetch(`/rest/v1/hm_runs?character_id=eq.${c.id}&season=eq.${SEASON}&valid=eq.true&order=completed_at.desc&limit=5&select=dungeon_name,difficulty_level,in_time,rating,completed_at`);
+          if (runs?.length) {
+            const hd = (heroClasses||[]).find(h=>h.class_name===c.character_class);
+            html += `<div style="font-family:'Cinzel',serif;font-size:12px;color:${hd?.color_hex||'var(--text-muted)'};letter-spacing:0.1em;margin:12px 0 8px">${c.character_class}</div>`;
+            for (const r of runs) {
+              const dl=r.difficulty_level; const rank=dl?diffLevelToRank(dl):null; const rc=rank?tierColor(rank.tier):'var(--text-muted)';
+              html += `<div class="hist-run-item">
+                <span style="color:var(--text-dim)">${r.dungeon_name}</span>
+                <span style="color:${rc};font-family:'Cinzel',serif;font-size:13px">${rank?.label||'—'}</span>
+                <span style="color:var(--teal-light);font-family:'Cinzel',serif;font-size:13px;text-align:right">${r.rating?Math.floor(r.rating)+' pts':'—'}</span>
+                <span style="text-align:center">${r.in_time?'<span style="color:var(--tier1)">✓</span>':'<span style="color:var(--text-muted)">✗</span>'}</span>
+                <span style="color:var(--text-muted);font-size:13px;text-align:right">${new Date(r.completed_at).toLocaleDateString(f?'fr-FR':'en-GB',{day:'2-digit',month:'short'})}</span>
+              </div>`;
+            }
+          }
+        } catch(e) {}
+      }
+      html += '</div>';
+    }
+    cont.innerHTML = html;
+  }
+
+  async function markWarningRead(warningId, el) {
     const session = await getSession();
     if (!session || el.classList.contains('read')) return;
     el.classList.add('read');
