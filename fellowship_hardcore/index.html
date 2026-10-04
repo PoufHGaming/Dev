@@ -1062,29 +1062,23 @@
   function classColor(cls) { return CLASS_COLORS[cls] || 'var(--text-muted)'; }
   function heroImg(cls) { return `../images/heroes/${(cls||'').toLowerCase()}.jpg`; }
 
-  // Mapping dungeon name (Fellowship logs) → image file
-  const DUNGEON_MAP = {
-    "Sailor's Abyss":       'abime-des-marins',
-    "Everdawn Grove":       'bois-de-laube',
-    "Godfall Quarry":       'carriere-tombe-dieu',
-    "Wraithtide Vault":     'caveau-de-lamespectre',
-    "Wyrmheart":            'coeur-de-guivre',
-    "The Heart of Tuzari":  'coeur-de-tuzari',
-    "Silken Hollow":        'creux-soyeux',
-    "Stormwatch":           'guet-tempete',
-    "Cithrel's Fall":       'la-chute-cithrel',
-    "Urrak Markets":        'marche-durrak',
-    "Ruins of Regath":      'ruins-of-regath',
-    "Empyrean Sands":       'sables-empyreens',
-    "Ransack of Drakheim":  'saccage-de-drakheim',
-    "Scryer's Peak":        'scryers-peak',
-    "Xul the Blood Monolith": 'xul-the-blood-monolith'
+  // Nom de zone (gameZone.name des logs Fellowship) → image. Clé normalisée :
+  // "Xul, The Blood Monolith" et "Xul the Blood Monolith" donnent la même clé.
+  const DUNGEON_SLUGS = {
+    'sailorsabyss':'abime-des-marins',   'everdawngrove':'bois-de-laube',
+    'godfallquarry':'carriere-tombe-dieu','wraithtidevault':'caveau-de-lamespectre',
+    'wyrmheart':'coeur-de-guivre',       'theheartoftuzari':'coeur-de-tuzari',
+    'heartoftuzari':'coeur-de-tuzari',   'silkenhollow':'creux-soyeux',
+    'stormwatch':'guet-tempete',         'cithrelsfall':'la-chute-cithrel',
+    'urrakmarkets':'marche-durrak',      'urrakmarket':'marche-durrak',
+    'ruinsofregath':'ruins-of-regath',   'empyreansands':'sables-empyreens',
+    'ransackofdrakheim':'saccage-de-drakheim', 'scryerspeak':'scryers-peak',
+    'xulthebloodmonolith':'xul-the-blood-monolith',
   };
+  function normDungeon(n) { return (n || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
   function dungeonImg(name) {
-    const slug = DUNGEON_MAP[name];
-    if (!slug) return null;
-    const ext = slug === 'medal' ? 'png' : 'jpg';
-    return `../gloire/images/${slug}.${ext}`;
+    const slug = DUNGEON_SLUGS[normDungeon(name)];
+    return slug ? `../gloire/images/${slug}.jpg` : null;
   }
   function isXul(name) { return name && name.toLowerCase().includes('xul'); }
 
@@ -1109,21 +1103,19 @@
   // Recrue 1-4, Adepte 1-4, Champion 1-4, Parangon 1-4, Eternal 1+
   function diffLevelToRank(dl) {
     if (!dl || dl <= 0) return { tier: '', level: 0, label: '—' };
-    if (dl <= 4)  return { tier: 'Recrue',   level: dl,      label: `Recrue ${dl}` };
-    if (dl <= 12) return { tier: 'Adepte',   level: dl - 8,  label: `Adepte ${dl - 8}` };
-    if (dl <= 20) return { tier: 'Champion', level: dl - 16, label: `Champion ${dl - 16}` };
-    if (dl <= 28) return { tier: 'Parangon', level: dl - 24, label: `Parangon ${dl - 24}` };
-    return { tier: 'Eternal', level: dl - 32, label: `Eternal ${dl - 32}` };
+    // Table vérifiée sur FellowshipLogs : dl 16/17/18 = Paragon 1/2/3, dl 22 = Eternal 2,
+    // dl 47/48 = Eternal 27/28. Eternal N = dl - 20 ; paliers de 5 niveaux avant.
+    if (dl > 20) return { tier: 'Eternal', level: dl - 20, label: `Eternal ${dl - 20}` };
+    const tiers = ['Recrue', 'Adepte', 'Champion', 'Parangon'];
+    const t = Math.floor((dl - 1) / 5);
+    const level = ((dl - 1) % 5) + 1;
+    return { tier: tiers[t], level, label: `${tiers[t]} ${level}` };
   }
 
   // Clé de tri numérique : Recrue1=1 … Recrue4=4, Adepte1=5 … Parangon4=16, Eternal1=17 …
   function rankSortKey(dl) {
-    if (!dl || dl <= 0) return 0;
-    if (dl <= 4)  return dl;           // Recrue 1-4 → 1-4
-    if (dl <= 12) return dl - 4;       // Adepte 1-4 → 5-8  (dl 9-12 → 5-8)
-    if (dl <= 20) return dl - 8;       // Champion 1-4 → 9-12
-    if (dl <= 28) return dl - 12;      // Parangon 1-4 → 13-16
-    return dl - 16;                    // Eternal 1+ → 17+
+    // Les rangs suivent désormais l'ordre des niveaux : Recrue 1 < ... < Paragon 5 < Eternal 1 < ...
+    return dl > 0 ? dl : 0;
   }
 
   // ── LANG ────────────────────────────────────────────────────────────────────
@@ -2344,20 +2336,21 @@
 
   // ── QUALITY / SLOT HELPERS ────────────────────────────────────────────────
   const QUALITY_LABELS = {
-    1: { fr:'Commun', en:'Common', cls:'q1' },
-    2: { fr:'Peu commun', en:'Uncommon', cls:'q2' },
-    3: { fr:'Rare', en:'Rare', cls:'q3' },
+    1: { fr:'Recrue', en:'Recruit', cls:'q1' },
+    2: { fr:'Adepte', en:'Adept', cls:'q2' },
+    3: { fr:'Champion', en:'Champion', cls:'q3' },
     4: { fr:'Héroïque', en:'Heroic', cls:'q4' },
     5: { fr:'Royal', en:'Royal', cls:'q5' },
     6: { fr:'Légendaire', en:'Legendary', cls:'q6' },
   };
+  // gear[] n'a pas de champ slot : l'ordre est fixe (14 pièces), enregistré comme index par le sync
   const SLOT_NAMES_MAP = {
-    fr: { 0:'Tête',1:'Collier',2:'Épaules',3:'Dos',4:'Torse',5:'Poignets',6:'Mains',7:'Taille',8:'Jambes',9:'Pieds',10:'Bague',11:'Bague',12:'Bague',13:'Arme',14:'Relique',15:'Relique',16:'Relique',17:'Relique' },
-    en: { 0:'Head',1:'Neck',2:'Shoulders',3:'Back',4:'Chest',5:'Wrists',6:'Hands',7:'Waist',8:'Legs',9:'Feet',10:'Ring',11:'Ring',12:'Ring',13:'Weapon',14:'Relic',15:'Relic',16:'Relic',17:'Relic' },
+    fr: { 0:'Tête',1:'Collier',2:'Épaules',3:'Dos',4:'Torse',5:'Poignets',6:'Mains',7:'Jambes',8:'Pieds',9:'Bague',10:'Bague',11:'Relique',12:'Relique',13:'Arme' },
+    en: { 0:'Head',1:'Neck',2:'Shoulders',3:'Back',4:'Chest',5:'Wrists',6:'Hands',7:'Legs',8:'Feet',9:'Ring',10:'Ring',11:'Relic',12:'Relic',13:'Weapon' },
   };
-  const SLOT_ICONS_MAP = { 0:'🪖',1:'📿',2:'🛡',3:'🧥',4:'👕',5:'🧤',6:'🧤',7:'👔',8:'👖',9:'👟',10:'💍',11:'💍',12:'💍',13:'⚔️',14:'💎',15:'💎',16:'💎',17:'💎' };
+  const SLOT_ICONS_MAP = { 0:'🪖',1:'📿',2:'🛡',3:'🧥',4:'👕',5:'🧤',6:'🧤',7:'👖',8:'👟',9:'💍',10:'💍',11:'💎',12:'💎',13:'⚔️' };
   function qualityClass(q) { return (QUALITY_LABELS[q]||QUALITY_LABELS[1]).cls; }
-  function slotName(slot, f) { return (f ? SLOT_NAMES_MAP.fr : SLOT_NAMES_MAP.en)[slot] || 'Slot'; }
+  function slotName(slot, f) { return (slot == null ? null : (f ? SLOT_NAMES_MAP.fr : SLOT_NAMES_MAP.en)[slot]) || (f ? 'Équipement' : 'Gear'); }
 
   let _activeProfileTab = 'heroes';
   let _equipSelectedHero = null;
@@ -2501,12 +2494,13 @@
         return;
       }
       const s = snap[0];
-      const gear = [...s.gear].sort((a,b) => (a.slot||0)-(b.slot||0));
+      const gear = [...s.gear].sort((a,b) => (a.slot ?? 99)-(b.slot ?? 99));
+      const ordered = gear.length === 14 && gear.every(g => g.slot != null);
       const date = new Date(s.created_at).toLocaleDateString(f?'fr-FR':'en-GB',{day:'2-digit',month:'long',year:'numeric'});
       const items = gear.map(item => {
         const q = item.quality||1; const qc = qualityClass(q);
-        const sl = slotName(item.slot??0,f); const ic = SLOT_ICONS_MAP[item.slot??0]||'📦';
-        const gs = item.potentialPower ? Math.round(item.potentialPower/100) : null;
+        const sl = slotName(item.slot,f); const ic = SLOT_ICONS_MAP[item.slot]||'📦';
+        const gs = item.potentialPower ? Math.round(item.potentialPower/10) : null; // PS pièce = /10 (le total du perso, lui, est /100)
         const nm = item.name||(f?'Objet inconnu':'Unknown item');
         return `<div class="equip-item">
           <div class="equip-icon ${qc}">${ic}</div>
@@ -2522,7 +2516,7 @@
       }).join('');
       zone.innerHTML = `
         <div class="equip-snapshot-info">${f?'Dernier run HM :':'Last HM run:'} <strong style="color:var(--text-dim)">${date}</strong></div>
-        <div class="equip-grid">${items}</div>
+        <div class="equip-grid" style="${ordered ? 'grid-auto-flow:column;grid-template-rows:repeat(7,auto)' : ''}">${items}</div>
         <div class="equip-totals">
           <span class="equip-total-label">${f?'ilvl moyen':'Avg ilvl'}</span><span class="equip-total-val">${s.ilvl}</span>
           <span class="equip-total-label" style="margin-left:32px">Power Score</span><span class="equip-total-val">${s.power_score ? Math.round(s.power_score).toLocaleString() : '—'}</span>

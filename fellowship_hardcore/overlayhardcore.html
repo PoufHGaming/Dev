@@ -343,12 +343,14 @@
   };
 
   function diffLevelToRank(dl) {
-    if (!dl || dl <= 0) return null;
-    if (dl <= 4)  return { tier: 'Recrue',   label: `Recrue ${dl}` };
-    if (dl <= 12) return { tier: 'Adepte',   label: `Adepte ${dl - 8}` };
-    if (dl <= 20) return { tier: 'Champion', label: `Champion ${dl - 16}` };
-    if (dl <= 28) return { tier: 'Parangon', label: `Parangon ${dl - 24}` };
-    return { tier: 'Eternal', label: `Eternal ${dl - 32}` };
+    if (!dl || dl <= 0) return { tier: '', level: 0, label: '—' };
+    // Table vérifiée sur FellowshipLogs : dl 16/17/18 = Paragon 1/2/3, dl 22 = Eternal 2,
+    // dl 47/48 = Eternal 27/28. Eternal N = dl - 20 ; paliers de 5 niveaux avant.
+    if (dl > 20) return { tier: 'Eternal', level: dl - 20, label: `Eternal ${dl - 20}` };
+    const tiers = ['Recrue', 'Adepte', 'Champion', 'Parangon'];
+    const t = Math.floor((dl - 1) / 5);
+    const level = ((dl - 1) % 5) + 1;
+    return { tier: tiers[t], level, label: `${tiers[t]} ${level}` };
   }
 
   function tierColor(tier) {
