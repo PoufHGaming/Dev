@@ -2541,7 +2541,7 @@
   function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   }
-  function heroFullImg(cls) { return `../images/heroes/full/${(cls || '').toLowerCase()}.jpg`; }
+  function heroFullImg(cls) { return `../images/heroes/full/${(cls || '').toLowerCase()}.png`; }
 
   let _activeProfileTab = 'heroes';
   let _spotClass = null;
