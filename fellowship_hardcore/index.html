@@ -887,6 +887,129 @@
     .q6 { color:#e96326; border-color:rgba(233,99,38,0.4);  background:rgba(233,99,38,0.08); }
 
     /* ── SLOT NAMES ── */
+
+    /* ══ PROFIL v2 ══════════════════════════════════════════════════════════════ */
+    /* Sélecteur de héros */
+    .pick-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .pick { position:relative; width:54px; height:54px; padding:0; border-radius:8px; overflow:hidden; border:2px solid var(--border); background:var(--bg3); cursor:pointer; transition:transform .15s, border-color .15s; }
+    .pick img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+    .pick:hover { transform:translateY(-2px); }
+    .pick.new { opacity:.45; filter:grayscale(.6); }
+    .pick.new:hover { opacity:.85; }
+    .pick.on { border-color:rgba(255,68,68,.75); }
+    .pick.sel { border-color:var(--hc); box-shadow:0 0 0 2px var(--hc), 0 0 14px var(--hc); }
+    .pick-dot { position:absolute; right:4px; bottom:4px; width:10px; height:10px; border-radius:50%; border:1.5px solid rgba(0,0,0,.7); background:#6ba8a8; }
+    .pick-dot.on { background:#ff4444; box-shadow:0 0 6px #ff4444; }
+    .pick-plus { position:absolute; right:4px; bottom:0; font-weight:700; font-size:18px; color:#fff; text-shadow:0 0 4px #000; }
+
+    /* Prochain trophée */
+    .next-trophy { display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; }
+    .nt-ico { font-size:22px; }
+    .nt-body { flex:1; min-width:0; }
+    .nt-label { font-size:13px; color:var(--text-muted); margin-bottom:6px; }
+    .nt-pct { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:var(--text-dim); }
+    .trophy-bar { height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
+    .trophy-bar div { height:100%; background:var(--tc, var(--teal-light)); border-radius:3px; }
+
+    /* Héros en vedette : équipement de chaque côté du portrait */
+    .spot { position:relative; display:grid; grid-template-columns:76px minmax(0,1fr) 76px; gap:16px; align-items:start; padding:18px; background:var(--bg2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .spot::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%, var(--hc-soft), transparent 65%); pointer-events:none; }
+    .spot > * { position:relative; }
+    .spot-slots { display:flex; flex-direction:column; gap:8px; }
+    .gslot { position:relative; width:76px; height:62px; box-sizing:border-box; border-width:2px; border-style:solid; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; }
+    .gslot-ico { font-size:24px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+    .gslot-ilvl { position:absolute; right:5px; bottom:2px; font-size:11px; font-weight:700; text-shadow:0 1px 2px #000; }
+    .gslot.empty { background:rgba(255,255,255,.02); border-color:rgba(255,255,255,.08); }
+    .gslot.empty .gslot-ico { opacity:.18; }
+    .spot-center { display:flex; flex-direction:column; gap:12px; min-width:0; }
+    .spot-art { height:340px; border-radius:10px; overflow:hidden; background:rgba(0,0,0,.28); border:1px solid var(--border); }
+    .spot-art img { width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; }
+    .spot-art img.is-square { object-fit:cover; object-position:center 25%; }
+    .spot-art.dim img { filter:grayscale(.7) brightness(.6); }
+    .spot-name { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .spot-name b { font-family:'Cinzel',serif; font-size:26px; letter-spacing:.06em; }
+    .spot-role { font-size:14px; font-style:italic; color:var(--text-muted); }
+    .spot-badges { display:flex; flex-wrap:wrap; gap:8px; }
+    .spot-rank { font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:.1em; padding:5px 12px; border-radius:20px; border:1px solid; }
+    .spot-surv { padding:10px 12px; background:rgba(0,0,0,.25); border:1px solid var(--border); border-radius:8px; }
+    .spot-surv-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; font-size:15px; color:var(--text-dim); }
+    .spot-surv-top b { font-family:'Cinzel',serif; font-size:20px; color:var(--text); }
+    .spot-surv-rec { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); }
+    .spot-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .spot-stat { background:rgba(0,0,0,.28); border:1px solid var(--border); border-radius:8px; padding:10px; text-align:center; }
+    .spot-stat b { display:block; font-family:'Cinzel',serif; font-size:20px; color:var(--teal-light); line-height:1.1; }
+    .spot-stat span { font-family:'Cinzel',serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); }
+    .spot-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .spot-reset, .spot-add { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.1em; padding:7px 14px; border-radius:4px; cursor:pointer; }
+    .spot-reset { background:rgba(255,68,68,.06); border:1px solid rgba(255,68,68,.3); color:rgba(255,120,120,.85); }
+    .spot-add { align-self:flex-start; background:rgba(64,212,212,.08); border:1px solid rgba(64,212,212,.4); color:var(--teal-light); }
+    .spot-empty { font-size:15px; font-style:italic; color:var(--text-muted); }
+    .spot-gear-note { font-size:12px; font-style:italic; color:var(--text-muted); text-align:center; }
+
+    /* Trophées */
+    .trophy-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+    .trophy-head b { font-family:'Cinzel',serif; font-size:20px; color:var(--text); }
+    .trophy-head span { font-size:13px; font-style:italic; color:var(--text-muted); }
+    .trophy-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px; }
+    .trophy { padding:14px; text-align:center; background:var(--bg2); border:1px solid var(--border); border-radius:10px; }
+    .trophy.done { border-color:var(--tc); box-shadow:0 0 14px var(--tc-soft); }
+    .trophy-ico { font-size:34px; line-height:1; margin-bottom:8px; }
+    .trophy.locked .trophy-ico { filter:grayscale(1); opacity:.35; }
+    .trophy-title { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:var(--tc); }
+    .trophy.locked .trophy-title { color:var(--text-muted); }
+    .trophy-desc { margin:4px 0 8px; font-size:13px; line-height:1.35; color:var(--text-muted); }
+    .trophy-prog { margin-top:4px; font-size:12px; color:var(--text-muted); }
+    .trophy-done { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.14em; color:var(--tc); }
+
+    /* Cimetière en pyramide */
+    .grave { display:flex; flex-direction:column; align-items:center; gap:14px; padding:8px 0; }
+    .grave-row { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; }
+    .tomb { width:132px; box-sizing:border-box; padding:12px 8px 10px; text-align:center; background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12); border-radius:66px 66px 8px 8px; }
+    .tomb.top { width:176px; border-radius:88px 88px 8px 8px; border-color:rgba(255,255,255,.3); }
+    .tomb-cross { font-size:16px; line-height:1; color:rgba(255,255,255,.35); }
+    .tomb-tag { font-family:'Cinzel',serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+    .tomb-art { width:68px; height:68px; margin:8px auto; border-radius:50%; overflow:hidden; border:2px solid rgba(255,255,255,.2); filter:grayscale(1) brightness(.75); }
+    .tomb.top .tomb-art { width:92px; height:92px; }
+    .tomb-art img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+    .tomb-name { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:#c8c8c8; }
+    .tomb-score { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:#dcdcdc; }
+    .tomb-meta { font-size:11px; color:rgba(255,255,255,.4); }
+    .grave-more { font-size:13px; font-style:italic; color:var(--text-muted); }
+    .grave-empty { text-align:center; padding:40px 0; font-size:46px; }
+    .grave-empty div { font-size:16px; color:var(--text-dim); margin-top:8px; }
+    .grave-empty span { display:block; font-size:13px; font-style:italic; color:var(--text-muted); margin-top:4px; }
+
+    /* ══ PODIUM et mouvements du classement ═════════════════════════════════════ */
+    .podium { margin:0 0 16px; padding:12px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; }
+    .podium-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-family:'Cinzel',serif; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-dim); }
+    .podium-close { background:none; border:none; color:var(--text-muted); font-size:14px; cursor:pointer; }
+    .podium-row { display:flex; justify-content:center; align-items:flex-end; gap:10px; }
+    .podium-card { flex:1; max-width:240px; padding:10px 8px; text-align:center; background:rgba(0,0,0,.25); border:1px solid var(--border); border-radius:8px; }
+    .podium-card.p1 { padding:16px 8px; border-color:rgba(255,200,60,.55); }
+    .podium-card.p2 { border-color:rgba(200,200,200,.4); }
+    .podium-card.p3 { border-color:rgba(205,127,50,.45); }
+    .podium-medal { font-size:24px; }
+    .podium-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:var(--text); }
+    .podium-hero { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.1em; }
+    .podium-score { font-family:'Cinzel',serif; font-size:14px; color:var(--teal-light); margin-top:2px; }
+    .podium-rank { font-family:'Cinzel',serif; font-size:11px; font-weight:700; }
+    .lb-rank { display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .lb-delta { font-family:'Cinzel',serif; font-size:10px; font-weight:700; line-height:1; }
+    .lb-delta.up { color:#44ee44; }
+    .lb-delta.down { color:#ff6b6b; }
+    .lb-delta.new { color:var(--teal-light); }
+
+    @media (max-width:760px) {
+      .spot { grid-template-columns:1fr 1fr; padding:12px; }
+      .spot-center { grid-column:1 / -1; order:-1; }
+      .gslot { width:100%; }
+      .spot-art { height:260px; }
+      .podium-row { gap:6px; }
+      .podium-name { font-size:13px; }
+      .tomb { width:100px; }
+      .tomb.top { width:140px; }
+    }
+
   </style>
 </head>
 <body>
@@ -948,6 +1071,7 @@
         <span data-fr="Actualiser" data-en="Refresh">Actualiser</span>
       </button>
     </div>
+    <div id="lb-podium"></div>
     <div class="lb-search-row">
       <div class="lb-search-wrap">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="color:var(--text-muted);flex-shrink:0"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -1136,6 +1260,9 @@
     renderRules();
     if (_lbData) renderLbPage();
     if (_eventsData) renderEvents();
+    if (typeof _profileData !== 'undefined' && _profileData && document.getElementById('profile-tab-content')) {
+      renderProfileConnected(document.getElementById('profile-content'), fr(), null);
+    }
   }
 
   // ── TOAST ───────────────────────────────────────────────────────────────────
@@ -1220,6 +1347,7 @@
   let _lbFiltered = [], _lbPage = 1, _expandedPlayer = null;
 
   async function loadLeaderboard(force = false) {
+    if (force) _lbSnap = null;
     if (!force && _lbData && Date.now() - _lbCacheTs < CACHE_MS) {
       renderLeaderboard(_lbData); return;
     }
@@ -1231,6 +1359,7 @@
         sbFetch(`/rest/v1/hm_summary?season=eq.${SEASON}&order=total_rating_score.desc`),
         sbFetch('/rest/v1/hm_capstones?select=id,tier_name,difficulty_level_threshold&order=difficulty_level_threshold.asc'),
         sbFetch(`/rest/v1/hm_capstone_unlocks?select=player_id,character_id,capstone_id,attempt_number&season=eq.${SEASON}`),
+        loadLbSnapshot(),
       ]);
       _lbData = { summary: summary ?? [], capstones: capstones ?? [], unlocks: unlocks ?? [] };
       _lbCacheTs = Date.now();
@@ -1246,6 +1375,68 @@
 
   function refreshLeaderboard() { loadLeaderboard(true); }
 
+  // ══ PODIUM + MOUVEMENTS : instantané quotidien du classement ═══════════════════
+  // Lu dans hm_leaderboard_snapshots (voir leaderboard-snapshots.sql). Public, donc visible sans connexion.
+  // null = pas encore chargé · false = aucun instantané (podium masqué) · objet = chargé
+  let _lbSnap = null;
+
+  async function loadLbSnapshot() {
+    if (_lbSnap !== null) return;
+    try {
+      const latest = await sbFetch('/rest/v1/hm_leaderboard_snapshots?select=snapshot_date&order=snapshot_date.desc&limit=1');
+      if (!latest?.length) { _lbSnap = false; return; }
+      const date = latest[0].snapshot_date;
+      const rows = await sbFetch(`/rest/v1/hm_leaderboard_snapshots?snapshot_date=eq.${date}&select=player_id,player_name,rank,score,best_difficulty_level,best_hero&order=rank.asc&limit=500`);
+      _lbSnap = { date, rows: rows ?? [], byPlayer: Object.fromEntries((rows ?? []).map(r => [r.player_id, r])) };
+    } catch (e) { _lbSnap = false; }       // table absente ou erreur réseau : on affiche le classement sans podium
+  }
+
+  // Flèche de mouvement depuis l'instantané (▲ monte, ▼ descend, ✦ nouveau)
+  function lbDeltaHtml(p) {
+    if (!_lbSnap || !_lbSnap.rows.length) return '';
+    const s = _lbSnap.byPlayer[p.player_id];
+    if (!s) return `<div class="lb-delta new" title="${fr() ? 'Nouveau depuis le dernier instantané' : 'New since the last snapshot'}">✦</div>`;
+    const d = s.rank - p.rank;
+    if (d > 0) return `<div class="lb-delta up">▲${d}</div>`;
+    if (d < 0) return `<div class="lb-delta down">▼${-d}</div>`;
+    return '';
+  }
+
+  function renderPodium() {
+    const el = document.getElementById('lb-podium');
+    if (!el) return;
+    const f = fr();
+    const top = _lbSnap ? _lbSnap.rows.filter(r => r.rank <= 3 && (r.score || 0) > 0) : [];
+    let hidden = false;
+    try { hidden = !!_lbSnap && localStorage.getItem('hm_podium_hidden') === _lbSnap.date; } catch (e) {}
+    if (!top.length || hidden) { el.innerHTML = ''; return; }
+    const d = new Date(_lbSnap.date + 'T12:00:00');
+    const ageDays = Math.floor((Date.now() - d.getTime()) / 86400000);
+    const dateStr = d.toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day: '2-digit', month: '2-digit' });
+    const title = ageDays <= 1 ? (f ? "Podium d'hier" : "Yesterday's podium") : (f ? `Podium du ${dateStr}` : `Podium of ${dateStr}`);
+    const medal = { 1: '🥇', 2: '🥈', 3: '🥉' };
+    const cards = [2, 1, 3].map(n => top.find(r => r.rank === n)).filter(Boolean).map(r => {
+      const rk = (r.best_difficulty_level || 0) > 0 ? diffLevelToRank(r.best_difficulty_level) : null;
+      const col = tierColor(rk?.tier);
+      return `<div class="podium-card p${r.rank}">
+        <div class="podium-medal">${medal[r.rank]}</div>
+        <div class="podium-name">${esc(r.player_name)}</div>
+        ${r.best_hero ? `<div class="podium-hero" style="color:${classColor(r.best_hero)}">${esc(r.best_hero)}</div>` : ''}
+        <div class="podium-score">${Math.floor(r.score).toLocaleString()} pts</div>
+        ${rk ? `<div class="podium-rank" style="color:${col}">${rk.label}</div>` : ''}
+      </div>`;
+    }).join('');
+    el.innerHTML = `<div class="podium">
+      <div class="podium-head"><span>🏅 ${title}</span><button class="podium-close" onclick="hidePodium()" title="${f ? 'Masquer jusqu\'au prochain podium' : 'Hide until the next podium'}">✕</button></div>
+      <div class="podium-row">${cards}</div>
+    </div>`;
+  }
+
+  function hidePodium() {
+    try { if (_lbSnap) localStorage.setItem('hm_podium_hidden', _lbSnap.date); } catch (e) {}
+    renderPodium();
+  }
+
   function renderLeaderboard(data) {
     // Grouper par player_id
     const playerMap = new Map();
@@ -1259,7 +1450,7 @@
     // Calculer best rank + total tentatives par joueur
     const players = [...playerMap.values()].map(p => {
       const aliveChars    = p.chars.filter(c => c.status === 'alive');
-      const totalAttempts = p.chars.reduce((s, c) => s + (c.character_total_attempts || 1), 0);
+      const totalAttempts = p.chars.length;   // une ligne = une tentative (la vue répète le total sur chaque ligne : 6 héros donnaient 36)
       const bestDl        = Math.max(...p.chars.map(c => c.best_difficulty_level || 0), 0);
       const bestRank      = diffLevelToRank(bestDl);
       const sortKey       = rankSortKey(bestDl);
@@ -1270,6 +1461,7 @@
 
     // Tri : meilleur score desc, à égalité highest dungeon, à égalité tentatives asc
     players.sort((a, b) => b.totalScore - a.totalScore || b.sortKey - a.sortKey || a.totalAttempts - b.totalAttempts);
+    players.forEach((p, i) => { p.rank = i + 1; });   // rang global, indépendant de la recherche
 
     // Mise à jour compteur header
     const activeCount = players.reduce((s, p) => s + p.aliveChars.length, 0);
@@ -1290,59 +1482,6 @@
     renderLbPage(_lbFiltered, data);
   }
 
-  function renderLbPage(filtered, data) {
-    filtered = filtered || _lbFiltered;
-    data = data || _lbData;
-    const total  = filtered.length;
-    const pages  = Math.ceil(total / PAGE_SIZE);
-    _lbPage      = Math.min(_lbPage, pages || 1);
-    const slice  = filtered.slice((_lbPage-1)*PAGE_SIZE, _lbPage*PAGE_SIZE);
-
-    const cont = document.getElementById('lb-content');
-    if (!slice.length) { cont.innerHTML = `<div class="empty">${fr() ? 'Aucun joueur inscrit.' : 'No registered players.'}</div>`; return; }
-
-    cont.innerHTML = slice.map((p, i) => {
-      const rank    = (_lbPage-1)*PAGE_SIZE + i + 1;
-      const rankCls = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-
-      // Highest dungeon badge coloré
-      const rankColor = tierColor(p.bestRank.tier);
-      const rankHtml  = p.bestDl > 0
-        ? `<span style="font-family:'Cinzel',serif;font-size:12px;color:${rankColor};
-                        border:1px solid ${rankColor}40;background:${rankColor}12;
-                        padding:3px 9px;border-radius:20px;white-space:nowrap">${p.bestRank.label}</span>`
-        : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
-
-      // Tags héros : affiche seulement la classe colorée (pas le nom du joueur)
-      const charTags = p.chars.map(c => {
-        const col = classColor(c.character_class);
-        const dead = c.status === 'dead';
-        return `<span class="lb-char-tag ${c.status}"
-          style="${dead ? '' : `border-color:${col}40;color:${col};background:${col}0d`}">
-          ${dead ? '<span class="lb-char-skull">💀</span>' : ''}
-          <span style="${dead ? '' : `color:${col}`}">${c.character_class || c.character_name}</span>
-        </span>`;
-      }).join('');
-
-      return `
-        <div class="lb-row" id="lbrow-${p.player_id}" onclick="toggleExpand(${p.player_id})">
-          <div class="lb-rank ${rankCls}">${rank}</div>
-          <div class="lb-player">
-            <div class="lb-player-name">${p.player_name}</div>
-            <div class="lb-char-list">${charTags}</div>
-          </div>
-          <div class="lb-ilvl">${p.bestIlvl || '—'}</div>
-          <div class="lb-attempts col-attempts">${p.totalAttempts}</div>
-          <div class="lb-capstone">${rankHtml}</div>
-        </div>
-        <div class="lb-expand" id="lbexpand-${p.player_id}">
-          ${renderExpandedPlayer(p, data)}
-        </div>`;
-    }).join('');
-
-    // Pagination
-    renderPagination(pages, filtered, data);
-  }
 
   // Cache des runs par character_id
   // ── LEADERBOARD v2 ─────────────────────────────────────────────────────────
@@ -1379,6 +1518,7 @@
   function renderLbPage(filtered, data) {
     filtered = filtered || _lbFiltered;
     data     = data || _lbData;
+    renderPodium();
     const total = filtered.length;
     const pages = Math.ceil(total / PAGE_SIZE);
     _lbPage     = Math.min(_lbPage, pages || 1);
@@ -1388,7 +1528,7 @@
     if (!slice.length) { cont.innerHTML = `<div class="empty">${fr() ? 'Aucun joueur inscrit.' : 'No registered players.'}</div>`; return; }
 
     cont.innerHTML = slice.map((p, i) => {
-      const rank    = (_lbPage-1)*PAGE_SIZE + i + 1;
+      const rank    = p.rank ?? ((_lbPage-1)*PAGE_SIZE + i + 1);
       const rankCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
       const f       = fr();
 
@@ -1407,7 +1547,7 @@
 
       return `
         <div class="lb-row" id="lbrow-${p.player_id}" onclick="toggleExpand(${p.player_id})">
-          <div class="lb-rank ${rankCls}">${rank}</div>
+          <div class="lb-rank ${rankCls}"><div>${rank}</div>${lbDeltaHtml(p)}</div>
           <div class="lb-player">
             <div style="display:flex;align-items:baseline;gap:10px">
               <div class="lb-player-name">${p.player_name}</div>
@@ -1992,12 +2132,27 @@
       periods = await fetch(`${base}/hm_active_periods?character_id=in.(${charIds})&order=active_from.desc`, { headers }).then(r => r.json()).catch(() => []);
     }
 
+    // Runs (survie, trophées) et score par personnage (cimetière, fiche héros)
+    let runs = [], scores = {};
+    if (charIds) {
+      const arr = x => Array.isArray(x) ? x : [];
+      const [runRows, sumRows] = await Promise.all([
+        fetch(`${base}/hm_runs?character_id=in.(${charIds})&valid=eq.true&select=character_id,dungeon_name,difficulty_level,in_time,completed,completed_at&order=completed_at.desc&limit=1000`, { headers }).then(r => r.json()).catch(() => []),
+        fetch(`${base}/hm_summary?character_id=in.(${charIds})&select=character_id,total_rating_score`, { headers }).then(r => r.json()).catch(() => []),
+      ]);
+      runs = arr(runRows);
+      for (const r of arr(sumRows)) scores[r.character_id] = Number(r.total_rating_score) || 0;
+    }
+    _snapCache = {};
+
     return {
       profile: profile?.[0] ?? null,
       warnings: warnings ?? [],
       characters: characters ?? [],
       periods: periods ?? [],
       heroClasses,
+      runs,
+      scores,
     };
   }
 
@@ -2352,28 +2507,122 @@
   function qualityClass(q) { return (QUALITY_LABELS[q]||QUALITY_LABELS[1]).cls; }
   function slotName(slot, f) { return (slot == null ? null : (f ? SLOT_NAMES_MAP.fr : SLOT_NAMES_MAP.en)[slot]) || (f ? 'Équipement' : 'Gear'); }
 
-  let _activeProfileTab = 'heroes';
-  let _equipSelectedHero = null;
+  // ══ PROFIL v2 : héros en vedette, trophées, cimetière ═════════════════════════
+  // Ce qui dépend de la saison (échelle de Xul, paliers de trophées) est regroupé ici.
+  const XUL_COLOR  = '#c4732a';
+  const XUL_DL     = { normal: 31, heroic: 43, nightmare: 60 };   // échelle de la saison actuelle
+  const GEAR_LEFT  = [0, 2, 3, 4, 5, 6, 7];       // Tête, Épaules, Dos, Torse, Poignets, Mains, Jambes
+  const GEAR_RIGHT = [1, 8, 9, 10, 11, 12, 13];   // Collier, Pieds, Bague, Bague, Relique, Relique, Arme
 
+  function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+  function heroFullImg(cls) { return `../images/heroes/full/${(cls || '').toLowerCase()}.jpg`; }
+
+  let _activeProfileTab = 'heroes';
+  let _spotClass = null;
+  let _snapCache = {};
+
+  const PROFILE_TABS = [
+    { id:'heroes',    ico:'⚔️', fr:'Mes héros',  en:'My heroes' },
+    { id:'trophies',  ico:'🏆', fr:'Trophées',   en:'Trophies'  },
+    { id:'graveyard', ico:'🪦', fr:'Cimetière',  en:'Graveyard' },
+    { id:'history',   ico:'📋', fr:'Historique', en:'History'   },
+  ];
+
+  // ── Trophées : calculés côté site à partir des runs, aucune table en plus ─────
+  function rankTrophy(id, dl, ico) {
+    const rk = diffLevelToRank(dl);
+    return {
+      id, ico, color: tierColor(rk.tier), target: dl,
+      val: s => s.bestDl,
+      fmt: v => `${v > 0 ? diffLevelToRank(v).label : '—'} / ${rk.label}`,
+      fr: [rk.label, `Termine un donjon dans le temps en ${rk.label}.`],
+      en: [rk.label, `Finish a dungeon within the time limit at ${rk.label}.`],
+    };
+  }
+  function countTrophy(id, ico, metric, target, fr, en, color) {
+    return { id, ico, color: color || '#40d4d4', target, val: s => s[metric], fmt: v => `${Math.min(v, target)} / ${target}`, fr, en };
+  }
+  const TROPHIES = [
+    countTrophy('timed_1',  '⏱️', 'timedTotal', 1,  ['Premier chrono', 'Termine un donjon dans le temps imparti.'], ['First timer', 'Finish a dungeon within the time limit.']),
+    countTrophy('timed_10', '⏱️', 'timedTotal', 10, ['Habitué', 'Termine 10 donjons dans le temps.'], ['Regular', 'Finish 10 dungeons in time.']),
+    countTrophy('timed_50', '⏱️', 'timedTotal', 50, ['Infatigable', 'Termine 50 donjons dans le temps.'], ['Tireless', 'Finish 50 dungeons in time.']),
+    countTrophy('surv_10',  '🛡️', 'maxSurvival', 10, ['Survivant', '10 donjons avec un même héros sans mourir.'], ['Survivor', '10 dungeons with one hero without dying.']),
+    countTrophy('surv_25',  '🛡️', 'maxSurvival', 25, ['Increvable', '25 donjons avec un même héros sans mourir.'], ['Unkillable', '25 dungeons with one hero without dying.']),
+    countTrophy('surv_50',  '🛡️', 'maxSurvival', 50, ['Légende vivante', '50 donjons avec un même héros sans mourir.'], ['Living legend', '50 dungeons with one hero without dying.']),
+    rankTrophy('rank_champion4', 14, '🛡️'),
+    rankTrophy('rank_parangon4', 19, '🏆'),
+    rankTrophy('rank_eternal5',  25, '👑'),
+    rankTrophy('rank_eternal10', 30, '👑'),
+    rankTrophy('rank_eternal20', 40, '👑'),
+    countTrophy('xul_normal',    '🏜️', 'xulNormal',    1, ['Xul : Normal',    'Termine Xul en Normal.'],    ['Xul: Normal',    'Complete Xul on Normal.'],    XUL_COLOR),
+    countTrophy('xul_heroic',    '🏜️', 'xulHeroic',    1, ['Xul : Héroïque',  'Termine Xul en Héroïque.'],  ['Xul: Heroic',    'Complete Xul on Heroic.'],    XUL_COLOR),
+    countTrophy('xul_nightmare', '🏜️', 'xulNightmare', 1, ['Xul : Nightmare', 'Termine Xul en Nightmare.'], ['Xul: Nightmare', 'Complete Xul on Nightmare.'], XUL_COLOR),
+    countTrophy('heroes_3', '🎭', 'heroesPlayed', 3, ['Polyvalent', 'Termine un donjon avec 3 héros différents.'], ['Versatile', 'Finish a dungeon with 3 different heroes.']),
+    countTrophy('heroes_6', '🎭', 'heroesPlayed', 6, ['Troupe complète', 'Termine un donjon avec 6 héros différents.'], ['Full troupe', 'Finish a dungeon with 6 different heroes.']),
+    countTrophy('first_blood', '💀', 'deaths', 1, ['Baptême du feu', "Perds ton premier héros. Mourir, c'est recommencer."], ['Baptism of fire', 'Lose your first hero. Death is just the beginning.'], '#ff4444'),
+  ];
+
+  function computeProfileStats() {
+    const { characters, runs = [] } = _profileData;
+    const byChar = {}, classOf = {};
+    for (const c of characters) { byChar[c.id] = { completed: 0 }; classOf[c.id] = c.character_class; }
+    let timedTotal = 0, bestDl = 0;
+    const xul = { normal: 0, heroic: 0, nightmare: 0 };
+    const classesDone = new Set();
+    for (const r of runs) {
+      if (!r.completed || !byChar[r.character_id]) continue;
+      byChar[r.character_id].completed++;
+      classesDone.add(classOf[r.character_id]);
+      if (/xul/i.test(r.dungeon_name || '')) {                     // Xul : échelle à part
+        for (const [k, dl] of Object.entries(XUL_DL)) if (r.difficulty_level === dl) xul[k] = 1;
+        continue;
+      }
+      if (r.in_time) { timedTotal++; bestDl = Math.max(bestDl, r.difficulty_level || 0); }
+    }
+    const recordByClass = {};
+    let maxSurvival = 0;
+    for (const c of characters) {
+      const n = byChar[c.id].completed;
+      recordByClass[c.character_class] = Math.max(recordByClass[c.character_class] || 0, n);
+      maxSurvival = Math.max(maxSurvival, n);
+    }
+    return {
+      byChar, recordByClass, maxSurvival, timedTotal, bestDl,
+      xulNormal: xul.normal, xulHeroic: xul.heroic, xulNightmare: xul.nightmare,
+      heroesPlayed: classesDone.size,
+      deaths: characters.filter(c => c.status === 'dead').length,
+    };
+  }
+
+  function trophyStates(stats) {
+    return TROPHIES.map(t => {
+      const v = t.val(stats);
+      return { t, v, done: v >= t.target, pct: Math.min(100, Math.round(100 * v / t.target)) };
+    });
+  }
+
+  // ── Coque du profil ──────────────────────────────────────────────────────────
   function renderProfileConnected(cont, f, session) {
     const { warnings, characters } = _profileData;
     const playerName = characters.find(c => c.character_name)?.character_name || '—';
     const tabEl = document.getElementById('tab-profile');
-    if (tabEl) { tabEl.textContent = f ? 'Gérer mes héros' : 'My Heroes'; tabEl.setAttribute('data-fr','Gérer mes héros'); tabEl.setAttribute('data-en','My Heroes'); }
+    if (tabEl) { tabEl.textContent = f ? 'Gérer mes héros' : 'My Heroes'; tabEl.setAttribute('data-fr', 'Gérer mes héros'); tabEl.setAttribute('data-en', 'My Heroes'); }
     const unread = warnings.filter(w => !w.read).length;
+    const tabsHtml = PROFILE_TABS.map(t => `
+      <button class="profile-tab-btn ${_activeProfileTab === t.id ? 'active' : ''}" data-tab="${t.id}" onclick="switchProfileTab('${t.id}')">
+        ${t.ico} ${f ? t.fr : t.en}${t.id === 'history' && unread ? `<span style="color:var(--hc-red);margin-left:4px">(${unread})</span>` : ''}
+      </button>`).join('');
     cont.innerHTML = `
       <div class="profile-header">
         <div class="profile-user">
-          <div class="profile-username">${playerName}</div>
+          <div class="profile-username">${esc(playerName)}</div>
           <div class="profile-email">${f ? 'Fellowship Hardcore · Saison 1' : 'Fellowship Hardcore · Season 1'}</div>
         </div>
         <button class="btn-logout" onclick="signOut()">${f ? 'Déconnexion' : 'Sign out'}</button>
       </div>
-      <div class="profile-tabs">
-        <button class="profile-tab-btn ${_activeProfileTab==='heroes'?'active':''}" onclick="switchProfileTab('heroes')">${f ? '⚔️ Mes Héros' : '⚔️ My Heroes'}</button>
-        <button class="profile-tab-btn ${_activeProfileTab==='equipment'?'active':''}" onclick="switchProfileTab('equipment')">${f ? '🛡 Équipement' : '🛡 Equipment'}</button>
-        <button class="profile-tab-btn ${_activeProfileTab==='history'?'active':''}" onclick="switchProfileTab('history')">${f ? '📋 Historique' : '📋 History'}${unread ? `<span style="color:var(--hc-red);margin-left:4px">(${unread})</span>` : ''}</button>
-      </div>
+      <div class="profile-tabs">${tabsHtml}</div>
       <div id="profile-tab-content"></div>
       <div style="margin-top:28px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--text-muted);line-height:1.7">
         💬 ${f ? `Un problème ? Contacte Pouf sur <strong style="color:var(--text-dim)">Discord : pouf_hgaming</strong> ou par <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.` : `A problem? Contact Pouf on <strong style="color:var(--text-dim)">Discord: pouf_hgaming</strong> or by <a href="mailto:poufhgaming@googlegroups.com" style="color:var(--hc-red)">email</a>.`}
@@ -2383,9 +2632,7 @@
 
   function switchProfileTab(tab) {
     _activeProfileTab = tab;
-    document.querySelectorAll('.profile-tab-btn').forEach((btn, i) => {
-      btn.classList.toggle('active', ['heroes','equipment','history'][i] === tab);
-    });
+    document.querySelectorAll('.profile-tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
     renderProfileTabContent();
   }
 
@@ -2394,134 +2641,280 @@
     if (!cont || !_profileData) return;
     const f = fr();
     if (_activeProfileTab === 'heroes')    renderTabHeroes(cont, f);
-    if (_activeProfileTab === 'equipment') renderTabEquipment(cont, f);
+    if (_activeProfileTab === 'trophies')  renderTabTrophies(cont, f);
+    if (_activeProfileTab === 'graveyard') renderTabGraveyard(cont, f);
     if (_activeProfileTab === 'history')   renderTabHistory(cont, f);
   }
 
+  // ── Onglet 1 : héros en vedette ──────────────────────────────────────────────
+  function selectSpotHero(cls) { _spotClass = cls; renderProfileTabContent(); }
+
+  // Colonne d'équipement façon écran de jeu. gear = items du snapshot (slot = index 0-13) ou null.
+  function gearColumn(slots, gear, f) {
+    const bySlot = {};
+    if (Array.isArray(gear) && gear.length) {
+      if (gear.every(g => g.slot == null)) {                       // snapshot sans slots fiables : ordre brut
+        const order = [...GEAR_LEFT, ...GEAR_RIGHT];
+        gear.forEach((it, i) => { if (order[i] !== undefined) bySlot[order[i]] = { ...it, _generic: true }; });
+      } else {
+        gear.forEach(it => { if (it.slot != null) bySlot[it.slot] = it; });
+      }
+    }
+    return slots.map(s => {
+      const it = bySlot[s];
+      if (!it) return `<div class="gslot empty" title="${esc(slotName(s, f))}"><span class="gslot-ico">${SLOT_ICONS_MAP[s] || '📦'}</span></div>`;
+      const q  = qualityClass(it.quality || 1);
+      const ps = it.potentialPower ? Math.round(it.potentialPower / 10) : null;
+      const tip = `${it.name || ''}${it._generic ? '' : ' · ' + slotName(s, f)} · ilvl ${it.itemLevel || 0}${ps ? ' · PS ' + ps : ''}`;
+      return `<div class="gslot ${q}" title="${esc(tip)}"><span class="gslot-ico">${it._generic ? '📦' : (SLOT_ICONS_MAP[s] || '📦')}</span><span class="gslot-ilvl">${it.itemLevel || 0}</span></div>`;
+    }).join('');
+  }
+
+  async function loadSpotGear(charId, f) {
+    let snap = _snapCache[charId];
+    if (snap === undefined) {
+      try {
+        const rows = await sbFetch(`/rest/v1/hm_equipment_snapshots?character_id=eq.${charId}&season=eq.${SEASON}&order=created_at.desc&limit=1&select=ilvl,power_score,gear,created_at`);
+        snap = rows?.[0] ?? null;
+      } catch (e) { snap = null; }
+      _snapCache[charId] = snap;
+    }
+    const cur = _profileData?.characters.find(c => c.character_class === _spotClass && c.status === 'alive');
+    if (!cur || cur.id !== charId) return;                         // l'utilisateur a changé de héros entre-temps
+    const L = document.getElementById('spot-left'), R = document.getElementById('spot-right'), note = document.getElementById('spot-gear-note');
+    if (!L || !R) return;
+    L.innerHTML = gearColumn(GEAR_LEFT,  snap?.gear, f);
+    R.innerHTML = gearColumn(GEAR_RIGHT, snap?.gear, f);
+    if (note) {
+      note.textContent = snap
+        ? `${f ? 'Équipement du dernier run HM' : 'Gear from your last HM run'} · ${new Date(snap.created_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day: '2-digit', month: 'long' })}`
+        : (f ? "L'équipement est enregistré après ton premier run HM." : 'Gear is saved after your first HM run.');
+    }
+  }
+
   function renderTabHeroes(cont, f) {
-    const { characters, periods, heroClasses } = _profileData;
-    const byClass = {};
-    for (const h of heroClasses) byClass[h.class_name] = { ...h, chars: [] };
-    for (const c of characters) { if (byClass[c.character_class]) byClass[c.character_class].chars.push(c); }
-    let html = '';
-    for (const role of ['Tank','Healer','DPS']) {
-      html += `<div style="margin-bottom:28px"><div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)">${role}</div>`;
-      for (const h of heroClasses.filter(x => x.role === role)) {
-        const chars  = byClass[h.class_name]?.chars ?? [];
-        const alive  = chars.find(c => c.status === 'alive');
-        const isOn   = alive?.hm_enabled ?? false;
-        const period = alive ? periods.find(p => p.character_id === alive.id && !p.active_until) : null;
-        if (alive) {
-          const rank = diffLevelToRank(alive.best_difficulty_level || 0);
-          const rCol = tierColor(rank.tier);
-          html += `<div class="hero-card-v2 ${isOn ? 'hm-on' : ''}">
-            <div class="hero-card-v2-header">
-              <div class="hero-card-v2-title">
-                <div class="hero-card-v2-name" style="color:${h.color_hex}">${h.class_name}</div>
-                <div class="hero-card-v2-role">${h.role}</div>
-              </div>
-              <div class="hm-toggle-pill">
-                <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:${isOn?'var(--hc-red)':'var(--text-muted)'}">${isOn?'HM ON':'HM OFF'}</span>
-                <label class="hm-toggle-switch">
-                  <input type="checkbox" ${isOn?'checked':''} onchange="toggleHm('${h.class_name}',this.checked,'${alive.id}',${alive.player_id})">
-                  <div class="hm-toggle-track"></div><div class="hm-toggle-thumb"></div>
-                </label>
-              </div>
-            </div>
-            <div class="hero-card-v2-stats">
-              <div class="hero-stat-block"><div class="hero-stat-block-val" style="color:${rCol||'var(--teal-light)'}">${alive.best_rank_label||'—'}</div><div class="hero-stat-block-lbl">${f?'Meilleur donjon':'Best dungeon'}</div></div>
-              <div class="hero-stat-block"><div class="hero-stat-block-val">${alive.ilvl_current||'—'}</div><div class="hero-stat-block-lbl">ilvl</div></div>
-              <div class="hero-stat-block"><div class="hero-stat-block-val">${alive.power_score_current ? Math.round(alive.power_score_current).toLocaleString() : '—'}</div><div class="hero-stat-block-lbl">Power Score</div></div>
-            </div>
-            <div class="hero-card-v2-footer">
-              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                <span class="hero-status-badge alive">⚔️ ${f?'En vie':'Alive'} · #${alive.attempt_number}</span>
-                ${period ? `<span class="hero-hm-since">HM ${f?'depuis':'since'} ${new Date(period.active_from).toLocaleDateString(f?'fr-FR':'en-GB')}</span>` : ''}
-              </div>
-              <button onclick="openResetModal('${alive.id}','${h.class_name}')" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.1em;padding:5px 12px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.25);color:rgba(255,68,68,0.6);border-radius:4px;cursor:pointer">🔄 Reset</button>
-            </div>
-          </div>`;
-          for (const dc of chars.filter(c=>c.status==='dead').sort((a,b)=>b.attempt_number-a.attempt_number)) {
-            html += `<div class="hero-card-v2" style="opacity:0.45;margin-left:16px;border-color:rgba(255,68,68,0.15)">
-              <div style="display:flex;align-items:center;justify-content:space-between">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <span style="font-family:'Cinzel',serif;font-size:15px;color:${h.color_hex};opacity:0.6">${h.class_name}</span>
-                  <span class="hero-status-badge dead">💀 ${f?'Mort':'Dead'} · #${dc.attempt_number}</span>
-                  ${dc.died_at ? `<span style="font-size:13px;color:var(--text-muted)">${new Date(dc.died_at).toLocaleDateString(f?'fr-FR':'en-GB')}</span>` : ''}
-                </div>
-                <span style="font-family:'Cinzel',serif;font-size:13px;color:var(--text-muted)">${dc.best_rank_label||'—'}</span>
-              </div>
-            </div>`;
-          }
-        } else {
-          html += `<div class="hero-card-add">
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:8px;height:8px;border-radius:50%;background:${h.color_hex};flex-shrink:0"></div>
-              <span class="hero-card-add-name" style="color:${h.color_hex}">${h.class_name}</span>
-              <span style="font-size:14px;color:var(--text-muted);font-style:italic">${h.role}</span>
-            </div>
-            <button onclick="addHeroToProfile('${h.class_name}')" style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.12em;padding:7px 16px;background:rgba(64,212,212,0.08);border:1px solid rgba(64,212,212,0.3);color:var(--teal-light);border-radius:4px;cursor:pointer">+ ${f?'Ajouter':'Add'}</button>
-          </div>`;
+    const { characters, heroClasses, periods, scores = {} } = _profileData;
+    const stats = computeProfileStats();
+    if (!_spotClass || !heroClasses.some(h => h.class_name === _spotClass)) {
+      const best = characters.filter(c => c.status === 'alive').sort((a, b) => (scores[b.id] || 0) - (scores[a.id] || 0))[0];
+      _spotClass = best?.character_class || heroClasses[0]?.class_name;
+    }
+    const hero  = heroClasses.find(h => h.class_name === _spotClass);
+    const alive = characters.find(c => c.character_class === _spotClass && c.status === 'alive');
+    const col   = hero?.color_hex || '#40d4d4';
+
+    // Sélecteur : 12 portraits, anneau rouge = HM actif, estompé = pas encore ajouté
+    const picker = heroClasses.map(h => {
+      const a = characters.find(c => c.character_class === h.class_name && c.status === 'alive');
+      const state = !a ? 'new' : (a.hm_enabled ? 'on' : 'off');
+      return `<button class="pick ${state} ${h.class_name === _spotClass ? 'sel' : ''}" style="--hc:${h.color_hex}" onclick="selectSpotHero('${h.class_name}')" title="${esc(h.class_name)}${state === 'on' ? ' · HM ON' : ''}">
+        <img src="${heroImg(h.class_name)}" alt="" onerror="this.style.visibility='hidden'">
+        ${state === 'new' ? '<span class="pick-plus">+</span>' : `<span class="pick-dot ${state}"></span>`}
+      </button>`;
+    }).join('');
+
+    // Prochain trophée (le plus avancé parmi ceux qui restent)
+    const next = trophyStates(stats).filter(s => !s.done).sort((a, b) => b.pct - a.pct)[0];
+    const hintHtml = next ? `
+      <div class="next-trophy">
+        <span class="nt-ico">${next.t.ico}</span>
+        <div class="nt-body">
+          <div class="nt-label">${f ? 'Prochain trophée' : 'Next trophy'} · <b style="color:${next.t.color}">${f ? next.t.fr[0] : next.t.en[0]}</b></div>
+          <div class="trophy-bar"><div style="width:${next.pct}%;background:${next.t.color}"></div></div>
+        </div>
+        <span class="nt-pct">${next.pct}%</span>
+      </div>` : '';
+
+    const artHtml = `
+      <div class="spot-art ${alive ? '' : 'dim'}">
+        <img src="${heroFullImg(_spotClass)}" alt="${esc(_spotClass)}" onerror="this.onerror=null;this.src='${heroImg(_spotClass)}';this.classList.add('is-square')">
+      </div>`;
+
+    let centerHtml;
+    if (alive) {
+      const rk    = diffLevelToRank(alive.best_difficulty_level || 0);
+      const rkCol = tierColor(rk.tier);
+      const isOn  = !!alive.hm_enabled;
+      const period = periods.find(p => p.character_id === alive.id && !p.active_until);
+      const surv   = stats.byChar[alive.id]?.completed || 0;
+      const record = Math.max(stats.recordByClass[_spotClass] || 0, surv);
+      const survPct = record > 0 ? Math.round(100 * surv / record) : 0;
+      const survTxt = f ? (surv > 1 ? 'donjons survécus' : 'donjon survécu') : (surv > 1 ? 'dungeons survived' : 'dungeon survived');
+      centerHtml = `
+        <div class="spot-name"><b style="color:${col}">${esc(hero.class_name)}</b><span class="spot-role">${esc(hero.role)}</span></div>
+        <div class="spot-badges">
+          <span class="hero-status-badge alive">⚔️ ${f ? 'En vie' : 'Alive'} · #${alive.attempt_number}</span>
+          ${(alive.best_difficulty_level || 0) > 0 ? `<span class="spot-rank" style="color:${rkCol};border-color:${rkCol}66;background:${rkCol}1a">${rk.label}</span>` : ''}
+        </div>
+        <div class="spot-surv">
+          <div class="spot-surv-top"><span>🛡️ <b>${surv}</b> ${survTxt}</span><span class="spot-surv-rec">record ${record}</span></div>
+          <div class="trophy-bar"><div style="width:${survPct}%;background:${col}"></div></div>
+        </div>
+        <div class="spot-stats">
+          <div class="spot-stat"><b>${alive.ilvl_current || '—'}</b><span>ilvl</span></div>
+          <div class="spot-stat"><b>${alive.power_score_current ? Math.round(alive.power_score_current).toLocaleString() : '—'}</b><span>Power Score</span></div>
+          <div class="spot-stat"><b>${Math.floor(scores[alive.id] || 0).toLocaleString()}</b><span>Score</span></div>
+        </div>
+        <div class="spot-actions">
+          <div class="hm-toggle-pill">
+            <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:${isOn ? 'var(--hc-red)' : 'var(--text-muted)'}">${isOn ? 'HM ON' : 'HM OFF'}</span>
+            <label class="hm-toggle-switch">
+              <input type="checkbox" ${isOn ? 'checked' : ''} onchange="toggleHm('${hero.class_name}', this.checked, '${alive.id}', ${alive.player_id})">
+              <div class="hm-toggle-track"></div><div class="hm-toggle-thumb"></div>
+            </label>
+          </div>
+          ${period ? `<span class="hero-hm-since">HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</span>` : ''}
+          <button class="spot-reset" onclick="openResetModal('${alive.id}','${hero.class_name}')">🔄 Reset</button>
+        </div>
+        <div class="spot-gear-note" id="spot-gear-note"></div>`;
+    } else {
+      centerHtml = `
+        <div class="spot-name"><b style="color:${col}">${esc(hero?.class_name)}</b><span class="spot-role">${esc(hero?.role)}</span></div>
+        <div class="spot-empty">${f ? "Ce héros n'est pas encore dans ton profil Hardcore." : 'This hero is not in your Hardcore profile yet.'}</div>
+        <button class="spot-add" onclick="addHeroToProfile('${hero?.class_name}')">+ ${f ? 'Ajouter ce héros' : 'Add this hero'}</button>`;
+    }
+
+    cont.innerHTML = `
+      <div class="pick-row">${picker}</div>
+      ${hintHtml}
+      <div class="spot" style="--hc:${col};--hc-soft:${col}38">
+        <div class="spot-slots" id="spot-left">${gearColumn(GEAR_LEFT, null, f)}</div>
+        <div class="spot-center">${artHtml}${centerHtml}</div>
+        <div class="spot-slots" id="spot-right">${gearColumn(GEAR_RIGHT, null, f)}</div>
+      </div>`;
+    if (alive) loadSpotGear(alive.id, f);
+  }
+
+  // ── Onglet 2 : trophées ──────────────────────────────────────────────────────
+  function renderTabTrophies(cont, f) {
+    const states = trophyStates(computeProfileStats());
+    const done = states.filter(s => s.done).length;
+    const cards = states.map(({ t, v, done: ok, pct }) => {
+      const [title, desc] = f ? t.fr : t.en;
+      return `<div class="trophy ${ok ? 'done' : 'locked'}" style="--tc:${t.color};--tc-soft:${t.color}44">
+        <div class="trophy-ico">${t.ico}</div>
+        <div class="trophy-title">${title}</div>
+        <div class="trophy-desc">${desc}</div>
+        ${ok ? `<div class="trophy-done">✓ ${f ? 'Débloqué' : 'Unlocked'}</div>`
+             : `<div class="trophy-bar"><div style="width:${pct}%"></div></div><div class="trophy-prog">${t.fmt(v)}</div>`}
+      </div>`;
+    }).join('');
+    cont.innerHTML = `
+      <div class="trophy-head"><b>🏆 ${done} / ${states.length}</b><span>${f ? 'Tes trophées restent acquis, même si ton héros meurt.' : 'Your trophies stay yours, even if your hero dies.'}</span></div>
+      <div class="trophy-grid">${cards}</div>`;
+  }
+
+  // ── Onglet 3 : cimetière en pyramide (le plus grand tombé au sommet) ─────────
+  function tombHtml(d, f, top) {
+    const c = d.c;
+    const rk = (c.best_difficulty_level || 0) > 0 ? diffLevelToRank(c.best_difficulty_level).label : '—';
+    const date = c.died_at ? new Date(c.died_at).toLocaleDateString(f ? 'fr-FR' : 'en-GB', { day: '2-digit', month: 'short' }) : '';
+    return `<div class="tomb ${top ? 'top' : ''}">
+      ${top ? `<div class="tomb-tag">${f ? 'Le plus grand tombé' : 'Greatest fallen'}</div>` : '<div class="tomb-cross">†</div>'}
+      <div class="tomb-art"><img src="${heroImg(c.character_class)}" alt="" onerror="this.style.visibility='hidden'"></div>
+      <div class="tomb-name">${esc(c.character_class)}</div>
+      <div class="tomb-score">${Math.floor(d.score).toLocaleString()} pts</div>
+      <div class="tomb-meta">${rk} · #${c.attempt_number}${date ? ' · ' + date : ''}</div>
+    </div>`;
+  }
+
+  function renderTabGraveyard(cont, f) {
+    const { characters, scores = {} } = _profileData;
+    const dead = characters.filter(c => c.status === 'dead')
+      .map(c => ({ c, score: scores[c.id] || 0 }))
+      .sort((a, b) => b.score - a.score || (b.c.best_difficulty_level || 0) - (a.c.best_difficulty_level || 0));
+    if (!dead.length) {
+      cont.innerHTML = `<div class="grave-empty">🪦<div>${f ? 'Aucun héros tombé pour le moment.' : 'No fallen hero yet.'}</div><span>${f ? "Mourir, c'est recommencer." : 'Death is just the beginning.'}</span></div>`;
+      return;
+    }
+    const MAX = 15;                                     // 5 rangées : 1 + 2 + 3 + 4 + 5
+    const shown = dead.slice(0, MAX);
+    let i = 0, rows = '';
+    for (let r = 1; i < shown.length; r++) {
+      const row = shown.slice(i, i + r);
+      i += r;
+      rows += `<div class="grave-row">${row.map(d => tombHtml(d, f, d === shown[0])).join('')}</div>`;
+    }
+    const more = dead.length - shown.length;
+    cont.innerHTML = `<div class="grave">${rows}${more > 0 ? `<div class="grave-more">+${more} ${f ? 'autres héros tombés' : 'more fallen heroes'}</div>` : ''}</div>`;
+  }
+
+  // ── Actions du profil : activer / désactiver le HM, ajouter un héros ─────────
+  async function toggleHm(heroClass, enabled, charId, playerId) {
+    const f = fr();
+    const session = await getSession();
+    if (!session) return;
+    if (!charId) {
+      const ch = _profileData?.characters?.find(c => c.character_class === heroClass && c.status === 'alive');
+      if (!ch) { toast(f ? 'Personnage introuvable.' : 'Character not found.', true); return; }
+      charId = ch.id; playerId = ch.player_id;
+    }
+    try {
+      const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' };
+      if (enabled) {
+        const userRes = await authFetch('/user', { token: session.access_token });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/hm_active_periods', {
+          method: 'POST', headers: { ...headers, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ character_id: charId, user_id: userRes.id, player_id: playerId, active_from: new Date().toISOString(), season: SEASON }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+      } else {
+        // On refuse de désactiver si la plage ouverte n'a pas pu être fermée : sinon un run en mode normal
+        // pourrait être compté comme Hardcore au prochain sync.
+        const hadOpen = (_profileData?.periods || []).some(p => p.character_id === charId && !p.active_until);
+        const res = await fetch(SUPABASE_URL + `/rest/v1/hm_active_periods?character_id=eq.${charId}&active_until=is.null`, {
+          method: 'PATCH', headers: { ...headers, 'Prefer': 'return=representation' },
+          body: JSON.stringify({ active_until: new Date().toISOString(), deactivated_by: 'user' }),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const closed = await res.json();
+        if (hadOpen && !(Array.isArray(closed) && closed.length)) {
+          throw new Error(f ? 'La plage HM n\'a pas pu être fermée (droits manquants). Préviens Pouf.' : 'The HM period could not be closed (missing permission). Tell Pouf.');
         }
       }
-      html += '</div>';
+      const res2 = await fetch(SUPABASE_URL + `/rest/v1/hm_characters?id=eq.${charId}`, {
+        method: 'PATCH', headers, body: JSON.stringify({ hm_enabled: enabled }),
+      });
+      if (!res2.ok) throw new Error(await res2.text());
+      toast(enabled ? (f ? `HM activé · ${heroClass}` : `HM enabled · ${heroClass}`) : (f ? `HM désactivé · ${heroClass}` : `HM disabled · ${heroClass}`));
+      _profileData = null;
+      await renderProfilePage();
+    } catch (e) {
+      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+      _profileData = null;
+      await renderProfilePage();           // remet l'interrupteur dans son état réel
     }
-    cont.innerHTML = html;
   }
 
-  async function renderTabEquipment(cont, f) {
-    const { characters, heroClasses } = _profileData;
-    const alive = characters.filter(c => c.status === 'alive');
-    if (!alive.length) { cont.innerHTML = `<div class="equip-empty">${f?'Aucun héros actif.':'No active hero.'}</div>`; return; }
-    if (!_equipSelectedHero) _equipSelectedHero = alive[0].id;
-    const sel = alive.map(c => {
-      const hd = heroClasses.find(h => h.class_name === c.character_class);
-      const col = hd?.color_hex || 'var(--text-muted)';
-      const act = c.id === _equipSelectedHero;
-      return `<button class="equip-hero-btn ${act?'active':''}" style="${act?`border-color:${col}60;color:${col};background:${col}12`:''}" onclick="_equipSelectedHero='${c.id}';renderTabEquipment(document.getElementById('profile-tab-content'),fr())">${c.character_class}</button>`;
-    }).join('');
-    cont.innerHTML = `<div class="equip-hero-selector">${sel}</div><div id="equip-snapshot-zone"><div class="equip-empty">${f?'Chargement…':'Loading…'}</div></div>`;
-    await renderEquipmentSnapshot(f);
-  }
-
-  async function renderEquipmentSnapshot(f) {
-    const zone = document.getElementById('equip-snapshot-zone');
-    if (!zone) return;
+  async function addHeroToProfile(heroClass) {
+    const f = fr();
+    const session = await getSession();
+    if (!session || !_profileData) return;
+    const { profile, characters } = _profileData;
+    const playerId = profile?.player_id;
+    const charName = characters[0]?.character_name;
+    if (!playerId || !charName) { toast(f ? 'Profil incomplet.' : 'Incomplete profile.', true); return; }
+    if (characters.some(c => c.character_class === heroClass && c.status === 'alive')) { toast(f ? 'Héros déjà ajouté.' : 'Hero already added.', true); return; }
     try {
-      const snap = await sbFetch(`/rest/v1/hm_equipment_snapshots?character_id=eq.${_equipSelectedHero}&season=eq.${SEASON}&order=created_at.desc&limit=1&select=ilvl,power_score,gear,created_at`);
-      if (!snap?.length || !snap[0].gear?.length) {
-        zone.innerHTML = `<div class="equip-empty">${f?'Aucun snapshot disponible.<br>Il sera créé après le premier run HM.':'No snapshot available.<br>It will be created after the first HM run.'}</div>`;
-        return;
-      }
-      const s = snap[0];
-      const gear = [...s.gear].sort((a,b) => (a.slot ?? 99)-(b.slot ?? 99));
-      const ordered = gear.length === 14 && gear.every(g => g.slot != null);
-      const date = new Date(s.created_at).toLocaleDateString(f?'fr-FR':'en-GB',{day:'2-digit',month:'long',year:'numeric'});
-      const items = gear.map(item => {
-        const q = item.quality||1; const qc = qualityClass(q);
-        const sl = slotName(item.slot,f); const ic = SLOT_ICONS_MAP[item.slot]||'📦';
-        const gs = item.potentialPower ? Math.round(item.potentialPower/10) : null; // PS pièce = /10 (le total du perso, lui, est /100)
-        const nm = item.name||(f?'Objet inconnu':'Unknown item');
-        return `<div class="equip-item">
-          <div class="equip-icon ${qc}">${ic}</div>
-          <div class="equip-info">
-            <div class="equip-name ${qc}" style="border:none;background:none;padding:0">${nm}</div>
-            <div class="equip-meta">
-              <span class="equip-slot">${sl}</span>
-              <span style="font-family:'Cinzel',serif;font-size:12px;font-weight:700;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:3px">${item.itemLevel||0}</span>
-              ${gs ? `<span class="equip-gs">PS ${gs}</span>` : ''}
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-      zone.innerHTML = `
-        <div class="equip-snapshot-info">${f?'Dernier run HM :':'Last HM run:'} <strong style="color:var(--text-dim)">${date}</strong></div>
-        <div class="equip-grid" style="${ordered ? 'grid-auto-flow:column;grid-template-rows:repeat(7,auto)' : ''}">${items}</div>
-        <div class="equip-totals">
-          <span class="equip-total-label">${f?'ilvl moyen':'Avg ilvl'}</span><span class="equip-total-val">${s.ilvl}</span>
-          <span class="equip-total-label" style="margin-left:32px">Power Score</span><span class="equip-total-val">${s.power_score ? Math.round(s.power_score).toLocaleString() : '—'}</span>
-        </div>`;
-    } catch(e) { zone.innerHTML = `<div class="equip-empty">${f?'Erreur.':'Error.'}</div>`; }
+      const userRes = await authFetch('/user', { token: session.access_token });
+      const res = await fetch(SUPABASE_URL + '/rest/v1/hm_characters', {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+          player_id: playerId, user_id: userRes.id,
+          fellowship_character_id: characters[0]?.fellowship_character_id ?? null,
+          character_name: charName, character_class: heroClass,
+          attempt_number: 1, status: 'alive', hm_enabled: false, season: SEASON,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      toast(f ? `${heroClass} ajouté !` : `${heroClass} added!`);
+      _spotClass = heroClass;
+      _profileData = null;
+      await renderProfilePage();
+    } catch (e) {
+      toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
+    }
   }
 
   async function renderTabHistory(cont, f) {
