@@ -898,7 +898,7 @@
     .pick.new:hover { opacity:.85; }
     .pick.on { border-color:rgba(255,68,68,.75); }
     .pick.sel { border-color:var(--hc); box-shadow:0 0 0 2px var(--hc), 0 0 14px var(--hc); }
-    .pick-dot { position:absolute; right:4px; bottom:4px; width:10px; height:10px; border-radius:50%; border:1.5px solid rgba(0,0,0,.7); background:#6ba8a8; }
+    .pick-dot { position:absolute; right:4px; bottom:4px; width:13px; height:13px; border-radius:50%; border:1.5px solid rgba(0,0,0,.7); background:#6ba8a8; }
     .pick-dot.on { background:#ff4444; box-shadow:0 0 6px #ff4444; }
     .pick-plus { position:absolute; right:4px; bottom:0; font-weight:700; font-size:18px; color:#fff; text-shadow:0 0 4px #000; }
 
@@ -906,7 +906,7 @@
     .next-trophy { display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:10px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; }
     .nt-ico { font-size:22px; }
     .nt-body { flex:1; min-width:0; }
-    .nt-label { font-size:13px; color:var(--text-muted); margin-bottom:6px; }
+    .nt-label { font-size:15px; color:var(--text-muted); margin-bottom:6px; }
     .nt-pct { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:var(--text-dim); }
     .trophy-bar { height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden; }
     .trophy-bar div { height:100%; background:var(--tc, var(--teal-light)); border-radius:3px; }
@@ -918,33 +918,57 @@
     .spot-slots { display:flex; flex-direction:column; gap:8px; }
     .gslot { position:relative; width:76px; height:62px; box-sizing:border-box; border-width:2px; border-style:solid; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; }
     .gslot-ico { font-size:24px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
-    .gslot-ilvl { position:absolute; right:5px; bottom:2px; font-size:11px; font-weight:700; text-shadow:0 1px 2px #000; }
+    .gslot-ilvl { position:absolute; right:5px; bottom:2px; font-size:13px; font-weight:700; text-shadow:0 1px 2px #000; }
     .gslot.empty { background:rgba(255,255,255,.02); border-color:rgba(255,255,255,.08); }
     .gslot.empty .gslot-ico { opacity:.18; }
     .spot-center { display:flex; flex-direction:column; gap:12px; min-width:0; }
-    .spot-art { height:340px; border-radius:10px; overflow:hidden; background:rgba(0,0,0,.28); border:1px solid var(--border); }
-    .spot-art img { width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; }
-    .spot-art img.is-square { object-fit:cover; object-position:center 25%; }
+    .spot-art { width:100%; max-width:360px; margin:0 auto; aspect-ratio:4/5; border-radius:10px; overflow:hidden; background:rgba(0,0,0,.28); border:1px solid var(--border); }
+    .spot-art img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+    .spot-art img.is-square { object-position:center 25%; }
     .spot-art.dim img { filter:grayscale(.7) brightness(.6); }
     .spot-name { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-    .spot-name b { font-family:'Cinzel',serif; font-size:26px; letter-spacing:.06em; }
-    .spot-role { font-size:14px; font-style:italic; color:var(--text-muted); }
+    .spot-name b { font-family:'Cinzel',serif; font-size:34px; letter-spacing:.06em; }
+    .spot-role { font-size:18px; font-style:italic; color:var(--text-muted); }
     .spot-badges { display:flex; flex-wrap:wrap; gap:8px; }
-    .spot-rank { font-family:'Cinzel',serif; font-size:12px; font-weight:700; letter-spacing:.1em; padding:5px 12px; border-radius:20px; border:1px solid; }
+    .spot-rank { font-family:'Cinzel',serif; font-size:15px; font-weight:700; letter-spacing:.08em; padding:7px 16px; border-radius:20px; color:#fff; background:var(--rc); border:1px solid rgba(255,255,255,.4); text-shadow:0 1px 3px rgba(0,0,0,.75); }
+    .spot-badges .hero-status-badge { font-size:15px; font-weight:700; letter-spacing:.06em; padding:7px 16px; color:#052b0c; background:#58f06a; border-color:#9bffa8; text-shadow:none; }
+    .rk-badge { font-family:'Cinzel',serif; font-weight:700; color:#fff; background:var(--rc); border:1px solid rgba(255,255,255,.4); text-shadow:0 1px 3px rgba(0,0,0,.75); padding:4px 12px; border-radius:20px; white-space:nowrap; }
     .spot-surv { padding:10px 12px; background:rgba(0,0,0,.25); border:1px solid var(--border); border-radius:8px; }
-    .spot-surv-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; font-size:15px; color:var(--text-dim); }
-    .spot-surv-top b { font-family:'Cinzel',serif; font-size:20px; color:var(--text); }
-    .spot-surv-rec { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); }
+    .spot-surv-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; font-size:17px; color:var(--text-dim); }
+    .spot-surv-top b { font-family:'Cinzel',serif; font-size:24px; color:var(--text); }
+    .spot-surv-rec { font-family:'Cinzel',serif; font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); }
     .spot-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
     .spot-stat { background:rgba(0,0,0,.28); border:1px solid var(--border); border-radius:8px; padding:10px; text-align:center; }
-    .spot-stat b { display:block; font-family:'Cinzel',serif; font-size:20px; color:var(--teal-light); line-height:1.1; }
-    .spot-stat span { font-family:'Cinzel',serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); }
-    .spot-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
-    .spot-reset, .spot-add { font-family:'Cinzel',serif; font-size:11px; letter-spacing:.1em; padding:7px 14px; border-radius:4px; cursor:pointer; }
-    .spot-reset { background:rgba(255,68,68,.06); border:1px solid rgba(255,68,68,.3); color:rgba(255,120,120,.85); }
-    .spot-add { align-self:flex-start; background:rgba(64,212,212,.08); border:1px solid rgba(64,212,212,.4); color:var(--teal-light); }
-    .spot-empty { font-size:15px; font-style:italic; color:var(--text-muted); }
-    .spot-gear-note { font-size:12px; font-style:italic; color:var(--text-muted); text-align:center; }
+    .spot-stat b { display:block; font-family:'Cinzel',serif; font-size:24px; color:var(--teal-light); line-height:1.1; }
+    .spot-stat span { font-family:'Cinzel',serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-muted); }
+    .spot-add { font-family:'Cinzel',serif; font-size:15px; letter-spacing:.1em; padding:12px 22px; border-radius:6px; cursor:pointer; align-self:flex-start; background:rgba(64,212,212,.12); border:2px solid rgba(64,212,212,.6); color:var(--teal-light); }
+
+    /* Interrupteur HM : gros, deux états explicites, en tête de carte */
+    .hm-banner { border-radius:12px; padding:14px; border:2px solid var(--border); background:rgba(0,0,0,.35); transition:background .2s, border-color .2s, box-shadow .2s; }
+    .hm-banner.on  { border-color:#ff4444; background:linear-gradient(180deg, rgba(255,68,68,.22), rgba(255,68,68,.08)); box-shadow:0 0 22px rgba(255,68,68,.35); }
+    .hm-banner.off { border-color:rgba(255,255,255,.28); }
+    .hm-banner.busy { opacity:.6; pointer-events:none; }
+    .hm-state { display:flex; align-items:center; gap:10px; font-family:'Cinzel',serif; font-weight:700; font-size:20px; letter-spacing:.06em; margin-bottom:6px; }
+    .hm-banner.on .hm-state { color:#ff8a8a; }
+    .hm-banner.off .hm-state { color:var(--text-dim); }
+    .hm-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; background:#7a8a8a; }
+    .hm-banner.on .hm-dot { background:#ff4444; box-shadow:0 0 10px #ff4444; animation:hmpulse 1.6s infinite; }
+    @keyframes hmpulse { 50% { opacity:.45; } }
+    .hm-sub { font-size:16px; line-height:1.4; color:var(--text-dim); margin-bottom:12px; }
+    .hm-since { font-family:'Crimson Pro',serif; font-size:16px; font-weight:500; letter-spacing:0; color:var(--text-dim); }
+    .hm-seg { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .hm-seg button { font-family:'Cinzel',serif; font-weight:700; font-size:18px; letter-spacing:.1em; padding:14px 8px; border-radius:8px; cursor:pointer; border:2px solid rgba(255,255,255,.2); background:rgba(255,255,255,.04); color:var(--text-muted); transition:all .15s; }
+    .hm-seg button:hover:not(.cur) { border-color:rgba(255,255,255,.55); color:var(--text); }
+    .hm-seg button.cur { cursor:default; }
+    .hm-seg button.cur.is-off { background:#4a5858; border-color:#9fb4b4; color:#fff; }
+    .hm-seg button.cur.is-on  { background:#d62f2f; border-color:#ff8a8a; color:#fff; box-shadow:0 0 14px rgba(255,68,68,.55); }
+
+    .spot-danger { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:12px 14px; border-radius:10px; border:2px dashed rgba(255,68,68,.5); background:rgba(255,68,68,.07); }
+    .spot-danger-txt { flex:1; min-width:160px; font-size:15px; line-height:1.35; color:var(--text-dim); }
+    .spot-reset { font-family:'Cinzel',serif; font-weight:700; font-size:16px; letter-spacing:.1em; padding:12px 20px; border-radius:8px; cursor:pointer; color:#fff; background:#a31f1f; border:2px solid #ff6b6b; }
+    .spot-reset:hover { background:#c42626; box-shadow:0 0 14px rgba(255,68,68,.5); }
+    .spot-empty { font-size:18px; font-style:italic; color:var(--text-muted); }
+    .spot-gear-note { font-size:14px; font-style:italic; color:var(--text-muted); text-align:center; }
 
     /* Trophées */
     .trophy-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
@@ -1542,7 +1566,7 @@
       // Highest dungeon badge
       const rankColor = tierColor(p.bestRank.tier);
       const rankBadge = p.bestDl > 0
-        ? `<span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:${rankColor};border:1px solid ${rankColor}40;background:${rankColor}12;padding:3px 10px;border-radius:20px;white-space:nowrap">${p.bestRank.label}</span>`
+        ? `<span class="rk-badge" style="--rc:${rankColor};font-size:15px">${p.bestRank.label}</span>`
         : `<span style="color:var(--text-muted);font-size:13px">—</span>`;
 
       return `
@@ -2647,6 +2671,37 @@
   }
 
   // ── Onglet 1 : héros en vedette ──────────────────────────────────────────────
+  // Bandeau HM ON/OFF : deux gros boutons explicites + phrase qui dit ce qui se passe réellement.
+  function hmBannerHtml(ch, f, busy) {
+    const on = !!ch.hm_enabled;
+    const period = (_profileData?.periods || []).find(p => p.character_id === ch.id && !p.active_until);
+    const since = on && period ? ` <span class="hm-since">· ${f ? 'depuis le' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</span>` : '';
+    const state = on ? (f ? 'HARDCORE ACTIVÉ' : 'HARDCORE ON') : (f ? 'HARDCORE DÉSACTIVÉ' : 'HARDCORE OFF');
+    const sub = on
+      ? (f ? 'Tes donjons sont comptés. Une mort en run = héros mort.' : 'Your dungeons count. A death in a run = dead hero.')
+      : (f ? 'Tes donjons ne comptent PAS. Active avant de lancer un run HM.' : 'Your dungeons do NOT count. Turn it on before starting an HM run.');
+    const args = `'${esc(ch.character_class)}','${ch.id}',${ch.player_id}`;
+    return `<div class="hm-banner ${on ? 'on' : 'off'} ${busy ? 'busy' : ''}" id="hm-banner">
+      <div class="hm-state"><span class="hm-dot"></span>${state}${since}</div>
+      <div class="hm-sub">${sub}</div>
+      <div class="hm-seg" role="group" aria-label="HM">
+        <button type="button" class="is-off ${on ? '' : 'cur'}" ${on ? `onclick="toggleHm(${args},false)"` : 'disabled'}>${on ? '' : '✓ '}HM OFF</button>
+        <button type="button" class="is-on ${on ? 'cur' : ''}" ${on ? 'disabled' : `onclick="toggleHm(${args},true)"`}>${on ? '✓ ' : ''}HM ON</button>
+      </div>
+    </div>`;
+  }
+
+  // Met à jour le bandeau et la pastille du sélecteur sans re-rendre la page.
+  function refreshHmUi(charId, busy) {
+    const ch = _profileData?.characters?.find(c => String(c.id) === String(charId));
+    if (!ch) return;
+    const f = fr();
+    const el = document.getElementById('hm-banner');
+    if (el && ch.character_class === _spotClass) el.outerHTML = hmBannerHtml(ch, f, busy);
+    const btn = document.querySelector(`.pick[title^="${ch.character_class.replace(/"/g, '')}"] .pick-dot`);
+    if (btn) btn.className = 'pick-dot ' + (ch.hm_enabled ? 'on' : 'off');
+  }
+
   function selectSpotHero(cls) { _spotClass = cls; renderProfileTabContent(); }
 
   // Colonne d'équipement façon écran de jeu. gear = items du snapshot (slot = index 0-13) ou null.
@@ -2734,17 +2789,17 @@
     if (alive) {
       const rk    = diffLevelToRank(alive.best_difficulty_level || 0);
       const rkCol = tierColor(rk.tier);
-      const isOn  = !!alive.hm_enabled;
-      const period = periods.find(p => p.character_id === alive.id && !p.active_until);
       const surv   = stats.byChar[alive.id]?.completed || 0;
       const record = Math.max(stats.recordByClass[_spotClass] || 0, surv);
       const survPct = record > 0 ? Math.round(100 * surv / record) : 0;
       const survTxt = f ? (surv > 1 ? 'donjons survécus' : 'donjon survécu') : (surv > 1 ? 'dungeons survived' : 'dungeon survived');
       centerHtml = `
         <div class="spot-name"><b style="color:${col}">${esc(hero.class_name)}</b><span class="spot-role">${esc(hero.role)}</span></div>
+        ${hmBannerHtml(alive, f)}
+        ${artHtml}
         <div class="spot-badges">
           <span class="hero-status-badge alive">⚔️ ${f ? 'En vie' : 'Alive'} · #${alive.attempt_number}</span>
-          ${(alive.best_difficulty_level || 0) > 0 ? `<span class="spot-rank" style="color:${rkCol};border-color:${rkCol}66;background:${rkCol}1a">${rk.label}</span>` : ''}
+          ${(alive.best_difficulty_level || 0) > 0 ? `<span class="spot-rank" style="--rc:${rkCol}">${rk.label}</span>` : ''}
         </div>
         <div class="spot-surv">
           <div class="spot-surv-top"><span>🛡️ <b>${surv}</b> ${survTxt}</span><span class="spot-surv-rec">record ${record}</span></div>
@@ -2755,21 +2810,15 @@
           <div class="spot-stat"><b>${alive.power_score_current ? Math.round(alive.power_score_current).toLocaleString() : '—'}</b><span>Power Score</span></div>
           <div class="spot-stat"><b>${Math.floor(scores[alive.id] || 0).toLocaleString()}</b><span>Score</span></div>
         </div>
-        <div class="spot-actions">
-          <div class="hm-toggle-pill">
-            <span style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:${isOn ? 'var(--hc-red)' : 'var(--text-muted)'}">${isOn ? 'HM ON' : 'HM OFF'}</span>
-            <label class="hm-toggle-switch">
-              <input type="checkbox" ${isOn ? 'checked' : ''} onchange="toggleHm('${hero.class_name}', this.checked, '${alive.id}', ${alive.player_id})">
-              <div class="hm-toggle-track"></div><div class="hm-toggle-thumb"></div>
-            </label>
-          </div>
-          ${period ? `<span class="hero-hm-since">HM ${f ? 'depuis' : 'since'} ${new Date(period.active_from).toLocaleDateString(f ? 'fr-FR' : 'en-GB')}</span>` : ''}
-          <button class="spot-reset" onclick="openResetModal('${alive.id}','${hero.class_name}')">🔄 Reset</button>
+        <div class="spot-danger">
+          <div class="spot-danger-txt">${f ? '<b>Ton héros est mort en jeu ?</b> Repars à zéro avec une nouvelle tentative.' : '<b>Did your hero die in game?</b> Start over with a fresh attempt.'}</div>
+          <button class="spot-reset" onclick="openResetModal('${alive.id}','${hero.class_name}')">☠️ ${f ? 'RESET' : 'RESET'}</button>
         </div>
         <div class="spot-gear-note" id="spot-gear-note"></div>`;
     } else {
       centerHtml = `
         <div class="spot-name"><b style="color:${col}">${esc(hero?.class_name)}</b><span class="spot-role">${esc(hero?.role)}</span></div>
+        ${artHtml}
         <div class="spot-empty">${f ? "Ce héros n'est pas encore dans ton profil Hardcore." : 'This hero is not in your Hardcore profile yet.'}</div>
         <button class="spot-add" onclick="addHeroToProfile('${hero?.class_name}')">+ ${f ? 'Ajouter ce héros' : 'Add this hero'}</button>`;
     }
@@ -2779,7 +2828,7 @@
       ${hintHtml}
       <div class="spot" style="--hc:${col};--hc-soft:${col}38">
         <div class="spot-slots" id="spot-left">${gearColumn(GEAR_LEFT, null, f)}</div>
-        <div class="spot-center">${artHtml}${centerHtml}</div>
+        <div class="spot-center">${centerHtml}</div>
         <div class="spot-slots" id="spot-right">${gearColumn(GEAR_RIGHT, null, f)}</div>
       </div>`;
     if (alive) loadSpotGear(alive.id, f);
@@ -2840,31 +2889,35 @@
   }
 
   // ── Actions du profil : activer / désactiver le HM, ajouter un héros ─────────
-  async function toggleHm(heroClass, enabled, charId, playerId) {
+  let _hmBusy = false;
+  async function toggleHm(heroClass, charId, playerId, enabled) {
+    if (_hmBusy) return;
     const f = fr();
     const session = await getSession();
     if (!session) return;
-    if (!charId) {
-      const ch = _profileData?.characters?.find(c => c.character_class === heroClass && c.status === 'alive');
-      if (!ch) { toast(f ? 'Personnage introuvable.' : 'Character not found.', true); return; }
-      charId = ch.id; playerId = ch.player_id;
-    }
+    const ch = _profileData?.characters?.find(c => String(c.id) === String(charId));
+    if (!ch) { toast(f ? 'Personnage introuvable.' : 'Character not found.', true); return; }
+    _hmBusy = true;
+    refreshHmUi(charId, true);                       // bandeau grisé pendant l'enregistrement
     try {
       const headers = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' };
+      const now = new Date().toISOString();
+      let newPeriod = null;
       if (enabled) {
         const userRes = await authFetch('/user', { token: session.access_token });
         const res = await fetch(SUPABASE_URL + '/rest/v1/hm_active_periods', {
           method: 'POST', headers: { ...headers, 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ character_id: charId, user_id: userRes.id, player_id: playerId, active_from: new Date().toISOString(), season: SEASON }),
+          body: JSON.stringify({ character_id: charId, user_id: userRes.id, player_id: playerId, active_from: now, season: SEASON }),
         });
         if (!res.ok) throw new Error(await res.text());
+        newPeriod = { character_id: charId, player_id: playerId, active_from: now, active_until: null };
       } else {
         // On refuse de désactiver si la plage ouverte n'a pas pu être fermée : sinon un run en mode normal
         // pourrait être compté comme Hardcore au prochain sync.
         const hadOpen = (_profileData?.periods || []).some(p => p.character_id === charId && !p.active_until);
         const res = await fetch(SUPABASE_URL + `/rest/v1/hm_active_periods?character_id=eq.${charId}&active_until=is.null`, {
           method: 'PATCH', headers: { ...headers, 'Prefer': 'return=representation' },
-          body: JSON.stringify({ active_until: new Date().toISOString(), deactivated_by: 'user' }),
+          body: JSON.stringify({ active_until: now, deactivated_by: 'user' }),
         });
         if (!res.ok) throw new Error(await res.text());
         const closed = await res.json();
@@ -2876,13 +2929,16 @@
         method: 'PATCH', headers, body: JSON.stringify({ hm_enabled: enabled }),
       });
       if (!res2.ok) throw new Error(await res2.text());
+      // Mise à jour locale : pas de rechargement de la page
+      ch.hm_enabled = enabled;
+      if (enabled) _profileData.periods.push(newPeriod);
+      else _profileData.periods.forEach(p => { if (p.character_id === charId && !p.active_until) { p.active_until = now; p.deactivated_by = 'user'; } });
       toast(enabled ? (f ? `HM activé · ${heroClass}` : `HM enabled · ${heroClass}`) : (f ? `HM désactivé · ${heroClass}` : `HM disabled · ${heroClass}`));
-      _profileData = null;
-      await renderProfilePage();
     } catch (e) {
       toast((f ? 'Erreur : ' : 'Error: ') + (e.message || ''), true);
-      _profileData = null;
-      await renderProfilePage();           // remet l'interrupteur dans son état réel
+    } finally {
+      _hmBusy = false;
+      refreshHmUi(charId, false);                    // reflète l'état réel (succès ou échec)
     }
   }
 
